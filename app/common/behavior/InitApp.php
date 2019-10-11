@@ -17,7 +17,7 @@ class initApp{
         //获取
         $base_file  = Request::baseFile();
         //配置使用默认的app
-        $defualt_layer = ['admin','common'];
+        $defualt_layer = ['admin','common','index'];
         //获取当前访问的应用，控制器，方法
         $path_array = explode('/',Request::pathinfo());
         $app = !empty($path_array[0])?$path_array[0]:config('app.default_app');//当前访问的应用
@@ -42,6 +42,8 @@ class initApp{
             if(!in_array($app,$defualt_layer)){
                 config(['controller_layer'=>'controller\home'],'route');
                 View::config(['view_path'=>App::getBasePath().$app.'/view/home/']);
+            }else{
+                View::config(['view_path'=>App::getBasePath().$app.'/view/']);
             }
         }
     }
