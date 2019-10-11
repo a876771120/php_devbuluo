@@ -28,7 +28,21 @@ class initApp{
             if($path_array[0]==''){
                 header("Location: /admin.php/admin/index/index.".config('route.url_html_suffix'), true, 302);exit();
             }
+            if(!in_array($app,$defualt_layer)){
+                config(['controller_layer'=>'controller\admin'],'route');
+                View::config(['view_path'=>App::getBasePath().$app.'/view/admin/']);
+                
+            }else{
+                View::config(['view_path'=>App::getBasePath().$app.'/view/']);
+            }
+        }else{
+            if($app=='admin'){
+                header("Location: /admin.php/admin/index/index.".config('route.url_html_suffix'), true, 302);exit();
+            }
+            if(!in_array($app,$defualt_layer)){
+                config(['controller_layer'=>'controller\home'],'route');
+                View::config(['view_path'=>App::getBasePath().$app.'/view/home/']);
+            }
         }
-        
     }
 }

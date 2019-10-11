@@ -12,10 +12,6 @@ namespace app\admin\controller;
 use app\admin\controller\Admin;
 class Index extends Admin{
     public function index(){
-        return \json(array(
-            'code'=>1,
-            'msg'=>'成功啦',
-            'data'=>[]
-        ));
+        
     }
 }
