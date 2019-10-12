@@ -33,4 +33,9 @@ return [
     'error_message'    => '页面错误！请稍后再试～',
     // 显示错误信息
     'show_error_msg'   => false,
+
+    // 开发新增配置
+    // 后台模板布局路径
+    'admin_layout_path'=>app()->getBasePath().'/admin/view/layout.html',
+
 ];

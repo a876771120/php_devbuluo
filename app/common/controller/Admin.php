@@ -31,13 +31,13 @@ class Admin extends Base{
      */
     protected function initialize(){
         // 设置后台layout模板
-        View::assign('_admin_layout',app()->getBasePath().'/admin/view/layout.html');
+        View::assign('_admin_base_layout',config('admin_layout_path'));
         // 传递pop参数
         View::assign('_pop',input('_pop'));
         // 输出页面标题
         View::assign('_page_title',$this->page_title);
         // 检查是否登录
-        // $this->CheckLogin();
+        $this->CheckLogin();
         
     }
     /**
