@@ -9,13 +9,19 @@
 // | 开源协议 ( http://www.apache.org/licenses/LICENSE-2.0 )
 // +----------------------------------------------------------------------
 namespace app\admin\controller;
-use app\common\controller\Base;
-class Admin extends Base{
+use app\common\controller\Admin;
+/**
+ * 配置管理控制器
+ * @package app\admin\controller
+ * @author 刘勤 <876771120@qq.com>
+ */
+class Config extends Admin{
     /**
-     * 初始化
-     * @author 刘勤 <876771120@qq.com>
+     * 管理列表页面
+     *
+     * @return void
      */
-    protected function initialize(){
-
+    public function index(){
+        dump($this->model);die;
     }
 }
