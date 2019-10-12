@@ -58,17 +58,11 @@ class initApp{
                 View::config(['view_path'=>App::getBasePath().$app.'/view/']);
             }
         }
-        // // 读取系统配置
-        // $system_config = cache('system_config');
-        // if(!$system_config){
-        //     $system_config = ConfigModel::getConfig();
-        //     // 非开发模式，缓存系统配置
-        //     if ($system_config['develop_mode'] == 0) {
-        //         cache('system_config', $system_config);
-        //     }
-        // }
-        // // 设置配置信息
-        // config($system_config,'app');
-        // dump(config(''));die;
+        // 设置静态目录路径
+        View::assign('duiPath','/static/dui');
+        View::assign('adminCssPath','/static/admin/css');
+        View::assign('adminJsPath','/static/admin/js');
+        View::assign('uploadPath','/uploads');
+        
     }
 }

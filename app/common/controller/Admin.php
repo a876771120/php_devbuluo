@@ -14,15 +14,12 @@ use think\facade\App;
 use think\facade\Request;
 use think\facade\View;
 use app\common\controller\Base;
+use app\member\model\Role as RoleModel;
 /**
  * 后台公共类
  * @author 刘勤 <876771120@qq.com>
  */
 class Admin extends Base{
-    // 当前模型对象
-    protected $model;
-    // 当前的模型名称
-    protected $model_name;
     // 当前页面的标题
     protected $page_title;
     /**
@@ -36,25 +33,10 @@ class Admin extends Base{
         View::assign('_pop',input('_pop'));
         // 输出页面标题
         View::assign('_page_title',$this->page_title);
-        // 检查是否登录
-        $this->CheckLogin();
-        
-    }
-    /**
-     * 加载模型
-     * @author 刘勤 <876771120@qq.com>
-     * @return void
-     */
-    protected function loadModel(){
-        if($name==$this->model_name && is_object($this->model)){
-            return $this->model;
-        }else{
-            if(file_exists(App::getAppPath().'model/'.$name.'.php')){
-                return App::factory(App::parseClass('model',$name));
-            }else{
-                return Db::name($name);
-            }
-        }
+        // 判断是否登录，并定义用户ID常量
+        defined('UID') or define('UID', $this->isLogin());
+        // 检查权限
+        if (!RoleModel::checkAuth()) $this->error('权限不足！');
     }
     /**
      * 构建查询条件
@@ -125,14 +107,14 @@ class Admin extends Base{
      * @author 刘勤 <876771120@qq.com>
      * @return void
      */
-    final protected function CheckLogin(){
+    final protected function isLogin(){
         //如果是没有登录则跳转到登录
         $login_user = session('admin.loginuser');
         if($login_user){
-           return $login_user;
+           return $login_user['id'];
         }else{
-            return redirect('member/publics/login');
+            $this->redirect('/admin.php/member/publics/login');
         }
     }
-
+    
 }

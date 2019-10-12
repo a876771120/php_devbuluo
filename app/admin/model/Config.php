@@ -18,7 +18,7 @@ use think\Model;
 class Config extends Model{
     // 自动写入时间戳
     protected $autoWriteTimestamp = true;
-    // 设置表名称不含表前缀
+    // 设置当前模型名称
     protected $name = 'AdminConfig';
     /**
      * 获取配置信息

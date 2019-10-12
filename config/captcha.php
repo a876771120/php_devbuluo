@@ -13,11 +13,11 @@ return [
     // 是否使用中文验证码
     'useZh'    => false,
     // 是否使用算术验证码
-    'math'     => false,
+    'math'     => true,
     // 是否使用背景图
     'useImgBg' => false,
     //验证码字符大小
-    'fontSize' => 25,
+    'fontSize' => 26,
     // 是否使用混淆曲线
     'useCurve' => true,
     //是否添加杂点

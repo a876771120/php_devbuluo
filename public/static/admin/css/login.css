@@ -1,0 +1,49 @@
+blockquote, body, button, dd, dl, dt, form, h1, h2, h3, h4, h5, h6, input, li, ol, p, pre, td, textarea, th, ul{
+    list-style: none;
+    padding: 0px;
+    margin: 0px;
+    -webkit-tap-highlight-color: rgba(0,0,0,0);
+}
+.login-header h2 {
+    margin-bottom: 10px;
+    font-weight: 300;
+    font-size: 30px;
+    color: #000;
+}
+.login-header p {
+    font-weight: 300;
+    color: #999;
+}
+.login-header{
+    padding: 20px;
+    text-align: center;
+}
+.login-box{
+    width: 400px;
+    margin: 0 auto;
+    box-sizing: border-box;
+}
+.login-body{
+    padding: 20px 30px;
+    background: #ffffff;
+    border-radius: 4px;
+}
+.login-body .login-title {
+    font-size: 18px;
+    font-weight: 400;
+    text-align: center;
+}
+
+body{
+    background: #f2f2f2;
+}
+.dui-input,.dui-select{
+    width: 100%;
+}
+.login-captcha-div{
+    position: absolute;
+    width: 130px;
+    height: 34px;
+    right: 1px;
+    top: 1px;
+}

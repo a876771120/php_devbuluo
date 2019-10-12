@@ -1,0 +1,140 @@
+<!DOCTYPE html>
+<html lang="zh">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>BaseAdmin-后台登录</title>
+    <link rel="stylesheet" href="{$adminCssPath}/login.css">
+    <link rel="stylesheet" href="{$duiPath}/css/dui.min.css">
+</head>
+<body>
+    <div class="aiui-col-xs login-main">
+        <div class="login-box">
+            <div class="login-header">
+                <h2>{:lang('app.developer tribe')}</h2>
+                <p>{:lang('app.dui integrates the background management system created by thinkphp')}</p>
+            </div>
+            <div class="login-body">
+                <form class="dui-form" dui-form method="POST">
+                    <div class="dui-form-item">
+                        <h3 class="login-title">{$Think.lang.user.login}</h3>
+                    </div>
+                    <div class="dui-form-item">
+                        <div class="dui-form-item__content">
+                            <select dui-select placeholder="{:lang('please select one')}" name="lang" filterable="true">
+                                <option value="zh-cn" {if cookie(config('lang.cookie_var'))}selected="selected"{/if}>{$Think.lang.user.chinese}</option>
+                                <option value="en-us" {if cookie(config('lang.cookie_var'))}selected="selected"{/if}>{$Think.lang.user.english}</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="dui-form-item">
+                        <div class="dui-form-item__content">
+                            <div class="dui-input">
+                                <input type="text" class="dui-input__inner" name="username" placeholder="{$Think.lang.user.username}">
+                            </div>
+                        </div>
+                    </div>
+                    <div class="dui-form-item">
+                        <div class="dui-form-item__content">
+                            <div class="dui-input">
+                                <input type="password" class="dui-input__inner" name="password" placeholder="{$Think.lang.user.password}">
+                            </div>
+                        </div>
+                    </div>
+                    <div class="dui-form-item" style="position:relative">
+                        <div class="dui-form-item__content">
+                            <div class="dui-input">
+                                <input type="text" class="dui-input__inner" name="captcha" placeholder="{$Think.lang.user.captcha}">
+                            </div>
+                        </div>
+                        <div class="login-captcha-div">
+                            <img src="{:captcha_src()}" id="captcha" alt="captcha" style="width:100%;height:100%;cursor:pointer"/>
+                        </div>
+                    </div>
+                    <div class="dui-form-item">
+                        <div class="dui-form-item__content">
+                            <button type="button" class="dui-button dui-button--primary is-fluid" id="login">{$Think.lang.user.login}</button>
+                        </div>
+                    </div>
+                </form>
+            </div>
+            <div class="login-footer">
+                
+            </div>
+        </div>
+    </div>
+</body>
+    <script src="{$duiPath}/js/dui.min.js"></script>
+    <script>
+    dui.use(['jquery','form','popup'],function($,form,popup){
+        //验证码切换事件
+        $('#captcha').on('click',function(){
+            this.src = "{:captcha_src()}?d="+Math.random();
+        })
+        //点击登录方法
+        $('#login').on('click',function(){
+            var data = {
+                lang:$('form[dui-form]').find('[name="lang"]').val(),
+                username:$('form[dui-form]').find('[name="username"]').val(),
+                password:$('form[dui-form]').find('[name="password"]').val(),
+                captcha:$('form[dui-form]').find('[name="captcha"]').val(),
+            };
+            if(!data.username){
+                popup.message('{:lang("user.please enter user name")}',{
+                    type:'error',
+                    duration:'3000',
+                    showClose:true
+                });
+                return;
+            }
+            if(!data.password){
+                popup.message('{:lang("user.please enter your password")}',{
+                    type:'error',
+                    duration:'3000',
+                    showClose:true
+                });
+                return;
+            }
+            if(!data.captcha){
+                popup.message('{:lang("user.verification code must be filled")}',{
+                    type:'error',
+                    duration:'3000',
+                    showClose:true
+                });
+                return;
+            }
+            $.ajax({
+                data:data,
+                type:"post",
+                dataType:'json',
+                url:'{:url("login")}',
+                success:function(res){
+                    if(res.code==1){
+                        popup.message(res.msg,{
+                            type:'success',
+                            duration:'3000',
+                            showClose:true,
+                            onClose:function(){
+                                window.location.href = '{:url("/admin.php/admin/index/index")}'
+                            }
+                        });
+                    }else{
+                        // 设置验证为空
+                        $('form[dui-form]').find('[name="captcha"]').val('');
+                        popup.message(res.msg,{
+                            type:'error',
+                            duration:'3000',
+                            showClose:true,
+                            onClose:function(){
+                                // 切换验证码
+                                $('#captcha').attr('src',"{:captcha_src()}?d="+Math.random());
+                            }
+                        });
+                    }
+                }
+            })
+        })
+    })
+    </script>
+</html>

@@ -37,5 +37,5 @@ return [
     // 开发新增配置
     // 后台模板布局路径
     'admin_layout_path'=>app()->getBasePath().'/admin/view/layout.html',
-
+    
 ];
