@@ -22,9 +22,9 @@
                     </div>
                     <div class="dui-form-item">
                         <div class="dui-form-item__content">
-                            <select dui-select placeholder="{:lang('please select one')}" name="lang" filterable="true">
-                                <option value="zh-cn" {if cookie(config('lang.cookie_var'))}selected="selected"{/if}>{$Think.lang.user.chinese}</option>
-                                <option value="en-us" {if cookie(config('lang.cookie_var'))}selected="selected"{/if}>{$Think.lang.user.english}</option>
+                            <select dui-select placeholder="{:lang('app.please select one')}" name="lang" filterable="true">
+                                <option value="zh-cn" {if $curren_lang=="zh-cn"}selected="selected"{/if}>{$Think.lang.user.chinese}</option>
+                                <option value="en-us" {if $curren_lang=="en-us"}selected="selected"{/if}>{$Think.lang.user.english}</option>
                             </select>
                         </div>
                     </div>
@@ -116,7 +116,7 @@
                             duration:'3000',
                             showClose:true,
                             onClose:function(){
-                                window.location.href = '{:url("/admin.php/admin/index/index")}'
+                                window.location.href = '{:url("admin/index/index")}'
                             }
                         });
                     }else{

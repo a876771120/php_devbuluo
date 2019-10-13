@@ -12,6 +12,7 @@ namespace app\member\controller\admin;
 use app\common\controller\Base;
 use app\member\model\Member as MemberModel;
 use think\exception\ValidateException;
+use think\facade\Lang;
 /**
  * 用户其他不需要权限的控制器
  */
@@ -41,6 +42,7 @@ class Publics extends Base{
             }
             return json($data);
         }
-        return view();
+        // 输出当前使用的语言
+        return view('',['curren_lang'=>Lang::getLangSet()]);
     }
 }
