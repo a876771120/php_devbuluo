@@ -5,47 +5,39 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta http-equiv="X-UA-Compatible" content="ie=edge">
     <title>BaseAdmin-后台登录</title>
-    <link rel="stylesheet" href="{$adminCssPath}/login.css">
-    <link rel="stylesheet" href="{$duiPath}/css/dui.min.css">
+    <link rel="stylesheet" href="__ADMIN_JS__/login.css">
+    <link rel="stylesheet" href="__DUI__/css/dui.min.css">
 </head>
 <body>
     <div class="aiui-col-xs login-main">
         <div class="login-box">
             <div class="login-header">
-                <h2>{:lang('app.developer tribe')}</h2>
-                <p>{:lang('app.dui integrates the background management system created by thinkphp')}</p>
+                <h2>开发者部落</h2>
+                <p>dui整合thinkphp打造的后台管理系统</p>
             </div>
             <div class="login-body">
                 <form class="dui-form" dui-form method="POST">
                     <div class="dui-form-item">
-                        <h3 class="login-title">{$Think.lang.user.login}</h3>
-                    </div>
-                    <div class="dui-form-item">
-                        <div class="dui-form-item__content">
-                            <select dui-select placeholder="{:lang('app.please select one')}" name="lang" filterable="true">
-                                <option value="zh-cn" {if $curren_lang=="zh-cn"}selected="selected"{/if}>{$Think.lang.user.chinese}</option>
-                                <option value="en-us" {if $curren_lang=="en-us"}selected="selected"{/if}>{$Think.lang.user.english}</option>
-                            </select>
-                        </div>
+                        <h3 class="login-title">登录</h3>
                     </div>
                     <div class="dui-form-item">
                         <div class="dui-form-item__content">
                             <div class="dui-input">
-                                <input type="text" class="dui-input__inner" name="username" placeholder="{$Think.lang.user.username}">
+                                <input type="text" class="dui-input__inner" name="username" placeholder="用户名">
                             </div>
                         </div>
                     </div>
                     <div class="dui-form-item">
                         <div class="dui-form-item__content">
                             <div class="dui-input">
-                                <input type="password" class="dui-input__inner" name="password" placeholder="{$Think.lang.user.password}">
+                                <input type="password" class="dui-input__inner" name="password" placeholder="密  码">
                             </div>
                         </div>
                     </div>
                     <div class="dui-form-item" style="position:relative">
                         <div class="dui-form-item__content">
                             <div class="dui-input">
-                                <input type="text" class="dui-input__inner" name="captcha" placeholder="{$Think.lang.user.captcha}">
+                                <input type="text" class="dui-input__inner" name="captcha" placeholder="验证码">
                             </div>
                         </div>
                         <div class="login-captcha-div">
@@ -54,7 +46,7 @@
                     </div>
                     <div class="dui-form-item">
                         <div class="dui-form-item__content">
-                            <button type="button" class="dui-button dui-button--primary is-fluid" id="login">{$Think.lang.user.login}</button>
+                            <button type="button" class="dui-button dui-button--primary is-fluid" id="login">登录</button>
                         </div>
                     </div>
                 </form>
@@ -65,7 +57,7 @@
         </div>
     </div>
 </body>
-    <script src="{$duiPath}/js/dui.min.js"></script>
+    <script src="__DUI__/js/dui.min.js"></script>
     <script>
     dui.use(['jquery','form','popup'],function($,form,popup){
         //验证码切换事件
@@ -81,7 +73,7 @@
                 captcha:$('form[dui-form]').find('[name="captcha"]').val(),
             };
             if(!data.username){
-                popup.message('{:lang("user.please enter user name")}',{
+                popup.message('请输入用户名',{
                     type:'error',
                     duration:'3000',
                     showClose:true
@@ -89,7 +81,7 @@
                 return;
             }
             if(!data.password){
-                popup.message('{:lang("user.please enter your password")}',{
+                popup.message('请输入密码',{
                     type:'error',
                     duration:'3000',
                     showClose:true
@@ -97,7 +89,7 @@
                 return;
             }
             if(!data.captcha){
-                popup.message('{:lang("user.verification code must be filled")}',{
+                popup.message('请输入验证码',{
                     type:'error',
                     duration:'3000',
                     showClose:true

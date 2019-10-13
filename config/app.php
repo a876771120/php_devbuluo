@@ -34,8 +34,13 @@ return [
     // 显示错误信息
     'show_error_msg'   => false,
 
+
+    
     // 开发新增配置
     // 后台模板布局路径
-    'admin_layout_path'=>app()->getBasePath().'/admin/view/layout.html',
-    
+    'admin_layout_path'=>app()->getBasePath().'admin/view/layout.html',
+    // 错误提示模板
+    'admin_error_template'=>app()->getBasePath().'admin/view/error.html',
+    // 成功提示模板
+    'admin_success_template'=>app()->getBasePath().'admin/view/success.html',
 ];

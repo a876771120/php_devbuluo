@@ -1,0 +1,28 @@
+{if !request()->isPjax()}
+<!DOCTYPE html>
+<html lang="zh">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>错误提示|{:config('app.web_site_title')}</title>
+    <link rel="stylesheet" href="{$duiPath}/css/dui.min.css">
+    <link rel="stylesheet" href="{$adminCssPath}/admin.min.css">
+</head>
+<body>
+{/if}
+    <div class="dui-admin__tips">
+        <div class="dui-admin__tips-centerbox">
+            <i class="dui-admin__tips-icon dui-icon-sad"></i>
+            <div class="dui-admin__tips-text is-success">
+                我是不是出错了
+                <div class="dui-admin__tips-jump">
+                    页面自动 <a href="#" class="dui-admin__tips-url">跳转</a> 等待时间： <b id="wait">3</b> [ <a href="#" class="dui-admin__tips-url">返回首页</a> ]
+                </div>
+            </div>
+        </div>
+    </div>
+{if !request()->isPjax()}
+</body>
+</html>
+{/if}

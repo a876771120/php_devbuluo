@@ -26,8 +26,6 @@ class Member extends Model{
     protected $pk = 'id';
     // 自动写入时间戳
     protected $autoWriteTimestamp = true;
-    // 错误信息
-    public $error;
     /**
      * 后台的登录方法并且设置用户信息与权限信息
      *
@@ -42,17 +40,17 @@ class Member extends Model{
         $data = self::alias('a')
             ->join('admin_perm p','a.id=p.uid')
             ->join('admin_role r','p.role_id=r.id')
-            ->field('a.*,r.name as rname,r.auth,r.status as rstatus,r.id as rid')
+            ->field('a.*,r.name as rname,r.auth,r.status as rstatus,r.id as role_id')
             ->where($where)
             ->find();
         if($data['status']!=1){
-            return lang('user.account is disabled');
+            return '账号被禁用';
         }
         if($data['password']!=md5(md5($password).$data['salt'].$data['jointime'])){
-            return lang('user.incorrect account or password');
+            return '账号或者密码错误';
         }
         // 设置用户信息
-        session('admin.loginuser',$data->getData());
+        session('member_auth',$data->getData());
         // 获取当前用户的权限
         $auth = RoleModel::getCurrenAuth();
         // 设置当前用户角色的权限

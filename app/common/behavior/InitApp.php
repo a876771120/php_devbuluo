@@ -58,11 +58,5 @@ class initApp{
                 View::config(['view_path'=>App::getBasePath().$app.'/view/']);
             }
         }
-        // 设置静态目录路径
-        View::assign('duiPath','/static/dui');
-        View::assign('adminCssPath','/static/admin/css');
-        View::assign('adminJsPath','/static/admin/js');
-        View::assign('uploadPath','/uploads');
-        
     }
 }

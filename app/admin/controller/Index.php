@@ -19,6 +19,6 @@ use app\admin\model\Config as ConfigModel;
 class Index extends Admin{
     
     public function index(){
-        
+        return view('');
     }
 }

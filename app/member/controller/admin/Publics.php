@@ -12,7 +12,6 @@ namespace app\member\controller\admin;
 use app\common\controller\Base;
 use app\member\model\Member as MemberModel;
 use think\exception\ValidateException;
-use think\facade\Lang;
 /**
  * 用户其他不需要权限的控制器
  */
@@ -34,8 +33,7 @@ class Publics extends Base{
                     $data = ['code'=>-1,'msg'=>$res,'data'=>''];
                 }else{
                     // 登录成功设置语言
-                    cookie(config('lang.cookie_var'),$data['lang']);
-                    $data = ['code'=>1,'msg'=>lang('login_success'),'data'=>''];
+                    $data = ['code'=>1,'msg'=>'登录成功','data'=>''];
                 }
             } catch (ValidateException $e) {
                 $data = ['code'=>-1,'msg'=>$e->getError(),'data'=>''];
@@ -43,6 +41,6 @@ class Publics extends Base{
             return json($data);
         }
         // 输出当前使用的语言
-        return view('',['curren_lang'=>Lang::getLangSet()]);
+        return view();
     }
 }

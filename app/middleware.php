@@ -7,6 +7,6 @@ return [
     \think\middleware\LoadLangPack::class,
     // Session初始化
     \think\middleware\SessionInit::class,
-    // 初始化配置文件
-    app\common\middleware\ConfigInit::class,
+    // 初始化自定义配置文件
+    app\common\middleware\LoadConfig::class,
 ];

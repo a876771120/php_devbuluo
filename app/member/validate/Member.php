@@ -25,15 +25,15 @@ class Member extends Validate
     ];
 
     protected $message = [
-        'username.require' => '{%user.please enter user name}',
-        'username.max' => '{%user.username cannot exceed 25 characters at most}',
-        'email.email' => '{%user.incorrect mailbox format}',
-        'email.unique' => '{%user.the mailbox already exists}',
-        'password.require'=>'{%user.please enter your password}',
-        'nickname.require'=>'{%user.please enter a nickname}',
-        'nickname.unique'=>'{%user.nickname already exists}',
-        'captcha.require'=>'{%user.verification code must be filled}',
-        'captcha.captcha'=>'{%user.verification code error}'
+        'username.require' => '请输入用户名',
+        'username.max' => '用户名最多不能超过25个字符',
+        'email.email' => '邮箱格式错误',
+        'email.unique' => '邮箱已经存在',
+        'password.require'=>'请输入密码',
+        'nickname.require'=>'请输入昵称',
+        'nickname.unique'=>'昵称已经存在',
+        'captcha.require'=>'验证码不能为空',
+        'captcha.captcha'=>'验证码错误'
     ];
 
     protected $scene = [

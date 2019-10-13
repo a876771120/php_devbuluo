@@ -12,8 +12,10 @@ namespace app\common\controller;
 use think\facade\Db;
 use think\facade\App;
 use think\facade\Request;
+use think\Response;
 use think\facade\View;
 use app\common\controller\Base;
+use think\exception\HttpResponseException;
 use app\member\model\Role as RoleModel;
 /**
  * 后台公共类
@@ -28,7 +30,7 @@ class Admin extends Base{
      */
     protected function initialize(){
         // 设置后台layout模板
-        View::assign('_admin_base_layout',config('admin_layout_path'));
+        View::engine()->assign(['_admin_base_layout'=>config('app.admin_layout_path')]);
         // 传递pop参数
         View::assign('_pop',input('_pop'));
         // 输出页面标题
@@ -109,12 +111,94 @@ class Admin extends Base{
      */
     final protected function isLogin(){
         //如果是没有登录则跳转到登录
-        $login_user = session('admin.loginuser');
+        $login_user = session('member_auth');
         if($login_user){
            return $login_user['id'];
         }else{
-            $this->redirect('/admin.php/member/publics/login');
+            $this->redirect(url('member/publics/login'));
         }
     }
     
+    /**
+     * 操作错误跳转的快捷方法
+     * @access protected
+     * @param  mixed     $msg 提示信息
+     * @param  string    $url 跳转的URL地址
+     * @param  mixed     $data 返回的数据
+     * @param  integer   $wait 跳转等待时间
+     * @param  array     $header 发送的Header信息
+     * @return void
+     */
+    protected function error($msg = '', string $url = null, $data = '', int $wait = 3, array $header = [])
+    {
+        if (is_null($url)) {
+            $url = $this->request->isAjax() ? '' : 'javascript:history.back(-1);';
+        } elseif ($url) {
+            $url = (strpos($url, '://') || 0 === strpos($url, '/')) ? $url : $this->app->route->buildUrl($url);
+        }
+        $template = config('app.admin_error_template');
+        if(request()->isPjax()){
+            $response = Response::create($template,'view')->assign([
+                'msg'=>$msg,
+                'url'=>$url,
+                'wait'=>$wait
+            ]);
+        }else if(request()->isAjax()){
+            $response = json([
+                'code'=>-1,
+                'msg'=>$msg,
+                'url'=>$url,
+                'wait'=>$wait,
+                'data'=>$data
+            ]);
+        }else{
+            $response = Response::create($template,'view')->assign([
+                'msg'=>$msg,
+                'url'=>$url,
+                'wait'=>$wait
+            ]);
+        }
+        throw new HttpResponseException($response);
+    }
+    /**
+     * 操作错误跳转的快捷方法
+     * @access protected
+     * @param  mixed     $msg 提示信息
+     * @param  string    $url 跳转的URL地址
+     * @param  mixed     $data 返回的数据
+     * @param  integer   $wait 跳转等待时间
+     * @param  array     $header 发送的Header信息
+     * @return void
+     */
+    protected function success($msg = '', string $url = null, $data = '', int $wait = 3, array $header = [])
+    {
+        if (is_null($url)) {
+            $url = $this->request->isAjax() ? '' : 'javascript:history.back(-1);';
+        } elseif ($url) {
+            $url = (strpos($url, '://') || 0 === strpos($url, '/')) ? $url : $this->app->route->buildUrl($url);
+        }
+        $template = config('app.admin_success_template');
+        if(request()->isPjax()){
+            $response = Response::create($template,'view')->assign([
+                'msg'=>$msg,
+                'url'=>$url,
+                'wait'=>$wait
+            ]);
+        }else if(request()->isAjax()){
+            $response = json([
+                'code'=>-1,
+                'msg'=>$msg,
+                'url'=>$url,
+                'wait'=>$wait,
+                'data'=>$data
+            ]);
+        }else{
+            $response = Response::create($template,'view')->assign([
+                'msg'=>$msg,
+                'url'=>$url,
+                'wait'=>$wait
+            ]);
+        }
+        throw new HttpResponseException($response);
+    }
 }

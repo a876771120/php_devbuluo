@@ -17,14 +17,7 @@ return [
     // 多语言cookie变量
     'cookie_var'      => 'devbuluo_lang',
     // 扩展语言包
-    'extend_list'     => [
-        'zh-cn'    => [
-            app()->getBasePath() . 'common/lang/zh-cn.php',
-        ],
-        'en-us'    => [
-            app()->getBasePath() . 'common/lang/en-us.php',
-        ],
-    ],
+    'extend_list'     => [],
     // Accept-Language转义为对应语言包名称
     'accept_language' => [
         'zh-hans-cn' => 'zh-cn',

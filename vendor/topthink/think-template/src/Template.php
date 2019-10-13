@@ -231,7 +231,6 @@ class Template
                 return;
             }
         }
-
         $template = $this->parseTemplateFile($template);
 
         if ($template) {

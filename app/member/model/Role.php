@@ -31,15 +31,15 @@ class Role extends Model{
      * @return array
      */
     public static function getCurrenAuth(){
-        $menu_auth = cache('role_menu_auth_'.session('admin.loginuser.role'));
+        $menu_auth = cache('role_menu_auth_'.session('member_auth.role_id'));
         if (!$menu_auth) {
-            $menu_auth = self::where('id', session('admin.loginuser.role'))->value('auth');
+            $menu_auth = self::where('id', session('member_auth.role_id'))->value('auth');
             $menu_auth = json_decode($menu_auth, true);
-            $menu_auth = MenuModel::where('id', 'in', $menu_auth)->column('id,url_value');
+            $menu_auth = MenuModel::where('id', 'in', $menu_auth)->column('url_value','id');
         }
         // 非开发模式，缓存数据
         if (config('develop_mode') == 0) {
-            cache('role_menu_auth_'.session('admin.loginuser.role'), $menu_auth);
+            cache('role_menu_auth_'.session('member_auth.role_id'), $menu_auth);
         }
         return $menu_auth;
     }
@@ -52,6 +52,27 @@ class Role extends Model{
      * @throws \think\Exception
      */
     public static function checkAuth($mid=0,$url = false){
-        
+        // 当前用户的角色编号
+        $role = session('member_auth.role_id');
+        // id为1的是超级管理员，或者角色为1的，拥有最高权限
+        if (session('member_auth.uid') == '1' || $role == '1') {
+            return true;
+        }
+        // 获取当前用户的权限
+        $menu_auth = session('role_menu_auth');
+        // 检查权限
+        if ($menu_auth) {
+            if ($mid !== 0) {
+                return $url === false ? isset($menu_auth[$mid]) : in_array($mid, $menu_auth);
+            }
+            // 获取当前操作的id
+            $location = MenuModel::getLocation();
+            // 取最后一个访问地址
+            $action   = end($location);
+            return $url === false ? isset($menu_auth[$action['id']]) : in_array($action['url_value'], $menu_auth);
+        }
+
+        // 其他情况一律没有权限
+        return false;
     }
 }

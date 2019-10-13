@@ -4,6 +4,8 @@ declare (strict_types = 1);
 namespace app\common\controller;
 
 use think\App;
+use think\facade\View;
+use \think\response\Json;
 use think\exception\ValidateException;
 use think\exception\HttpResponseException;
 use think\Validate;
@@ -94,6 +96,17 @@ abstract class Base
     }
 
     /**
+     * 模板变量赋值
+     * @access public
+     * @param  string|array $name  模板变量
+     * @param  mixed        $value 变量值
+     * @return View
+     */
+    public function assign($name, $value = null){
+        return View::assign($name, $value);
+    }
+
+    /**
      * URL重定向
      * @access protected
      * @param  string         $url 跳转的URL表达式
@@ -114,4 +127,6 @@ abstract class Base
 
         throw new HttpResponseException($response);
     }
+    
+    
 }
