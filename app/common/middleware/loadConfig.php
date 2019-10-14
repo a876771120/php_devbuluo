@@ -36,7 +36,7 @@ class LoadConfig
         if(!$system_config){
             $system_config = ConfigModel::getConfig();
             // 非开发模式，缓存系统配置
-            if ($system_config['develop_mode'] == 0) {
+            if (config('app.develop_mode') == 0) {
                 cache('system_config', $system_config);
             }
         }

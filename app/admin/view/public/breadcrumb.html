@@ -1,0 +1,12 @@
+<div class="dui-breadcrumb">
+    {volist name="_location" id="breadcrumb"}
+    <span class="dui-breadcrumb__item">
+        {if $key==count($_location)-1}
+        <a href="{:url($breadcrumb['url_value'])}" class="dui-breadcrumb__inner is-link">{$breadcrumb.title}</a>
+        {else/}
+        <span class="dui-breadcrumb__inner">{$breadcrumb.title}</span>
+        {/if}
+        <span class="dui-breadcrumb__separator">/</span>
+    </span>
+    {/volist}
+</div>

@@ -11,6 +11,7 @@
 namespace app\admin\model;
 
 use app\common\helper\PhpTree;
+use app\member\model\Role as RoleModel;
 use think\Model;
 /**
  * 配置模型
@@ -64,10 +65,44 @@ class Menu extends Model{
             }
 
             // 非开发模式，缓存菜单
-            if (config('develop_mode') == 0) {
+            if (config('app.develop_mode') == 0) {
                 cache($cache_name, $location);
             }
         }
         return $location;
+    }
+    /**
+     * 获取顶部菜单
+     * @author 刘勤 <876771120@qq.com>
+     * @return array
+     */
+    public static function getAllMenuByRole():array{
+        $cache_name = 'all_menu_by_role_'.session('member_auth.role_id');
+        $menus = cache($cache_name);
+        if(!$menus){
+            // 非开发模式，只显示可以显示的菜单
+            if (config('app.develop_mode') == 0) {
+                $map['online_hide'] = 0;
+            }
+            $map['status'] = 1;
+            $menus     = self::where($map)->order('sort,id')->column('id,pid,app,title,url_value,url_target,icon,url_params','id');
+            // 检验权限
+            foreach ($menus as $key => &$menu) {
+                // 没有访问权限的节点不显示
+                if (!RoleModel::checkAuth($menu['id'])) {
+                    unset($menus[$key]);
+                    continue;
+                }
+                if ($menu['url_value'] != '') {
+                    $menu['url_value'] = (string)url($menu['url_value'],json_decode($menu['url_params'],true)??[]);
+                }
+            }
+            $menus = PhpTree::toLayer($menus, 0, 3);
+            // 非开发模式，缓存菜单
+            if (config('app.develop_mode') == 0) {
+                cache($cache_name, $menus);
+            }
+        }
+        return $menus;
     }
 }

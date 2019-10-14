@@ -44,3 +44,23 @@ if (!function_exists('parse_attr')) {
         return $value;
     }
 }
+// 生成后台url
+if(function_exists('adminUrl')){
+    /**
+     * Url生成
+     * @param string      $url    路由地址
+     * @param array       $vars   变量
+     * @param bool|string $suffix 生成的URL后缀
+     * @param bool|string $domain 域名
+     * @return String
+     */
+    function adminUrl(string $url = '', array $vars = [], $suffix = true, $domain = false){
+        $url = (string)url($url, $vars, $suffix, $domain);
+        if (defined('ADMIN') && ADMIN) {
+            return $url;
+        } else {
+            return preg_replace('/\/index.php/', '/'.ADMIN_FILE, $url);
+        }
+    }
+}
+

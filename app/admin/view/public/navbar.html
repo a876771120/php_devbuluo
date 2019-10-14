@@ -1,0 +1,36 @@
+<div class="dui-header">
+    <ul class="dui-menu dui-menu--horizontal dui-header-left">
+        <li class="dui-menu-item">
+            <i class="dui-icon-menu dui-icon-shrink-right"></i>
+        </li>
+        {volist name='_role_all_menu' id='topMenu'}
+        <li class="dui-menu-item{if $topMenu.id==$_location[0]['id']} is-select{/if}" data-id="{$topMenu.id}">{$topMenu.title}</li>
+        {/volist}
+    </ul>
+    <ul class="dui-menu dui-menu--horizontal dui-header-right">
+        <li class="dui-menu-item">
+            <i class="dui-icon-menu dui-icon-earth"></i>
+        </li>
+        <li class="dui-menu-item">
+            <i class="dui-icon-menu dui-icon-screen-full"></i>
+        </li>
+        <li class="dui-menu-item dui-dropdown" dui-dropDown>
+            <span class="diu-dropdown-link dui-dropdown-toggle" toggle="hover">
+                <!-- <img src="{$avatar??'/static/admin/images/avatar.jpeg'}" style="width: 25px;
+                height: 25px;
+                vertical-align: middle;
+                border-radius: 5px;"> -->
+                <span>{:session('member_auth.nickname')}</span>
+                <i class="dui-icon-dropdown-arrow dui-icon-arrow-down"></i>
+            </span>
+            <ul class="dui-dropdown-menu dui-popper" style="display: none">
+                <li class="dui-dropdown-menu__item">修改密码</li>
+                <li class="dui-dropdown-menu__item">退出</li>
+                <div x-arrow="" class="popper__arrow"></div>
+            </ul>
+        </li>
+        <li class="dui-menu-item">
+            <i class="dui-icon-menu dui-icon-more-vertical"></i>
+        </li>
+    </ul>
+</div>

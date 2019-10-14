@@ -40,7 +40,7 @@ return [
     // 后台模板布局路径
     'admin_layout_path'=>app()->getBasePath().'admin/view/layout.html',
     // 错误提示模板
-    'admin_error_template'=>app()->getBasePath().'admin/view/error.html',
+    'admin_error_template'=>app()->getBasePath().'admin/view/public/error.html',
     // 成功提示模板
-    'admin_success_template'=>app()->getBasePath().'admin/view/success.html',
+    'admin_success_template'=>app()->getBasePath().'admin/view/public/success.html',
 ];

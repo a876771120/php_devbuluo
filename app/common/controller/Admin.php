@@ -17,6 +17,7 @@ use think\facade\View;
 use app\common\controller\Base;
 use think\exception\HttpResponseException;
 use app\member\model\Role as RoleModel;
+use app\admin\model\Menu as MenuModel;
 /**
  * 后台公共类
  * @author 刘勤 <876771120@qq.com>
@@ -24,6 +25,8 @@ use app\member\model\Role as RoleModel;
 class Admin extends Base{
     // 当前页面的标题
     protected $page_title;
+    // 是否显示面包屑导航
+    protected $page_breadcrumb=true;
     /**
      * 初始化
      * @author 刘勤 <876771120@qq.com>
@@ -32,13 +35,28 @@ class Admin extends Base{
         // 设置后台layout模板
         View::engine()->assign(['_admin_base_layout'=>config('app.admin_layout_path')]);
         // 传递pop参数
-        View::assign('_pop',input('_pop'));
+        $this->assign('_pop',$this->request->get('_pop'));
         // 输出页面标题
-        View::assign('_page_title',$this->page_title);
+        $this->assign('_page_title',$this->page_title);
+        // 是否显示面包屑导航
+        $this->assign('_page_breadcrumb',$this->page_breadcrumb);
         // 判断是否登录，并定义用户ID常量
         defined('UID') or define('UID', $this->isLogin());
         // 检查权限
         if (!RoleModel::checkAuth()) $this->error('权限不足！');
+        // 如果不是弹窗形式展现
+        if(!$this->request->get('_pop')){
+            // 如果当前不是ajax访问
+            if(!$this->request->isAjax()){
+                // 获取所有的菜单
+                $this->assign('_role_all_menu',MenuModel::getAllMenuByRole());
+            }
+            // 面包屑导航在pjax的时候也需要
+            if(!$this->request->isAjax()  || $this->request->isPjax()){
+                // 获取面包屑导航
+                $this->assign('_location', MenuModel::getLocation('', true));
+            }
+        }
     }
     /**
      * 构建查询条件
@@ -129,8 +147,7 @@ class Admin extends Base{
      * @param  array     $header 发送的Header信息
      * @return void
      */
-    protected function error($msg = '', string $url = null, $data = '', int $wait = 3, array $header = [])
-    {
+    protected function error($msg = '', string $url = null, $data = '', int $wait = 3, array $header = []){
         if (is_null($url)) {
             $url = $this->request->isAjax() ? '' : 'javascript:history.back(-1);';
         } elseif ($url) {
@@ -170,8 +187,7 @@ class Admin extends Base{
      * @param  array     $header 发送的Header信息
      * @return void
      */
-    protected function success($msg = '', string $url = null, $data = '', int $wait = 3, array $header = [])
-    {
+    protected function success($msg = '', string $url = null, $data = '', int $wait = 3, array $header = []){
         if (is_null($url)) {
             $url = $this->request->isAjax() ? '' : 'javascript:history.back(-1);';
         } elseif ($url) {
