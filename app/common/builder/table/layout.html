@@ -1,0 +1,35 @@
+{extend name="$_admin_base_layout" /}
+{block name="title"}{$page_title}{/block}
+{block name="content"}
+<div class="dui-card box-card is-never-shadow">
+    <div class="dui-card__header">
+        <div class="clearfix">
+            <span>数据表格</span>
+        </div>
+    </div>
+    <div class="dui-card__body">
+        <table dui-table id="{$dataTable_id}"></table>
+    </div>
+</div>
+<script>
+dui.use(['table'],function(table){
+    var thisTable = table.render({
+        el:'#{$dataTable_id}',
+        height:'full-215',
+        {if $tree_table}
+        treeTable:{:json_encode($tree_table)},
+        {/if}
+        {if $show_page}
+        page:{
+            show:true
+        },
+        {/if}
+        data:{
+            url:'{$ajax_info.url}',
+            type:'{$ajax_info.type}',
+        },
+        columns:[{:json_encode($columns,true)}]
+    });
+})
+</script>
+{/block}

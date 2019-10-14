@@ -5,17 +5,11 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta http-equiv="X-UA-Compatible" content="ie=edge">
-    <title>{block name="title"}{/block} | {:config('app.web_site_title')}-devbuluo</title>
+    <title>{block name="title"}{$_location[count($_location)-1]['title']}{/block} | {:config('app.web_site_title')}-devbuluo</title>
     <link rel="stylesheet" href="__DUI__/css/dui.min.css">
     <link rel="stylesheet" href="__ADMIN_CSS__/admin.min.css">
     <link rel="stylesheet" href="__ADMIN_CSS__/nprogress.css">
-    <script src="__DUI__/js/dui.min.js" data-base="__ADMIN_JS__/" data-plugin="admin"></script>
-    <script>
-    //配置扩展目录
-    dui.config({base:'__ADMIN_JS__/'}).use(['admin'],function(admin){
-        console.log(admin);
-    })
-    </script>
+    <script src="__DUI__/js/dui.min.js" config-base="__ADMIN_JS__/" exec-plugin="admin"></script>
 </head>
 <body>
 <div id="dui-app" class="dui-layout dui-layout-admin">
@@ -26,6 +20,9 @@
 {if !$_pop && $_page_breadcrumb}
     {include file='../app/admin/view/public/breadcrumb.html'/}
 {/if}
+        {if request()->isPjax()}
+        <title>{block name="title"}{$_location[count($_location)-1]['title']}{/block} | {:config('app.web_site_title')}-devbuluo</title>
+        {/if}
         <div class="aiui-content">
             {block name='content'}{/block}
         </div>

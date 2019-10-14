@@ -23,8 +23,6 @@ use app\admin\model\Menu as MenuModel;
  * @author 刘勤 <876771120@qq.com>
  */
 class Admin extends Base{
-    // 当前页面的标题
-    protected $page_title;
     // 是否显示面包屑导航
     protected $page_breadcrumb=true;
     /**
@@ -36,8 +34,6 @@ class Admin extends Base{
         View::engine()->assign(['_admin_base_layout'=>config('app.admin_layout_path')]);
         // 传递pop参数
         $this->assign('_pop',$this->request->get('_pop'));
-        // 输出页面标题
-        $this->assign('_page_title',$this->page_title);
         // 是否显示面包屑导航
         $this->assign('_page_breadcrumb',$this->page_breadcrumb);
         // 判断是否登录，并定义用户ID常量
@@ -54,7 +50,7 @@ class Admin extends Base{
             // 面包屑导航在pjax的时候也需要
             if(!$this->request->isAjax()  || $this->request->isPjax()){
                 // 获取面包屑导航
-                $this->assign('_location', MenuModel::getLocation('', true));
+                $this->assign('_location', MenuModel::getLocation());
             }
         }
     }
@@ -215,6 +211,24 @@ class Admin extends Base{
                 'wait'=>$wait
             ]);
         }
+        throw new HttpResponseException($response);
+    }
+
+    /**
+     * 渲染视图
+     * @param string $template  自定义显示模板
+     * @param array $vars   额外变量
+     * @param array $config 配置信息
+     * @author 刘勤 <876771120@qq.com>
+     * @return mixed
+     */
+    public function view($template = '', $vars = []){
+        // 变量合并
+        if (!empty($vars)) {
+            $this->_vars = array_merge($this->_vars, $vars);
+        }
+        $response = Response::create($template,'view')->assign($this->_vars);
+
         throw new HttpResponseException($response);
     }
 }

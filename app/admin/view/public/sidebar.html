@@ -7,17 +7,17 @@
         <ul dui-menubar class="dui-menu" openonly data-id="{$appLayer.id}" {if $appLayer.id!=$_location[0]['id']}style="display: none;"{/if}>
             {notempty name="appLayer.child"}
             {volist name='appLayer.child' id='controllerLayer'}
-            <li class="dui-submenu{if $controllerLayer.id==$_location[1]['id']} is-open{/if}">
-                <div class="dui-submenu__title" style="padding-left: 20px;">
+            <li class="dui-submenu{if $controllerLayer.id==$_location[1]['id'] || $key==0} is-opened{/if}">
+                <div class="dui-submenu__title{if $controllerLayer.id==$_location[1]['id']} is-active{/if}" style="padding-left: 20px;">
                     <i class="{$controllerLayer.icon}"></i> 
                     <span>{$controllerLayer.title}</span>
                     <i class="dui-submenu__icon-arrow dui-icon-arrow-down"></i>
                 </div>
-                <ul class="dui-menu dui-menu--inline" {if $controllerLayer.id!=$_location[1]['id']}style="display:none"{/if}>
+                <ul class="dui-menu dui-menu--inline" {if !($controllerLayer.id==$_location[1]['id'] || ($appLayer.id!=$_location[0]['id'] && $key==0))}style="display:none"{/if}>
                 {notempty name='controllerLayer.child'}
                 {volist name='controllerLayer.child' id='actionLayer'}
                 <li>
-                    <a class="dui-menu-item" style="padding-left: 40px;" href="{$actionLayer.url_value}">
+                    <a class="dui-menu-item{if $actionLayer.id==$_location[2]['id']} is-active{/if}" jump jump-target="{$actionLayer.url_target}" style="padding-left: 40px;" href="{$actionLayer.url_value}">
                         <i class="dui-icon-menu"></i> 
                         <span>{$actionLayer.title}</span>
                     </a>

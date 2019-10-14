@@ -29,6 +29,12 @@ abstract class Base
     protected $app;
 
     /**
+     * 模板变量
+     * @var array
+     */
+    protected $_vars=[];
+
+    /**
      * 是否批量验证
      * @var bool
      */
@@ -127,6 +133,4 @@ abstract class Base
 
         throw new HttpResponseException($response);
     }
-    
-    
 }

@@ -4,7 +4,7 @@
             <i class="dui-icon-menu dui-icon-shrink-right"></i>
         </li>
         {volist name='_role_all_menu' id='topMenu'}
-        <li class="dui-menu-item{if $topMenu.id==$_location[0]['id']} is-select{/if}" data-id="{$topMenu.id}">{$topMenu.title}</li>
+        <li class="dui-menu-item{if $topMenu.id==$_location[0]['id']} is-active{/if}" data-id="{$topMenu.id}" dui-event="changeApp">{$topMenu.title}</li>
         {/volist}
     </ul>
     <ul class="dui-menu dui-menu--horizontal dui-header-right">

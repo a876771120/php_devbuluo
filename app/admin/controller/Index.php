@@ -27,4 +27,12 @@ class Index extends Admin{
     public function index(){
         return view('');
     }
+    /**
+     * 个人信息
+     *
+     * @return void
+     */
+    public function profile(){
+        return view('');
+    }
 }
