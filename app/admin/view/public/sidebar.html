@@ -1,7 +1,8 @@
 <div class="dui-admin__aside">
     <div class="dui-admin__aside-inner">
         <div class="dui-admin__logo" style="background: #409eff">
-                <span>devbuluo</span>
+            <span class="dui-admin__logo-large">DuiAdmin Pro</span>
+            <span class="dui-admin__logo-mini">DAP</span>
         </div>
         {volist name='_role_all_menu' id='appLayer'}
         <ul dui-menubar class="dui-menu" openonly data-id="{$appLayer.id}" {if $appLayer.id!=$_location[0]['id']}style="display: none;"{/if}>
@@ -9,7 +10,7 @@
             {volist name='appLayer.child' id='controllerLayer'}
             <li class="dui-submenu{if $controllerLayer.id==$_location[1]['id'] || $key==0} is-opened{/if}">
                 <div class="dui-submenu__title{if $controllerLayer.id==$_location[1]['id']} is-active{/if}" style="padding-left: 20px;">
-                    <i class="{$controllerLayer.icon}"></i> 
+                    <i class="{if $controllerLayer.icon}{$controllerLayer.icon}{else/}dui-icon-link{/if}"></i> 
                     <span>{$controllerLayer.title}</span>
                     <i class="dui-submenu__icon-arrow dui-icon-arrow-down"></i>
                 </div>

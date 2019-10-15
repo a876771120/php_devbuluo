@@ -44,23 +44,23 @@ if (!function_exists('parse_attr')) {
         return $value;
     }
 }
-// 生成后台url
-if(function_exists('adminUrl')){
+// 找到最后一个数组当中的第一个元素的url
+if(!function_exists('find_first_url')){
     /**
-     * Url生成
-     * @param string      $url    路由地址
-     * @param array       $vars   变量
-     * @param bool|string $suffix 生成的URL后缀
-     * @param bool|string $domain 域名
-     * @return String
+     * 找到URL数组中最后一个子元素
+     * @param array $urlData 要查找的数组
+     * @return string
      */
-    function adminUrl(string $url = '', array $vars = [], $suffix = true, $domain = false){
-        $url = (string)url($url, $vars, $suffix, $domain);
-        if (defined('ADMIN') && ADMIN) {
-            return $url;
-        } else {
-            return preg_replace('/\/index.php/', '/'.ADMIN_FILE, $url);
+    function find_first_url($urlData=[]){
+        // dump($urlData);die;
+        $res = '';
+        $thisData = $urlData['child'];
+        $resUdata = array_shift($thisData);
+        if(!empty($resUdata['child'])){
+            $res = find_first_url($resUdata);
+        }else{
+            $res = $resUdata['url_value'];
         }
+        return $res;
     }
 }
-

@@ -11,9 +11,30 @@
         </div>
     </div>
     <div class="dui-tabs__content">
-        <div class="dui-col-md12 dui-admin__table_toolbar">
-            <div class="dui-col-xs12 dui-col-md6">111</div>
-            <div class="dui-col-xs12 dui-col-md6">1122</div>
+        <div class="dui-col-md12 dui-admin__table-toolbar">
+            <div class="dui-col-xs12 dui-col-md6">
+                <div class="dui-button-group">
+                    <button class="dui-button dui-button--primary">添加</button>
+                    <button class="dui-button dui-button--success">启用</button>
+                    <button class="dui-button dui-button--warning">禁用</button>
+                    <button class="dui-button dui-button--danger">删除</button>
+                </div>
+            </div>
+            <div class="dui-col-xs12 dui-col-md6 algin-right">
+                <div class="dui-admin__search">
+                    <div class="dui-input dui-input-group dui-input-group--append dui-input-group--prepend">
+                        <div class="dui-input-group__prepend">
+                            <select name="" id="">
+                                <option value="field">字段</option>
+                            </select>
+                        </div>
+                        <input type="text" placeholder="请输入内容" class="dui-input__inner">
+                        <div class="dui-input-group__append">
+                            <button class="dui-button dui-button--default"><i class="dui-icon-search"></i></button>
+                        </div>
+                    </div>
+                </div>
+            </div>
         </div>
         <table dui-table id="{$dataTable_id}"></table>
     </div>
@@ -22,7 +43,7 @@
 dui.use(['table'],function(table){
     var thisTable = table.render({
         el:'#{$dataTable_id}',
-        height:'full-215',
+        height:'full-265',
         {if $tree_table}
         treeTable:{:json_encode($tree_table)},
         {/if}

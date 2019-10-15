@@ -1,11 +1,28 @@
+<div class="dui-admin__moreapps-content">
+    {volist name='_role_all_menu' id='topMenu'}
+    <div class="dui-admin__moreapps-item dui-col-xs3">
+        <div class="dui-card{if $topMenu.id==$_location[0]['id']} is-active{/if}" jump jump-url="{:find_first_url($topMenu)}" data-id="{$topMenu.id}">
+            <div class="dui-card__body">
+                <i class="dui-admin__app-icon{if $topMenu.icon} {$topMenu.icon}{else/} dui-icon-link{/if}"></i>
+                <div class="dui-admin__app-name">
+                    {$topMenu.title}
+                </div>
+            </div>
+        </div>
+    </div>
+    {/volist}
+</div>
 <div class="dui-admin__header">
     <ul class="dui-menu dui-menu--horizontal dui-header-left">
-        <li class="dui-menu-item">
+        <li class="dui-menu-item" dui-event="flexible">
             <i class="dui-icon-menu dui-icon-shrink-right"></i>
         </li>
         {volist name='_role_all_menu' id='topMenu'}
-        <li class="dui-menu-item{if $topMenu.id==$_location[0]['id']} is-active{/if}" data-id="{$topMenu.id}" dui-event="changeApp">{$topMenu.title}</li>
+        <li class="dui-menu-item{if $topMenu.id==$_location[0]['id']} is-active{/if}" jump jump-url="{:find_first_url($topMenu)}" data-id="{$topMenu.id}">{$topMenu.title}</li>
         {/volist}
+        <li class="dui-menu-item" dui-event="moreapp">
+            <i class="dui-icon-menu dui-icon-apps"></i>
+        </li>
     </ul>
     <ul class="dui-menu dui-menu--horizontal dui-header-right">
         <li class="dui-menu-item">
@@ -24,7 +41,7 @@
                 <i class="dui-icon-dropdown-arrow dui-icon-arrow-down"></i>
             </span>
             <ul class="dui-dropdown-menu dui-popper" style="display: none">
-                <li class="dui-dropdown-menu__item">修改密码</li>
+                <li class="dui-dropdown-menu__item" jump jump-url="{:url('/admin/index/profile')}">个人设置</li>
                 <li class="dui-dropdown-menu__item">退出</li>
                 <div x-arrow="" class="popper__arrow"></div>
             </ul>
