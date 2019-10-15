@@ -2,7 +2,7 @@ define('admin',['jquery','element','pjax','nprogress'],function($,element,pjax,n
     var _BODY=$('body'),
     _WIN = $(window),
     SELECTOR={
-        aside:'.dui-aside',
+        aside:'.dui-admin__aside',
         pjax_container:'#pjax-container'
     },
     ADMIN = {
@@ -31,6 +31,7 @@ define('admin',['jquery','element','pjax','nprogress'],function($,element,pjax,n
 
                 }else if(url){//其他跳转方式
                     if(target=='_pjax'){//pjax方式
+                        if(location.pathname==url) return false;
                         $.pjax({url:url,container: SELECTOR.pjax_container});
                     }    
                 }

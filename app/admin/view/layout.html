@@ -12,10 +12,10 @@
     <script src="__DUI__/js/dui.min.js" config-base="__ADMIN_JS__/" exec-plugin="admin"></script>
 </head>
 <body>
-<div id="dui-app" class="dui-layout dui-layout-admin">
+<div class="dui-admin">
     {include file='../app/admin/view/public/navbar.html'/}
     {include file='../app/admin/view/public/sidebar.html'/}
-    <div class="dui-container" id="pjax-container">
+    <div class="dui-admin__container" id="pjax-container">
 {/if}
 {if !$_pop && $_page_breadcrumb}
     {include file='../app/admin/view/public/breadcrumb.html'/}
@@ -23,7 +23,7 @@
         {if request()->isPjax()}
         <title>{block name="title"}{$_location[count($_location)-1]['title']}{/block} | {:config('app.web_site_title')}-devbuluo</title>
         {/if}
-        <div class="aiui-content">
+        <div class="dui-admin__body">
             {block name='content'}{/block}
         </div>
 {if !request()->isPjax()}
