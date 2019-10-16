@@ -53,7 +53,9 @@ class Config extends Admin{
                 'type'=>'text.edit'
             ]
         ])
-        ->addTopButton('add')
+        ->addTopButtons('add,enable,disable,delete')
+        ->addSearch('name','配置名称')
+        ->addSearch('field','配置类型','select',['switch'=>'开关','text'=>'文本框'])
         ->view();
     }
 }

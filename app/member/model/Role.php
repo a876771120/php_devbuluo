@@ -63,7 +63,7 @@ class Role extends Model{
         // 检查权限
         if ($menu_auth) {
             if ($mid !== 0) {
-                return $url === false ? isset($menu_auth[$mid]) : in_array($mid, $menu_auth);
+                return $url === false ? isset($menu_auth[$mid]) : in_array(strtolower($mid), $menu_auth);
             }
             // 获取当前操作的id
             $location = MenuModel::getLocation();

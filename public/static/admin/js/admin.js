@@ -68,6 +68,15 @@ define('admin',['jquery','element','pjax','nprogress','popup'],function($,elemen
             });
             // 设置pjax结束监听
             $(document).on('pjax:end',   function() { nprogress.done();  });
+            // 初始化设置和表格条件展开事件
+            $(document).on('click','.show-parent',function(e){
+                var parent = $(this).parent();
+                if(parent.hasClass(CLASS.open)){
+                    parent.removeClass(CLASS.open);
+                }else{
+                    parent.addClass(CLASS.open);
+                }
+            })
             // 窗口大小发生变化事件
             $(window).on('resize',function(e){
                 $(SELECTOR.adminbox).removeClass(CLASS.open).removeClass(CLASS.shrink);

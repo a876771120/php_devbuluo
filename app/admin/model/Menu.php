@@ -105,4 +105,42 @@ class Menu extends Model{
         }
         return $menus;
     }
+
+    /**
+     * 获取菜单根据url，如果url为空则根据当前访问的url
+     * @param string $url 要获取菜单信息的url，如：admin/member/index
+     * @param bool $check
+     * @author 刘勤 <876771120@qq.com>
+     * @return array
+     */
+    public static function getMenuByUrl($url='',$check=false){
+        // 获取当前应用
+        $app      = app('http')->getName();
+        // 获取当前控制器
+        $controller = request()->controller();
+        // 获取当前方法
+        $action     = request()->action();
+        if($url!=''){
+            $cache_name = 'menu_'.$url;
+        }else{
+            $cache_name = 'menu_'.$app.'_'.$controller.'_'.$action;
+        }
+        $menu = cache($cache_name);
+        if(!$menu){
+            $map = [
+                ['pid', '<>', 0],
+                ['url_value', '=', $url??strtolower($app.'/'.trim(preg_replace("/[A-Z]/", "_\\0", $controller), "_").'/'.$action)]
+            ];
+            $menu = self::where($map)->find();
+            // 如果需要检查
+            if($check && empty($menu)){
+                throw new Exception('没有获取到相关菜单节点', 9002);
+            }
+            // 非开发模式，缓存菜单
+            if (config('app.develop_mode') == 0) {
+                cache($cache_name, $menu);
+            }
+        }
+        return $menu;
+    }
 }

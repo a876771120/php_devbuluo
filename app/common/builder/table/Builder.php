@@ -9,7 +9,9 @@
 // | 开源协议 ( http://www.apache.org/licenses/LICENSE-2.0 )
 // +----------------------------------------------------------------------
 namespace app\common\builder\table;
+
 use think\Exception;
+use app\admin\model\Menu;
 use app\common\builder\Dbuilder;
 use app\member\model\Role as RoleModel;
 
@@ -38,6 +40,7 @@ class Builder extends Dbuilder{
         'ajax_info'         =>[],   //数据请求地址
         'show_page'         =>true, //是否显示分页
         'tree_table'        =>[],   //树形表格
+        'top_buttons'       =>[],   //顶部按钮
     ];
     /**
      * 初始化
@@ -159,16 +162,15 @@ class Builder extends Dbuilder{
         }
         return $this;
     }
-
     /**
      * 添加一个顶部按钮
      * @param string $type  类型
      * @param array $attribute  其他属性
-     * @param boolean $pop  是否使用弹窗方式打开
+     * @param boolean $param  额外参数
      * @author 刘勤 <876771120@qq.om>
-     * @return void
+     * @return $this
      */
-    public function addTopButton($type = '', $attribute = [], $pop = true){
+    public function addTopButton($type = '', $attribute = [], $param = []){
         //根据不同的类型构建属性
         switch ($type) {
             // 新增按钮
@@ -178,7 +180,7 @@ class Builder extends Dbuilder{
                     'title'         => '新增',
                     'class'         => 'dui-button dui-button--primary',
                     'jump'          => '',
-                    'jump-url'      => $this->app.'/'.$this->controller.'/add',
+                    'href'          => $this->createBtnUrl($type,$param),
                     'jump-target'   => '_pop'
                 ];
                 break;
@@ -189,7 +191,7 @@ class Builder extends Dbuilder{
                     'title'         => '启用',
                     'class'         => 'dui-button dui-button--success confirm',
                     'jump'          => 'submit',
-                    'jump-url'      => $this->app.'/'.$this->controller.'/enable',
+                    'href'          => $this->createBtnUrl($type,$param),
                     'jump-mode'     => '_ajax',
                     'jump-form'     => $this->app.'_'.$this->controller.'_index',
                 ];
@@ -201,7 +203,7 @@ class Builder extends Dbuilder{
                     'title'         => '禁用',
                     'class'         => 'dui-button dui-button--warning confirm',
                     'jump'          => 'submit',
-                    'jump-url'      => $this->app.'/'.$this->controller.'/enable',
+                    'href'          => $this->createBtnUrl($type,$param),
                     'jump-mode'     => '_ajax',
                     'jump-form'     => $this->app.'_'.$this->controller.'_index',
                 ];
@@ -213,7 +215,7 @@ class Builder extends Dbuilder{
                     'title'         => '删除',
                     'class'         => 'dui-button dui-button--danger confirm',
                     'jump'          => 'submit',
-                    'jump-url'      => $this->app.'/'.$this->controller.'/enable',
+                    'href'          => $this->createBtnUrl($type,$param),
                     'jump-mode'     => '_ajax',
                     'jump-form'     => $this->app.'_'.$this->controller.'_index',
                 ];
@@ -224,6 +226,7 @@ class Builder extends Dbuilder{
                 $btn_attribute = [
                     'title'         => '定义按钮',
                     'class'         => 'dui-button dui-button--default',
+                    'jump'          => '',
                     'jump-form'     => 'ids',
                     'href'          => 'javascript:void(0);'
                 ];
@@ -235,14 +238,107 @@ class Builder extends Dbuilder{
         }
         // 判断权限
         if(session('member_auth.role_id') != 1){
-            // 权限检测按照小写
-            $checkUrl = strtolower($btn_attribute['jump-url']);
-            // 检查权限
-            if(!RoleModel::checkAuth($checkUrl,true)){
+            // 如果没有生成
+            if($this->checkBtnAuth($btn_attribute)===false){
                 return $this;
             }
         }
+        // 替换链接
+        $this->_vars['top_buttons'][] = $btn_attribute;
         return $this;
+    }
+    /**
+     * 一次性添加多个顶部按钮
+     * @param array|string $buttons 按钮类型
+     * 例如：
+     * $builder->addTopButtons('add');
+     * $builder->addTopButtons('add,delete');
+     * $builder->addTopButtons(['add', 'delete']);
+     * $builder->addTopButtons(['add' => ['model' => '__USER__'], 'delete']);
+     * $builder->addTopButtons(['add' => ['attribute'=>['title'=>'新增'],'param'=>['uid'=>1]]])
+     * @author 刘勤 <876771120@qq.com>
+     * @return $this
+     */
+    public function addTopButtons($buttons = []){
+        if (!empty($buttons)) {
+            $buttons = is_array($buttons) ? $buttons : explode(',', $buttons);
+            foreach ($buttons as $key => $value) {
+                if (is_numeric($key)) {
+                    $this->addTopButton($value);
+                } else {
+                    if(is_array($value) && !empty($value['param']) && !empty($value['attribute'])){
+                        $this->addTopButton($key, $value['attribute'],$value['param']);
+                    }else{
+                        $this->addTopButton($key, $value);
+                    }
+                }
+            }
+        }
+        return $this;
+    }
+
+    /**
+     * 添加顶部搜索条件
+     * @param string $field 搜索字段
+     * @param string $title 搜索标题
+     * @param string $type  搜索的类型
+     * @param array $param  额外参数
+     * @return $this
+     */
+    public function addSearch($field='',$title='',$type='string',$param=[]){
+        return $this;
+    }
+    /**
+     * 批量添加搜索条件
+     *
+     * @param array $searchParam
+     * @return $this
+     */
+    public function addSearchs($searchParam=[]){
+        if (!empty($searchParam)) {
+            foreach ($searchParam as $param) {
+                call_user_func_array([$this, 'addSearch'], $param);
+            }
+        }
+        return $this;
+    }
+    /**
+     * 根据类型创建按钮的访问地址
+     * @param string $type 链接类型
+     * @param array $param 额外参数
+     * @author 刘勤 <876771120@qq.com>
+     * @return string
+     */
+    protected function createBtnUrl($type='',$param=[]){
+        // 组装url
+        $url = $this->app.'/'.$this->controller.'/'.$type;
+        // 查询数据库
+        $menu = Menu::getMenuByUrl($url);
+        // 解析参数
+        parse_str(!empty($menu['param'])?$menu['param']:'',$orgParam);
+        // 合并参数
+        $param = array_merge($orgParam);
+        // 返回url
+        return (string)url($url,$param);
+    }
+    /**
+     * 检查按钮是否有权限
+     * @param array $attr 按钮属性
+     * @author 刘勤 <876771120@qq.com>
+     * @return bool
+     */
+    protected function checkBtnAuth($attr=[]){
+        $url = !empty($attr['jump-url']) ? $attr['jump-url'] : !empty($attr['href']) ? $attr['href'] :'';
+        if (preg_match('/\/(index.php|'.ADMIN_FILE.')\/(.*)/', $url , $match)) {
+            $url_value = explode('/', $match[2]);
+            if (strpos($url_value[2], '.')) {
+                $url_value[2] = substr($url_value[2], 0, strpos($url_value[2], '.'));
+            }
+            $url_value = $url_value[0].'/'.$url_value[1].'/'.$url_value[2];
+            $url_value = strtolower($url_value);
+            return RoleModel::checkAuth($url_value, true);
+        }
+        return true;
     }
 
     /**
@@ -251,6 +347,17 @@ class Builder extends Dbuilder{
      * @return void
      */
     protected function compileTable(){
+        // 组装顶部按钮
+        foreach ($this->_vars['top_buttons'] as &$button) {
+            // 编译html的属性
+            $button['attribute'] = $this->compileHtmlAttr($button);
+            $newButton = "<a {$button['attribute']}>";
+            if (isset($button['icon']) && $button['icon'] != '') {
+                $newButton .= '<i class="'.$button['icon'].'"></i> ';
+            }
+            $newButton .= "{$button['title']}</a>";
+            $button = $newButton;
+        }
         // 组装列
         foreach ($this->_vars['columns'] as &$column) {
             // 如果类型是编辑框，如排序字段，可以修改排序
@@ -284,7 +391,26 @@ class Builder extends Dbuilder{
             $this->_vars['ajax_info']['type'] = 'post';
         }
     }
-
+    /**
+     * 编译html属性
+     * @param array $attrs 属性数组
+     * @author 刘勤 <876771120@qq.com>
+     * @return string
+     */
+    protected function compileHtmlAttr($attrs=[]){
+        $result = [];
+        if ($attrs) {
+            foreach ($attrs as $key => &$value) {
+                if ($key == 'title') {
+                    $value = trim(htmlspecialchars(strip_tags(trim($value))));
+                } else {
+                    $value = htmlspecialchars($value);
+                }
+                array_push($result, $value?"$key=\"$value\"":"$key");
+            }
+        }
+        return join(' ', $result);
+    }
     /**
      * 模板赋值
      * @param string|array $name 变量名称
@@ -300,7 +426,6 @@ class Builder extends Dbuilder{
         }
         return $this;
     }
-
     /**
      * 渲染视图
      * @param string $template  自定义显示模板
