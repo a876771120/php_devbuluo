@@ -11,6 +11,7 @@
 namespace app\common\builder\table;
 use think\Exception;
 use app\common\builder\Dbuilder;
+use app\member\model\Role as RoleModel;
 
 /**
  * dui框架table构建器
@@ -40,7 +41,7 @@ class Builder extends Dbuilder{
     ];
     /**
      * 初始化
-     * 
+     * @author 刘勤 <876771120@qq.com>
      * @return void
      */
     protected function initialize(){
@@ -80,6 +81,7 @@ class Builder extends Dbuilder{
     /**
      * 设置请求信息
      * @param array $ajaxInfo 设置ajax请求信息
+     * @author 刘勤 <876771120@qq.com>
      * @return $this
      */
     public function setAjaxInfo($ajaxInfo=[]){
@@ -101,6 +103,7 @@ class Builder extends Dbuilder{
      * 设置是否显示分页
      *
      * @param boolean $show
+     * @author 刘勤 <876771120@qq.com>
      * @return $this
      */
     public function setShowPage($show=true){
@@ -158,6 +161,91 @@ class Builder extends Dbuilder{
     }
 
     /**
+     * 添加一个顶部按钮
+     * @param string $type  类型
+     * @param array $attribute  其他属性
+     * @param boolean $pop  是否使用弹窗方式打开
+     * @author 刘勤 <876771120@qq.om>
+     * @return void
+     */
+    public function addTopButton($type = '', $attribute = [], $pop = true){
+        //根据不同的类型构建属性
+        switch ($type) {
+            // 新增按钮
+            case 'add':
+                // 默认属性
+                $btn_attribute = [
+                    'title'         => '新增',
+                    'class'         => 'dui-button dui-button--primary',
+                    'jump'          => '',
+                    'jump-url'      => $this->app.'/'.$this->controller.'/add',
+                    'jump-target'   => '_pop'
+                ];
+                break;
+            // 启用按钮
+            case 'enable':
+                // 默认属性
+                $btn_attribute = [
+                    'title'         => '启用',
+                    'class'         => 'dui-button dui-button--success confirm',
+                    'jump'          => 'submit',
+                    'jump-url'      => $this->app.'/'.$this->controller.'/enable',
+                    'jump-mode'     => '_ajax',
+                    'jump-form'     => $this->app.'_'.$this->controller.'_index',
+                ];
+                break;
+            // 禁用按钮
+            case 'disable':
+                // 默认属性
+                $btn_attribute = [
+                    'title'         => '禁用',
+                    'class'         => 'dui-button dui-button--warning confirm',
+                    'jump'          => 'submit',
+                    'jump-url'      => $this->app.'/'.$this->controller.'/enable',
+                    'jump-mode'     => '_ajax',
+                    'jump-form'     => $this->app.'_'.$this->controller.'_index',
+                ];
+                break;
+            // 禁用按钮
+            case 'delete':
+                // 默认属性
+                $btn_attribute = [
+                    'title'         => '删除',
+                    'class'         => 'dui-button dui-button--danger confirm',
+                    'jump'          => 'submit',
+                    'jump-url'      => $this->app.'/'.$this->controller.'/enable',
+                    'jump-mode'     => '_ajax',
+                    'jump-form'     => $this->app.'_'.$this->controller.'_index',
+                ];
+                break;
+            // 自定义按钮
+            default:
+                // 默认属性
+                $btn_attribute = [
+                    'title'         => '定义按钮',
+                    'class'         => 'dui-button dui-button--default',
+                    'jump-form'     => 'ids',
+                    'href'          => 'javascript:void(0);'
+                ];
+                break;
+        }
+        // 合并自定义属性
+        if ($attribute && is_array($attribute)) {
+            $btn_attribute = array_merge($btn_attribute, $attribute);
+        }
+        // 判断权限
+        if(session('member_auth.role_id') != 1){
+            // 权限检测按照小写
+            $checkUrl = strtolower($btn_attribute['jump-url']);
+            // 检查权限
+            if(!RoleModel::checkAuth($checkUrl,true)){
+                return $this;
+            }
+        }
+        return $this;
+    }
+
+    /**
      * 编译表格
      * @author 刘勤 <876771120@qq.com>
      * @return void
@@ -187,9 +275,6 @@ class Builder extends Dbuilder{
                 'fixed'=>true
             ]);
         }
-
-
-
         // 设置默认ajax请求地址
         if(empty($this->_vars['ajax_info']['url'])){
             $this->_vars['ajax_info']['url'] = (string)url($this->app.'/'.$this->controller.'/'.$this->action);

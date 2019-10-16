@@ -18,7 +18,7 @@
                 {notempty name='controllerLayer.child'}
                 {volist name='controllerLayer.child' id='actionLayer'}
                 <li>
-                    <a class="dui-menu-item{if $actionLayer.id==$_location[2]['id']} is-active{/if}" jump jump-target="{$actionLayer.url_target}" style="padding-left: 40px;" href="{$actionLayer.url_value}">
+                    <a class="dui-menu-item{if $actionLayer.id==$_location[2]['id']} is-active{/if}" jump jump-mode="{$actionLayer.url_target}" style="padding-left: 40px;" href="{$actionLayer.url_value}">
                         <i class="dui-icon-menu"></i> 
                         <span>{$actionLayer.title}</span>
                     </a>

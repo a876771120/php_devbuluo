@@ -9,5 +9,5 @@
 // | Author: liu21st <liu21st@gmail.com>
 // +----------------------------------------------------------------------
 use think\facade\Route;
-// 验证码
-Route::get('captcha/[:id]', "\\think\\captcha\\CaptchaController@index");
+
+Route::get('api/5ce78d450636c',"app\\member\\controller\\api\\Index@index");

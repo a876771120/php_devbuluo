@@ -24,7 +24,6 @@ class Config extends Admin{
      * @return void
      */
     public function index(){
-        
         // 如果是post则表示在请求数据
         if(request()->isAjax() && request()->isPost()){
 
@@ -54,6 +53,7 @@ class Config extends Admin{
                 'type'=>'text.edit'
             ]
         ])
+        ->addTopButton('add')
         ->view();
     }
 }

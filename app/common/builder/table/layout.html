@@ -14,7 +14,7 @@
         <div class="dui-col-md12 dui-admin__table-toolbar">
             <div class="dui-col-xs12 dui-col-md6">
                 <div class="dui-button-group">
-                    <button class="dui-button dui-button--primary">添加</button>
+                    <button class="dui-button dui-button--primary"><i class="dui-icon-circle-close"></i> 添加</button>
                     <button class="dui-button dui-button--success">启用</button>
                     <button class="dui-button dui-button--warning">禁用</button>
                     <button class="dui-button dui-button--danger">删除</button>
@@ -40,7 +40,8 @@
     </div>
 </div>
 <script>
-dui.use(['table'],function(table){
+dui.use(['table','buildtable'],function(table,buildtable){
+    console.log(buildtable);
     var thisTable = table.render({
         el:'#{$dataTable_id}',
         height:'full-265',
@@ -58,6 +59,8 @@ dui.use(['table'],function(table){
         },
         columns:[{:json_encode($columns,true)}]
     });
+    // 初始化buildTable
+    buildtable.render(thisTable);
 })
 </script>
 {/block}

@@ -36,20 +36,27 @@ define('admin',['jquery','element','pjax','nprogress','popup'],function($,elemen
             // 初始化url跳转事件
             $(document).delegate('[jump]','click',function(e){
                 var othis       = $(this),
-                    url         = othis.attr('href') || othis.attr('jump-url'),
-                    type        = othis.attr('type'),//检测是否是提交
-                    target      = othis.attr('jump-target') || '_pjax',//跳转方式
-                    form_name   = othis.attr('jump-form'),//form名称
-                    text        = othis.attr('jump-text'),//跳转提示信息
-                    title       = othis.attr('jump-title'),//跳转提示标题
-                    form        = $('form[name="'+form_name+'"]');//表单
-                if(type=='submit'){// 表单提交
-    
-                }else if(url){//其他跳转方式
-                    if(target=='_pjax'){//pjax方式
-                        if(location.pathname==url) return false;
-                        $.pjax({url:url,container: SELECTOR.pjax_container});
-                    }    
+                    url         = othis.attr('href') || othis.attr('jump-url'),     //跳转以及
+                    type        = othis.attr('type') || othis.attr('jump'),         //检测是否是提交
+                    mode        = othis.attr('jump-mode') || '_pjax',               //跳转方式
+                    target      = othis.attr('jump-target'),                        //跳转目标
+                    method      = othis.attr('jump-method') || 'get',               //提交方式，post还是get
+                    form_name   = othis.attr('jump-form'),                          //提交数据所在的form表单
+                    text        = othis.attr('jump-text'),                          //跳转提示信息
+                    title       = othis.attr('jump-title'),                         //跳转提示标题
+                    form        = $('form[name="'+form_name+'"]');                  //表单
+                // 不管是什么操作必须得有url
+                if(url){
+                    if(type=='submit'){// 表单提交
+                        
+                    }else{//其他链接跳转
+                        if(mode=='_pjax'){//pjax方式
+                            if(location.pathname==url) return false;
+                            $.pjax({url:url,container: SELECTOR.pjax_container});
+                        }else if(target=='_ajax'){
+
+                        }
+                    }
                 }
                 return false;
             })

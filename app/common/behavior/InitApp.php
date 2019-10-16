@@ -27,6 +27,7 @@ class initApp{
         $controller = !empty($path_array[1])?$path_array[1]:config('route.default_controller');
         // 当前访问的方法
         $action = !empty($path_array[2])?$path_array[2]:config('route.default_action');
+        // dump($path_array);die;
         // 如果是后台入口进入
         if($base_file=="/admin.php"){
             if($path_array[0]==''){
