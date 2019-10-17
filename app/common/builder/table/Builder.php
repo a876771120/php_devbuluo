@@ -281,20 +281,21 @@ class Builder extends Dbuilder{
      * 添加顶部搜索条件
      * @param string $field 搜索字段
      * @param string $title 搜索标题
-     * @param string $type  搜索的类型
-     * @param array $param  额外参数
      * @return $this
      */
-    public function addSearch($field='',$title='',$type='string',$param=[]){
+    public function addSimpleSearch($field='',$type='string'){
+
+
+
         return $this;
     }
     /**
      * 批量添加搜索条件
      *
-     * @param array $searchParam
+     * @param array $searchParam 搜索数据
      * @return $this
      */
-    public function addSearchs($searchParam=[]){
+    public function addSimpleSearchs($searchParam=[]){
         if (!empty($searchParam)) {
             foreach ($searchParam as $param) {
                 call_user_func_array([$this, 'addSearch'], $param);
@@ -361,11 +362,10 @@ class Builder extends Dbuilder{
         // 组装列
         foreach ($this->_vars['columns'] as &$column) {
             // 如果类型是编辑框，如排序字段，可以修改排序
-            if($column['type']=='text.edit'){
+            if($column['template']=='text.edit'){
                 $column['template']='<div class="dui-input">
                     <input type="text" class="dui-input__inner dui-table__input" value="{{'.$column['field'].'}}">
                 </div>';
-                unset($column['type']);
             }
             // 删除为空的配置信息
             foreach ($column as $key => $value) {

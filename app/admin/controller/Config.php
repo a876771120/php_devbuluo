@@ -57,12 +57,12 @@ class Config extends Admin{
             [
                 'field'=>'sort',
                 'title'=>'排序',
-                'type'=>'text.edit'
+                'template'=>'text.edit'
             ]
         ])
         ->addTopButtons('add,enable,disable,delete')
-        ->addSearch('name','配置名称')
-        ->addSearch('field','配置类型','select',['switch'=>'开关','text'=>'文本框'])
+        ->addSimpleSearch('name')
+        ->addSimpleSearch('field')
         ->view();
     }
 }
