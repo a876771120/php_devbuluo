@@ -17,7 +17,7 @@ use app\admin\model\Config as ConfigModel;
  * @author 刘勤 <876771120@qq.com>
  */
 class Index extends Admin{
-    // 不限是面包屑导航
+    // 不显示面包屑导航
     protected $page_breadcrumb = false;
     /**
      * 后台首页显示

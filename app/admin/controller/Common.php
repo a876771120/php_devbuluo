@@ -12,25 +12,18 @@ namespace app\admin\controller;
 
 use app\common\controller\Admin;
 use app\common\builder\Dbuilder;
-use think\facade\App;
-use think\facade\Db;
 /**
- * 配置管理控制器
+ * 公共控制器
  * @package app\admin\controller
  * @author 刘勤 <876771120@qq.com>
  */
-class Config extends Admin{
-    
+class Common extends Admin{
     /**
      * 管理列表页面
      *
      * @return void
      */
     public function index(){
-        
-        // dump(App::factory(App::parseClass('model','Config'))->db()->getTable());
-        // dump(Db::name('AdminConfig'));
-
         // 如果是post则表示在请求数据
         if(request()->isAjax() && request()->isPost()){
 

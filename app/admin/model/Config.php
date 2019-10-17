@@ -20,6 +20,24 @@ class Config extends Model{
     protected $autoWriteTimestamp = true;
     // 设置当前模型名称
     protected $name = 'AdminConfig';
+
+    // 设置字段信息
+    // protected $schema = [
+    //     'id'          => 'int',
+    //     'name'        => 'string',
+    //     'status'      => 'int',
+    //     'score'       => 'float',
+    //     'create_time' => 'datetime',
+    //     'update_time' => 'datetime',
+    // ];
+    /**
+     * 获取字段信息
+     *
+     * @return void
+     */
+    public function getSchema(){
+        return $this->schema;
+    }
     /**
      * 获取配置信息
      * @param  string $name 配置名
