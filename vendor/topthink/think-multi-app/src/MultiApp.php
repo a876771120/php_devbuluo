@@ -87,8 +87,9 @@ class MultiApp
     protected function parseMultiApp(): bool
     {
         $scriptName = $this->getScriptName();
-
-        if ($this->name || 'index' != $scriptName && 'admin' != $scriptName) {
+        $defaultApp = $this->app->config->get('app.default_app', 'index');
+        $admin = explode('.',$this->app->config->get('app.admin_entrance_file'))[0];
+        if ($this->name || !in_array($scriptName,['inde',$admin])) {
             $appName = $this->name ?: $scriptName;
             $this->app->http->setBind();
         } else {
@@ -134,12 +135,13 @@ class MultiApp
                 } elseif ($name && isset($map['*'])) {
                     $appName = $map['*'];
                 } else {
-                    $appName = $name;
+                    $appName = $name ?: $defaultApp;
                     $appPath = $this->path ?: $this->app->getBasePath() . $appName . DIRECTORY_SEPARATOR;
+
                     if (!is_dir($appPath)) {
                         $express = $this->app->config->get('app.app_express', false);
                         if ($express) {
-                            $this->setApp($this->app->config->get('app.default_app', 'index'));
+                            $this->setApp($defaultApp);
                             return true;
                         } else {
                             return false;
@@ -154,7 +156,7 @@ class MultiApp
             }
         }
 
-        $this->setApp($appName ?: $this->app->config->get('app.default_app', 'index'));
+        $this->setApp($appName ?: $defaultApp);
         return true;
     }
 

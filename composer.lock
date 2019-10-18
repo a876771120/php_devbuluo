@@ -8,16 +8,16 @@
     "packages": [
         {
             "name": "league/flysystem",
-            "version": "1.0.56",
+            "version": "1.0.57",
             "source": {
                 "type": "git",
                 "url": "https://github.com/thephpleague/flysystem.git",
-                "reference": "90e3f83cb10ef6b058d70f95267030e7a6236518"
+                "reference": "0e9db7f0b96b9f12dcf6f65bc34b72b1a30ea55a"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/thephpleague/flysystem/zipball/90e3f83cb10ef6b058d70f95267030e7a6236518",
-                "reference": "90e3f83cb10ef6b058d70f95267030e7a6236518",
+                "url": "https://api.github.com/repos/thephpleague/flysystem/zipball/0e9db7f0b96b9f12dcf6f65bc34b72b1a30ea55a",
+                "reference": "0e9db7f0b96b9f12dcf6f65bc34b72b1a30ea55a",
                 "shasum": "",
                 "mirrors": [
                     {
@@ -94,7 +94,7 @@
                 "sftp",
                 "storage"
             ],
-            "time": "2019-10-12T13:05:59+00:00"
+            "time": "2019-10-16T21:01:05+00:00"
         },
         {
             "name": "league/flysystem-cached-adapter",
@@ -436,12 +436,12 @@
             "source": {
                 "type": "git",
                 "url": "https://github.com/top-think/framework.git",
-                "reference": "6217ae4a9e9beb0c7426e427b535d14f1fe4ab90"
+                "reference": "28ef775b20acae3bc84e49a0a78868069e4c545a"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/top-think/framework/zipball/6217ae4a9e9beb0c7426e427b535d14f1fe4ab90",
-                "reference": "6217ae4a9e9beb0c7426e427b535d14f1fe4ab90",
+                "url": "https://api.github.com/repos/top-think/framework/zipball/28ef775b20acae3bc84e49a0a78868069e4c545a",
+                "reference": "28ef775b20acae3bc84e49a0a78868069e4c545a",
                 "shasum": "",
                 "mirrors": [
                     {
@@ -496,7 +496,7 @@
                 "orm",
                 "thinkphp"
             ],
-            "time": "2019-10-14T14:00:20+00:00"
+            "time": "2019-10-17T10:30:36+00:00"
         },
         {
             "name": "topthink/think-captcha",
@@ -600,16 +600,16 @@
         },
         {
             "name": "topthink/think-multi-app",
-            "version": "v1.0.7",
+            "version": "v1.0.8",
             "source": {
                 "type": "git",
                 "url": "https://github.com/top-think/think-multi-app.git",
-                "reference": "1abc0527ad1808beff161d1d163436754060ddc9"
+                "reference": "fecfa58459c1cf0596ffe29a4f9aeb453c5e8b68"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/top-think/think-multi-app/zipball/1abc0527ad1808beff161d1d163436754060ddc9",
-                "reference": "1abc0527ad1808beff161d1d163436754060ddc9",
+                "url": "https://api.github.com/repos/top-think/think-multi-app/zipball/fecfa58459c1cf0596ffe29a4f9aeb453c5e8b68",
+                "reference": "fecfa58459c1cf0596ffe29a4f9aeb453c5e8b68",
                 "shasum": "",
                 "mirrors": [
                     {
@@ -646,7 +646,7 @@
                 }
             ],
             "description": "thinkphp6 multi app support",
-            "time": "2019-10-10T15:42:49+00:00"
+            "time": "2019-10-17T10:47:14+00:00"
         },
         {
             "name": "topthink/think-orm",

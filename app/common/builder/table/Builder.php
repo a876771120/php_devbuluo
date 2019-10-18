@@ -28,6 +28,13 @@ class Builder extends Dbuilder{
      */
     protected $_template='';
     /**
+     * 当前table的模型
+     *
+     * @var \think\Model
+     */
+    protected $_model;
+
+    /**
      * 模板输出变量
      * @author 刘勤 <876771120@qq.com>
      * @var array
@@ -62,6 +69,18 @@ class Builder extends Dbuilder{
     public function setPageTitle($title=''){
         if($title){
             $this->_vars['page_title'] = $title;
+        }
+        return $this;
+    }
+    /**
+     * 设置当前表格模型
+     * @param think\Model $model
+     * @author 刘勤 <876771120@qq.com>
+     * @return $this
+     */
+    public function setModel(\think\Model $model){
+        if($model){
+            $this->_model = $model;
         }
         return $this;
     }
@@ -138,7 +157,6 @@ class Builder extends Dbuilder{
             'fixed'     => !empty($attribute['fixed']) ? $attribute['fixed'] : '',      //浮动
             'sort'      => !empty($attribute['sort']) ? $attribute['sort'] : '',        //排序
             'minWidth'  => !empty($attribute['minWidth']) ? $attribute['minWidth'] : '',//最小宽度
-            'type'      => !empty($attribute['type']) ? $attribute['type'] : '',        //列类型
             'default'   => !empty($attribute['default']) ? $attribute['default'] : '',  //默认值
             'param'    => !empty($attribute['param']) ? $attribute['param'] : '',       //额外参数
             'align'     => !empty($attribute['align']) ? $attribute['align'] : '',      //排版，居左，居中，居右
@@ -280,7 +298,7 @@ class Builder extends Dbuilder{
     /**
      * 添加顶部搜索条件
      * @param string $field 搜索字段
-     * @param string $title 搜索标题
+     * @param string $title 字段类型
      * @return $this
      */
     public function addSimpleSearch($field='',$type='string'){
@@ -361,6 +379,10 @@ class Builder extends Dbuilder{
         }
         // 组装列
         foreach ($this->_vars['columns'] as &$column) {
+            if(is_string($column)){
+                $template = $this->_model->getForm();
+            }
+            dump($column);die;
             // 如果类型是编辑框，如排序字段，可以修改排序
             if($column['template']=='text.edit'){
                 $column['template']='<div class="dui-input">

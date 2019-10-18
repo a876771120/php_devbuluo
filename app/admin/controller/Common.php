@@ -12,6 +12,8 @@ namespace app\admin\controller;
 
 use app\common\controller\Admin;
 use app\common\builder\Dbuilder;
+use think\Exception;
+use think\facade\App;
 /**
  * 公共控制器
  * @package app\admin\controller
@@ -19,43 +21,34 @@ use app\common\builder\Dbuilder;
  */
 class Common extends Admin{
     /**
-     * 管理列表页面
-     *
-     * @return void
+     * 当前模型
+     * @var \think\Model
      */
-    public function index(){
-        // 如果是post则表示在请求数据
-        if(request()->isAjax() && request()->isPost()){
-
+    protected $model;
+    /**
+     * 模型名
+     * @var string
+     */
+    protected $model_name;
+    /**
+     * 获取当前模型
+     * @param string $name  模型名称，如设置config，则获取在当前应用下找到model\config
+     * @return \think\Model;
+     */
+    final protected function loadModel($name=''){
+        // 如果为空则获取控制器名为模型名称
+        if(!$name) $name = request()->controller();
+        // 如果已经实例化则直接返回
+        if($name==$this->model_name && is_object($this->model)){
+            return $this->model;
+        }else{
+            // 实例化模型返回
+            $this->model_name = $name;
+            if(file_exists(App::getAppPath().'model/'.$name.'.php')){
+                return App::factory(App::parseClass('model',$name));
+            }else{
+                throw new Exception("没有获取到模型类：".App::parseClass('model',$name), 9003);
+            }
         }
-        return Dbuilder::create('table')
-        ->setPageTitle('配置管理')
-        ->addColumns([
-            [
-                'field'=>'name',
-                'title'=>'配置名称',
-            ],
-            [
-                'field'=>'title',
-                'title'=>'配置标题',
-            ],
-            [
-                'field'=>'group',
-                'title'=>'分组',
-            ],
-            [
-                'field'=>'type',
-                'title'=>'类型',
-            ],
-            [
-                'field'=>'sort',
-                'title'=>'排序',
-                'type'=>'text.edit'
-            ]
-        ])
-        ->addTopButtons('add,enable,disable,delete')
-        ->addSearch('name','配置名称')
-        ->addSearch('field','配置类型','select',['switch'=>'开关','text'=>'文本框'])
-        ->view();
     }
 }

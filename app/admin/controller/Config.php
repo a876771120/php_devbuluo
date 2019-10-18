@@ -10,8 +10,10 @@
 // +----------------------------------------------------------------------
 namespace app\admin\controller;
 
-use app\common\controller\Admin;
+use app\admin\controller\Common;
 use app\common\builder\Dbuilder;
+
+use app\admin\model\Config as ConfigModel;
 use think\facade\App;
 use think\facade\Db;
 /**
@@ -19,7 +21,7 @@ use think\facade\Db;
  * @package app\admin\controller
  * @author 刘勤 <876771120@qq.com>
  */
-class Config extends Admin{
+class Config extends Common{
     
     /**
      * 管理列表页面
@@ -27,39 +29,15 @@ class Config extends Admin{
      * @return void
      */
     public function index(){
-        
-        // dump(App::factory(App::parseClass('model','Config'))->db()->getTable());
-        // dump(Db::name('AdminConfig'));
-
         // 如果是post则表示在请求数据
         if(request()->isAjax() && request()->isPost()){
 
         }
+        $ceshi = $this->loadModel()->find(1);
         return Dbuilder::create('table')
         ->setPageTitle('配置管理')
-        ->addColumns([
-            [
-                'field'=>'name',
-                'title'=>'配置名称',
-            ],
-            [
-                'field'=>'title',
-                'title'=>'配置标题',
-            ],
-            [
-                'field'=>'group',
-                'title'=>'分组',
-            ],
-            [
-                'field'=>'type',
-                'title'=>'类型',
-            ],
-            [
-                'field'=>'sort',
-                'title'=>'排序',
-                'template'=>'text.edit'
-            ]
-        ])
+        ->setModel($this->loadModel())
+        ->addColumns([])
         ->addTopButtons('add,enable,disable,delete')
         ->addSimpleSearch('name')
         ->addSimpleSearch('field')

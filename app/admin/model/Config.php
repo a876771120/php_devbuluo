@@ -9,34 +9,49 @@
 // | 开源协议 ( http://www.apache.org/licenses/LICENSE-2.0 )
 // +----------------------------------------------------------------------
 namespace app\admin\model;
-use think\Model;
+use app\common\model\Base;
 /**
  * 配置模型
  * @package app\admin\model
  * @author 刘勤 <876771120@qq.com>
  */
-class Config extends Model{
+class Config extends Base{
     // 自动写入时间戳
     protected $autoWriteTimestamp = true;
     // 设置当前模型名称
     protected $name = 'AdminConfig';
-
-    // 设置字段信息
-    // protected $schema = [
-    //     'id'          => 'int',
-    //     'name'        => 'string',
-    //     'status'      => 'int',
-    //     'score'       => 'float',
-    //     'create_time' => 'datetime',
-    //     'update_time' => 'datetime',
-    // ];
+    // 字段定义
+    protected $field = [
+        'id'=>[
+            'title'     =>  'ID',           //标题
+            'type'      =>  'integer',      //类型
+            'table'     =>  false,          //table列的显示样式，如果为false则表示该列隐藏
+            'options'   =>  [],             //例如state有开，关属性，数据库记录为0，1，列表显示需要显示开关，则需要该属性
+            'from'      =>  [               
+                'template'  =>  'text',
+                'default'   =>  0
+            ]                               //form的固有属性
+        ],
+        'type'=>[
+            'title'     =>  '类型',           //标题
+            'options'   =>  [],
+            'table'     =>  [
+                'width'     =>  80,             //列表页面的宽度
+            ],
+            'from'      =>  [
+                'type'      =>  'integer',
+                'template'  =>  'text',
+                'default'   =>  0,
+            ]
+        ]
+    ];
     /**
-     * 获取字段信息
-     *
+     * 初始化方法
+     * @author 刘勤 <876771120@qq.com>
      * @return void
      */
-    public function getSchema(){
-        return $this->schema;
+    protected static function init(){
+
     }
     /**
      * 获取配置信息

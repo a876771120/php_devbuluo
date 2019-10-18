@@ -37,6 +37,8 @@ return [
 
     
     // 开发新增配置
+    // 后台访问文件
+    'admin_entrance_file'=>'admin.php',
     // 后台模板布局路径
     'admin_layout_path'=>app()->getBasePath().'admin/view/layout.html',
     // 错误提示模板
