@@ -84,7 +84,7 @@ class Menu extends Model{
             if (config('app.develop_mode') == 0) {
                 $map['online_hide'] = 0;
             }
-            $map['status'] = 1;
+            $map['state'] = 1;
             $menus     = self::where($map)->order('sort,id')->column('id,pid,app,title,url_value,url_target,icon,url_params','id');
             // 检验权限
             foreach ($menus as $key => &$menu) {
@@ -94,7 +94,7 @@ class Menu extends Model{
                     continue;
                 }
                 if ($menu['url_value'] != '') {
-                    $menu['url_value'] = (string)url($menu['url_value'],json_decode($menu['url_params'],true)??[]);
+                    $menu['url_value'] = strtolower((string)url($menu['url_value'],json_decode($menu['url_params'],true)??[]));
                 }
             }
             $menus = PhpTree::toLayer($menus, 0, 3);

@@ -26,6 +26,11 @@
         <div class="dui-admin__body">
             {block name='content'}{/block}
         </div>
+        {if request()->isPjax()}
+        <script>
+        window.duiRoute = {$_location[2]['id']}
+        </script>
+        {/if}
 {if !request()->isPjax()}
     </div>
 </div>

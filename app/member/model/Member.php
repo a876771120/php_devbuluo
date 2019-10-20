@@ -9,23 +9,21 @@
 // | 开源协议 ( http://www.apache.org/licenses/LICENSE-2.0 )
 // +----------------------------------------------------------------------
 namespace app\member\model;
-
-use think\Model;
-use app\common\helper\PhpTree;
-use app\admin\model\Menu as MenuModel;
 use app\member\model\Role as RoleModel;
+use app\common\model\Base;
 /**
  * 角色模型
  * @package app\member\model
  * @author 刘勤 <876771120@qq.com>
  */
-class Member extends Model{
+class Member extends Base{
     // 设置当前模型名称
     protected $name = 'CommonMember';
     // 主键
     protected $pk = 'id';
     // 自动写入时间戳
     protected $autoWriteTimestamp = true;
+
     /**
      * 后台的登录方法并且设置用户信息与权限信息
      *
@@ -40,10 +38,10 @@ class Member extends Model{
         $data = self::alias('a')
             ->join('admin_perm p','a.id=p.uid')
             ->join('admin_role r','p.role_id=r.id')
-            ->field('a.*,r.name as rname,r.auth,r.status as rstatus,r.id as role_id')
+            ->field('a.*,r.name as rname,r.auth,r.state as rstate,r.id as role_id')
             ->where($where)
             ->find();
-        if($data['status']!=1){
+        if($data['state']!=1){
             return '账号被禁用';
         }
         if($data['password']!=md5(md5($password).$data['salt'].$data['jointime'])){

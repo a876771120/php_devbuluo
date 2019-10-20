@@ -33,6 +33,16 @@ class Builder extends Dbuilder{
      * @var \think\Model
      */
     protected $_model;
+    /**
+     * 顶部搜索框
+     * @var array
+     */
+    protected $_search=[];
+    /**
+     * 高级搜索字段
+     * @var array
+     */
+    protected $_searchArea=[];
 
     /**
      * 模板输出变量
@@ -42,6 +52,7 @@ class Builder extends Dbuilder{
     protected $_vars=[
         'page_title'        =>'',   //页面标题
         'checkbox'          =>true, //是否有选择框
+        'columns'           =>[],   //列集合
         'tab_nav'           =>[],   //顶部导航
         'dataTable_id'      =>'',   //数据表格的id
         'ajax_info'         =>[],   //数据请求地址
@@ -92,7 +103,7 @@ class Builder extends Dbuilder{
      * @return $this
      */
     public function setTabNav($list = [], $curr = ''){
-        if (!empty($tab_list)) {
+        if (!empty($list)) {
             $this->_vars['tab_nav'] = [
                 'list' => $list,
                 'curr' => $curr,
@@ -117,8 +128,8 @@ class Builder extends Dbuilder{
      * @author 刘勤 <876771120@qq.com>
      * @return $this
      */
-    public function setCheckbox($status=true){
-        $this->_vars['checkbox'] = $status;
+    public function setCheckbox($state=true){
+        $this->_vars['checkbox'] = $state;
         return $this;
     }
     /**
@@ -150,19 +161,7 @@ class Builder extends Dbuilder{
      * @return $this
      */
     public function addColumn($attribute=[]){
-        $column = [
-            'field'     => !empty($attribute['field']) ? $attribute['field'] : '',      //字段名称
-            'width'     => !empty($attribute['width']) ? $attribute['width'] : '',      //宽度
-            'title'     => !empty($attribute['title']) ? $attribute['title'] : '',      //标题
-            'fixed'     => !empty($attribute['fixed']) ? $attribute['fixed'] : '',      //浮动
-            'sort'      => !empty($attribute['sort']) ? $attribute['sort'] : '',        //排序
-            'minWidth'  => !empty($attribute['minWidth']) ? $attribute['minWidth'] : '',//最小宽度
-            'default'   => !empty($attribute['default']) ? $attribute['default'] : '',  //默认值
-            'param'    => !empty($attribute['param']) ? $attribute['param'] : '',       //额外参数
-            'align'     => !empty($attribute['align']) ? $attribute['align'] : '',      //排版，居左，居中，居右
-            'template'  => !empty($attribute['template']) ? $attribute['template'] : '',//模板
-            'unresize'  => !empty($attribute['unresize']) ? $attribute['unresize'] : '',//不允许调整宽度
-        ];
+        $column = $attribute;
         $this->_vars['columns'][] = $column;
         return $this;
     }
@@ -296,28 +295,30 @@ class Builder extends Dbuilder{
     }
 
     /**
-     * 添加顶部搜索条件
-     * @param string $field 搜索字段
-     * @param string $title 字段类型
+     * 添加简单的搜索
+     * @param array $field 搜索字段
+     * @param string $placeholder 提示
+     * @author 刘勤 <876771120@qq.com>
      * @return $this
      */
-    public function addSimpleSearch($field='',$type='string'){
-
-
-
+    public function setSearch($fields=[],$placeholder = ''){
+        if (!empty($fields)) {
+            $this->_search = [
+                'fields'      => is_string($fields) ? explode(',', $fields) : $fields,
+                'placeholder' => $placeholder,
+            ];
+        }
         return $this;
     }
     /**
-     * 批量添加搜索条件
-     *
-     * @param array $searchParam 搜索数据
+     * 添加高级搜索
+     * @param array $items 搜索字段
+     * @author 刘勤 <876771120@qq.com>
      * @return $this
      */
-    public function addSimpleSearchs($searchParam=[]){
-        if (!empty($searchParam)) {
-            foreach ($searchParam as $param) {
-                call_user_func_array([$this, 'addSearch'], $param);
-            }
+    public function setSearchArea($fields = []){
+        if (!empty($fields)) {
+            $this->_searchArea = is_string($fields) ? explode(',', $fields) : $fields;
         }
         return $this;
     }
@@ -377,21 +378,59 @@ class Builder extends Dbuilder{
             $newButton .= "{$button['title']}</a>";
             $button = $newButton;
         }
-        // 组装列
-        foreach ($this->_vars['columns'] as &$column) {
-            if(is_string($column)){
-                $template = $this->_model->getForm();
+        // 处理搜索框
+        if ($this->_search) {
+            $_temp_fields = [];
+            foreach ($this->_search['fields'] as $key => $field) {
+                if (is_numeric($key)) {
+                    if(empty($this->_model)){
+                        throw new Exception("请先设置模型", 9004);
+                    }
+                    $fieldConfig = $this->_model->getFieldConfig($field);
+                    if(empty($fieldConfig)){
+                        unset($this->_search[$key]);
+                        continue;
+                    }
+                    $_temp_fields[$field] = !empty($fieldConfig['title'])?$fieldConfig['title']:'';
+                } else {
+                    $_temp_fields[$key]   = $field;
+                }
             }
-            dump($column);die;
+            $this->_vars['search'] = [
+                'fields'      => $_temp_fields,
+                'field_all'   => implode('|', array_keys($_temp_fields)),
+                'placeholder' => $this->_search['placeholder'] != '' ? $this->_search['placeholder'] : '请输入'. implode('/', $_temp_fields),
+            ];
+        }
+        // 组装列
+        foreach ($this->_vars['columns'] as $index => &$column) {
+            if(is_string($column)){
+                if(empty($this->_model)){
+                    throw new Exception("请先设置模型", 9004);
+                }
+                $column = $this->_model->getTableConfig($column);
+                if(empty($newColumn)){
+                    unset($this->_vars['columns'][$index]);
+                    continue;
+                }
+            }
             // 如果类型是编辑框，如排序字段，可以修改排序
-            if($column['template']=='text.edit'){
+            if(!empty($column['template']) && $column['template']=='text.edit'){
                 $column['template']='<div class="dui-input">
                     <input type="text" class="dui-input__inner dui-table__input" value="{{'.$column['field'].'}}">
                 </div>';
+            }else if(!empty($column['template']) && $column['template']=='switch'){
+                // 居中显示
+                if(empty($column['align'])){
+                    $column['align'] = 'center';
+                }
+                // 状态模板
+                $column['template']='<input type="checkbox" dui-switch data-field="'.$column['field'].'" value="{{'.$column['field'].'}}" inactive-value="'.$column['options']['inactiveValue'].'" 
+                active-value="'.$column['options']['activeValue'].'"/>';
             }
             // 删除为空的配置信息
             foreach ($column as $key => $value) {
-                if($value==''){
+                if(!$value){
                     unset($column[$key]);
                 }
             }
@@ -406,7 +445,7 @@ class Builder extends Dbuilder{
         }
         // 设置默认ajax请求地址
         if(empty($this->_vars['ajax_info']['url'])){
-            $this->_vars['ajax_info']['url'] = (string)url($this->app.'/'.$this->controller.'/'.$this->action);
+            $this->_vars['ajax_info']['url'] = (string)url($this->app.'/'.$this->controller.'/'.$this->action,input('get.'));
         }
         // 设置请求类型
         if(empty($this->_vars['ajax_info']['type'])){

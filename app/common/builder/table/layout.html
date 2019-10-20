@@ -1,63 +1,69 @@
 {extend name="$_admin_base_layout" /}
-{block name="title"}{$page_title}{/block}
+{block name="title"}{if !empty($page_title)}{$page_title}{else/}{$_location[count($_location)-1]['title']}{/if}{/block}
 {block name="content"}
 <div class="dui-tabs dui-tabs__card" dui-tabs>
     <div class="dui-tabs__header">
         <div class="dui-tabs__nav">
-            <div class="dui-tabs__item is-active">数据表格</div>
-            <div class="dui-tabs__item">数据表格2</div>
-            <div class="dui-tabs__item">数据表格3</div>
-            <div class="dui-tabs__item">数据表格4</div>
+            {if (!empty($tab_nav))}
+            {volist name="tab_nav.list" id="nav"}
+            <div class="dui-tabs__item{if $nav.name == $tab_nav.curr} is-active{/if}"{if !($nav.name == $tab_nav.curr)} jump jump-url="{$nav.href}"{/if}>{$nav.title}</div>
+            {/volist}
+            {else/}
+            <div class="dui-tabs__item is-active">{if !empty($page_title)}{$page_title}{else/}{$_location[count($_location)-1]['title']}{/if}</div>
+            {/if}
         </div>
     </div>
     <div class="dui-tabs__content">
         <div class="dui-col-md12 dui-admin__table-toolbar">
+            {// 顶部按钮 }
+            {notempty name="top_buttons"}
             <div class="dui-col-xs12 dui-col-md6">
                 <div class="dui-button-group">
-                    {if (!empty($top_buttons))}
                     {volist name="top_buttons" id="button"}
                         {$button|raw}
                     {/volist}
-                    {/if}
                 </div>
             </div>
+            {/notempty}
+            {// 搜索框 }
+            {notempty name="search"}
             <div class="dui-col-xs12 dui-col-md6 algin-right">
                 <div class="dui-search dui-admin__search">
                     <div class="dui-input dui-input-group dui-input-group--append dui-input-group--prepend">
                         <div class="dui-input-group__prepend">
-                            <input type="hidden" class="dui-search__field-hide" name="field">
+                            <input type="hidden" class="dui-search__field-hide" name="field" value="{$search.field_all}">
                             <div class="dui-search__field">
                                 <span class="dui-search__field-show">不限</span>
                                 <i class="dui-icon-arrow-down"></i>
                             </div>
                             <ul class="dui-search__field-popper dui-popper dui-dropdown-menu" style="display: none;">
-                                <li class="dui-dropdown-menu__item" data-field="name">
-                                    配置名称
+                                <li class="dui-dropdown-menu__item" data-field="{$search.field_all}">
+                                    不限
                                 </li>
-                                <li class="dui-dropdown-menu__item" data-field="name">
-                                    配置标题
+                                {volist name="search.fields" id="field"}
+                                <li class="dui-dropdown-menu__item" data-field="{$key}">
+                                    {$field|htmlspecialchars}
                                 </li>
-                                <li class="dui-dropdown-menu__item" data-field="name">
-                                    配置分组
-                                </li>
+                                {/volist}
                             </ul>
                         </div>
-                        <input type="text" placeholder="请输入内容" class="dui-input__inner">
+                        <input type="text" class="dui-input__inner" name="keyword" placeholder="{$search.placeholder}">
                         <div class="dui-input-group__append">
                             <button class="dui-button dui-button--default"><i class="dui-icon-search"></i></button>
                         </div>
                     </div>
                 </div>
             </div>
+            {/notempty}
         </div>
         <table dui-table id="{$dataTable_id}"></table>
         <div class="dui-query__condition">
-            <div class="dui-query__condition-label">
-                筛选条件
-            </div>
-            <div class="dui-query__condition-body">
+                <div class="dui-query__condition-label">
+                    筛选条件
+                </div>
+                <div class="dui-query__condition-show">
 
-            </div>
+                </div>
         </div>
         <div class="dui-query">
             <div class="dui-query__show show-parent" title="高级查询">
@@ -69,15 +75,32 @@
                 </div>
                 <button type="button" class="dui-query__closebtn"><i class="dui-query__close dui-icon-circle-close"></i></button>
             </div>
-            <div class="dui-query__body">
-
+            <div class="dui-query__body" dui-form>
+                <div class="dui-query__toolbar">
+                    <div class="dui-col-xs6">
+                        <div class="dui-button-group">
+                            <button class="dui-button dui-button--primary dui-button--small" query-event="addCondition">添加条件</button>
+                            <button class="dui-button dui-button--primary dui-button--small" query-event="addGroup">添加分组</button>
+                        </div>
+                    </div>
+                    <div class="dui-col-xs6" style="text-align: right;">
+                        <span>
+                            <input type="checkbox" dui-checkbox id="auto_search" bordered="true" label="实时更新">
+                        </span>
+                        <button class="dui-button dui-button--primary dui-button--small" style="float: right;">查询</button>
+                    </div>
+                </div>
+                <div class="dui-query__body-inner">
+                    <ul>
+                        
+                    </ul>
+                </div>
             </div>
         </div>
     </div>
 </div>
 <script>
 dui.use(['table','buildtable'],function(table,buildtable){
-    console.log(buildtable);
     var thisTable = table.render({
         el:'#{$dataTable_id}',
         height:'full-300',

@@ -53,7 +53,17 @@ class Admin extends Base{
                 $this->assign('_location', MenuModel::getLocation());
             }
         }
+        $this->init();
     }
+    /**
+     * 初始化方法
+     *
+     * @return void
+     */
+    protected function init(){
+
+    }
+
     /**
      * 构建查询条件
      * @author 刘勤 <876771120@qq.com>

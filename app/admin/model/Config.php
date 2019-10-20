@@ -21,37 +21,82 @@ class Config extends Base{
     // 设置当前模型名称
     protected $name = 'AdminConfig';
     // 字段定义
-    protected $field = [
+    protected $fields=[
         'id'=>[
             'title'     =>  'ID',           //标题
             'type'      =>  'integer',      //类型
             'table'     =>  false,          //table列的显示样式，如果为false则表示该列隐藏
-            'options'   =>  [],             //例如state有开，关属性，数据库记录为0，1，列表显示需要显示开关，则需要该属性
-            'from'      =>  [               
-                'template'  =>  'text',
+            'form'      =>  [               
+                'template'  =>  'hidden',
                 'default'   =>  0
             ]                               //form的固有属性
         ],
+        'name'=>[
+            'title'     =>  '配置名称',           //标题
+            'table'     =>  [
+                'sort'      =>true,
+            ]
+        ],
+        'title'=>[
+            'title'     =>  '配置标题',           //标题
+        ],
         'type'=>[
             'title'     =>  '类型',           //标题
-            'options'   =>  [],
             'table'     =>  [
                 'width'     =>  80,             //列表页面的宽度
             ],
-            'from'      =>  [
-                'type'      =>  'integer',
+            'form'      =>  [
                 'template'  =>  'text',
                 'default'   =>  0,
             ]
-        ]
+        ],
+        'group'=>[
+            'title'     =>  '分组',           //标题
+            'table'     =>  [
+                'width'     =>  80,             //列表页面的宽度
+            ],
+            'form'      =>  [
+                'template'  =>  'text',
+                'default'   =>  0,
+            ]
+        ],
+        'state'=>[
+            'title'     =>  '状态',           //标题
+            'type'      =>  'integer',
+            'table'     =>  [
+                'width'     =>  80,             //列表页面的宽度
+                'template'  =>  'switch',       //模板
+                'options'=>['inactiveValue'=>0,'activeValue'=>1]
+            ],
+            'form'      =>  [
+                'template'  =>  'text',
+                'default'   =>  0,
+            ]
+        ],
+        'create_time'=>[
+            'title'     =>  '创建时间',           //创建时间
+            'table'     => [
+                'width' => 180,
+            ],
+            'type'      =>  'timestamp',
+            'form'      =>  false
+        ],
+        'update_time'=>[
+            'title'     =>  '创建时间',           //创建时间
+            'table'     => [
+                'width' => 180,
+            ],
+            'type'      =>  'timestamp',
+            'form'      =>  false
+        ],
     ];
     /**
-     * 初始化方法
+     * 初始化字段方法
      * @author 刘勤 <876771120@qq.com>
      * @return void
      */
-    protected static function init(){
-
+    protected function setFields(){
+        $this->fields['group']['options'] = config('app.config_group');
     }
     /**
      * 获取配置信息
@@ -60,7 +105,7 @@ class Config extends Base{
      * @return mixed
      */
     public static function getConfig($name = ''){
-        $configs = self::where('status','=',1)->select();
+        $configs = self::where('state','=',1)->select();
         $result = [];
         foreach ($configs as $config) {
             switch ($config['type']) {
