@@ -71,7 +71,7 @@ define('buildtable',['jquery','popup','form'],function($,popup,form){
             'float':['eq','neq','gt','gte','lt','lte','contain','notContain','between'],
             'timestamp':['gt','gte','lt','lte','between'],
             'boolean':['eq','neq'],
-            'string':['contain','notContain'],
+            'string':['contain','notContain','eq','neq'],
             'enum':['eq','neq'],
         }
         frist = tableFilter[0];
@@ -497,6 +497,9 @@ define('buildtable',['jquery','popup','form'],function($,popup,form){
             var search = new initMethod.initSearch();
             // 初始化高级查询
             var searchArea = new initMethod.initSearchArea();
+            // 渲染一下实时跟新按钮
+            form.render(Selector.query);
+
         }
     },
     initMethod={
