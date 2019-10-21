@@ -35,10 +35,12 @@ class Config extends Base{
             'title'     =>  '配置名称',           //标题
             'table'     =>  [
                 'sort'      =>true,
+                'filter'    =>true
             ]
         ],
         'title'=>[
             'title'     =>  '配置标题',           //标题
+            'filter'    =>  true
         ],
         'type'=>[
             'title'     =>  '类型',           //标题
@@ -54,6 +56,10 @@ class Config extends Base{
             'title'     =>  '分组',           //标题
             'table'     =>  [
                 'width'     =>  80,             //列表页面的宽度
+                'filter'    => [
+                    'type'  => 'enum',
+                    'options'=>[],
+                ]
             ],
             'form'      =>  [
                 'template'  =>  'text',
@@ -66,7 +72,11 @@ class Config extends Base{
             'table'     =>  [
                 'width'     =>  80,             //列表页面的宽度
                 'template'  =>  'switch',       //模板
-                'options'=>['inactiveValue'=>0,'activeValue'=>1]
+                'options'=>['inactiveValue'=>0,'activeValue'=>1],
+                'filter'=>[
+                    'type'  =>'enum',
+                    'options'=>[0=>'禁用',1=>'启用']
+                ]
             ],
             'form'      =>  [
                 'template'  =>  'text',
@@ -77,6 +87,7 @@ class Config extends Base{
             'title'     =>  '创建时间',           //创建时间
             'table'     => [
                 'width' => 180,
+                'filter'=>true
             ],
             'type'      =>  'timestamp',
             'form'      =>  false
@@ -85,6 +96,7 @@ class Config extends Base{
             'title'     =>  '创建时间',           //创建时间
             'table'     => [
                 'width' => 180,
+                'filter'=> true
             ],
             'type'      =>  'timestamp',
             'form'      =>  false
@@ -97,6 +109,7 @@ class Config extends Base{
      */
     protected function setFields(){
         $this->fields['group']['options'] = config('app.config_group');
+        $this->fields['group']['table']['filter']['options']=config('app.config_group');
     }
     /**
      * 获取配置信息

@@ -36,7 +36,7 @@ class Config extends Common{
             $field = $model->getQueryField();
             $order = $this->getOrder();
             $where[] = ['group','=',$group];
-            $list = $model->buildQuery([],$field,$order)->where("id=? and name like ?", [1,'%web%'])->paginate([
+            $list = $model->buildQuery([],$field,$order)->where($where)->paginate([
                 'list_rows'=> input('size',10),
                 'page' => input('page',1),
             ]);
@@ -52,6 +52,7 @@ class Config extends Common{
         }
         return Dbuilder::create('table')
         ->setPageTitle('配置管理')
+        ->setAjaxInfo(['url'=>url('index',['group'=>$group])])
         ->setTabNav($tabNav,$group)
         ->setModel($model)
         ->addColumns($model->getTableConfig())

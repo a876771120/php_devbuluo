@@ -402,6 +402,8 @@ class Builder extends Dbuilder{
                 'placeholder' => $this->_search['placeholder'] != '' ? $this->_search['placeholder'] : '请输入'. implode('/', $_temp_fields),
             ];
         }
+        // 组装高级搜索
+        
         // 组装列
         foreach ($this->_vars['columns'] as $index => &$column) {
             if(is_string($column)){
