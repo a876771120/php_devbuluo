@@ -34,12 +34,15 @@ class Config extends Common{
         // 如果是post则表示在请求数据
         if(request()->isAjax() && request()->isPost()){
             $field = $model->getQueryField();
+            $filter = $this->getFilter();
             $order = $this->getOrder();
             $where[] = ['group','=',$group];
-            $list = $model->buildQuery([],$field,$order)->where($where)->paginate([
+            // dump($filter);die;
+            $list = $model->buildQuery([],$field,$order)->where($where)->where($filter['sql'],$filter['param'])->paginate([
                 'list_rows'=> input('size',10),
                 'page' => input('page',1),
             ]);
+            dump($model->getlastSql());die;
             // dump($list->getCollection());die;
             return json(['code'=>1,'msg'=>'获取成功','count'=>$list->total(),'data'=>$list->getCollection()]);
         }

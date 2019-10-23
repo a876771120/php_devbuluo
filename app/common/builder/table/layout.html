@@ -37,11 +37,11 @@
                                 <i class="dui-icon-arrow-down"></i>
                             </div>
                             <ul class="dui-search__field-popper dui-popper dui-dropdown-menu" style="display: none;">
-                                <li class="dui-dropdown-menu__item" data-field="{$search.field_all}">
+                                <li class="dui-dropdown-menu__item" data-field="{$search.field_all}" data-placeholder="{$search.placeholder}">
                                     不限
                                 </li>
                                 {volist name="search.fields" id="field"}
-                                <li class="dui-dropdown-menu__item" data-field="{$key}">
+                                <li class="dui-dropdown-menu__item" data-field="{$key}" data-placeholder="请输入{$field|htmlspecialchars}">
                                     {$field|htmlspecialchars}
                                 </li>
                                 {/volist}
@@ -49,7 +49,7 @@
                         </div>
                         <input type="text" class="dui-input__inner" name="keyword" placeholder="{$search.placeholder}">
                         <div class="dui-input-group__append">
-                            <button class="dui-button dui-button--default"><i class="dui-icon-search"></i></button>
+                            <button class="dui-button dui-button--default" id="search_btn"><i class="dui-icon-search"></i></button>
                         </div>
                     </div>
                 </div>
@@ -57,53 +57,13 @@
             {/notempty}
         </div>
         <table dui-table id="{$dataTable_id}"></table>
-        <div class="dui-query__condition">
-                <div class="dui-query__condition-label">
-                    筛选条件
-                </div>
-                <div class="dui-query__condition-show">
-
-                </div>
-        </div>
-        <div class="dui-query">
-            <div class="dui-query__show show-parent" title="高级查询">
-                <i class="dui-icon-search"></i>
-            </div>
-            <div class="dui-query__header">
-                <div class="dui-query__title">
-                    <span>高级查询</span>
-                </div>
-                <button type="button" class="dui-query__closebtn"><i class="dui-query__close dui-icon-circle-close"></i></button>
-            </div>
-            <div class="dui-query__body" dui-form>
-                <div class="dui-query__toolbar">
-                    <div class="dui-col-xs6">
-                        <div class="dui-button-group">
-                            <button class="dui-button dui-button--primary dui-button--small" query-event="addCondition">添加条件</button>
-                            <button class="dui-button dui-button--primary dui-button--small" query-event="addGroup">添加分组</button>
-                        </div>
-                    </div>
-                    <div class="dui-col-xs6" style="text-align: right;">
-                        <span>
-                            <input type="checkbox" dui-checkbox id="auto_search" bordered="true" label="实时更新">
-                        </span>
-                        <button class="dui-button dui-button--primary dui-button--small" style="float: right;">查询</button>
-                    </div>
-                </div>
-                <div class="dui-query__body-inner">
-                    <ul>
-                        
-                    </ul>
-                </div>
-            </div>
-        </div>
     </div>
 </div>
 <script>
 dui.use(['table','buildtable'],function(table,buildtable){
     var thisTable = table.render({
         el:'#{$dataTable_id}',
-        height:'full-300',
+        height:'full-265',
         {if $tree_table}
         treeTable:{:json_encode($tree_table)},
         {/if}

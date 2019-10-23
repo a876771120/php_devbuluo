@@ -57,6 +57,36 @@ class Common extends Admin{
         }
     }
     /**
+     * 获取高级查询条件，根据前对dui传入参数解析
+     * @return string
+     */
+    final protected function getFilter($filterList=[],&$param=[]){
+        $filter = $filterList ? $filterList :json_decode(input('filterData',''),true);
+        $sql = '';
+        foreach ($filter as $i => $item) {
+            // 过滤连接符
+            if(!empty($item['prefix']) && $item['prefix']=='and'){
+                $item['prefix']='and';
+            }else{
+                $item['prefix']='or';
+            }
+            if(!empty($item['mod']) && $item['mod']=='group'){
+                $sql .= ' '.$item['prefix'].' (';
+                $sql .=$this->getFilter($item['children'],$param)['sql'];
+                $sql .= ')';
+            }else{
+                // 根据条件组装sql
+                switch ($item['condition']) {
+                    case 'eq':
+                        $param[] = $item['value'];
+                        $sql .= ($sql? ' '.$item['prefix']:'').' `'.$item['field'].'` = ?';
+                        break;
+                }
+            }
+        }
+        return ['sql'=>$sql,'param'=>$param];
+    }
+    /**
      * 获取查询条件方法
      * @author 刘勤 <876771120@qq.com>
      * @param array $where  查询条件
@@ -110,7 +140,6 @@ class Common extends Admin{
         }
         return $sql?$sql:[];
     }
-
     /**
      * 获取order查询条件
      * @author 刘勤 <876771120@qq.com>

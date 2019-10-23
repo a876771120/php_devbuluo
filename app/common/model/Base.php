@@ -57,6 +57,7 @@ class Base extends Model{
                 $tableConfig = [];$formConfig=[];
                 // 设置字段
                 $tableConfig['field'] = $formConfig['field'] = $field;
+                $tableConfig['type'] = $formConfig['type'] = isset($config['type'])?$config['type']:'string';;
                 $tableConfig['title'] = $formConfig['title'] = isset($config['title'])?$config['title']:$field;
                 // 设置修改器字段
                 if(!empty($config['options'])){
@@ -66,13 +67,13 @@ class Base extends Model{
                 $tableConfig['options'] = $formConfig['options'] = !empty($config['options']) ? $config['options']:[];
                 // 如果table配置信息不为空并且不是为false
                 if(!(isset($config['table']) && $config['table']==false)){
-                    $config['table'] = !empty($config['table']) ? $config['table'] : [];
-                    $tableConfig = array_merge($tableConfig,$config['table']);
+                    $config['table'] = $config['table'] ?? [];
+                    $tableConfig = array_merge($tableConfig,(!empty($config['table'])?$config['table']:[]));
                     $tableConfig['template'] = !empty($tableConfig['template'])?$tableConfig['template']:'';
                     $this->_table[$field] = $tableConfig;
                 }
-                if(!(empty($config['form']) || $config['form']==false)){
-                    $formConfig = array_merge($formConfig,$config['form']);
+                if(!(isset($config['form']) && $config['form']==false)){
+                    $formConfig = array_merge($formConfig,(!empty($config['form'])?$config['form']:[]));
                     $tableConfig['template'] = !empty($tableConfig['template'])?$tableConfig['template']:'text';
                     $this->_form[$field] = $formConfig;
                 }
@@ -145,7 +146,6 @@ class Base extends Model{
             }
         }
     }
-
     /**
      * 获取列表数据
      * @param array $where 条件

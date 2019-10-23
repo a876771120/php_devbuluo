@@ -54,15 +54,9 @@ class Config extends Base{
         ],
         'group'=>[
             'title'     =>  '分组',           //标题
-            'table'     =>  [
-                'width'     =>  80,             //列表页面的宽度
-                'filter'    => [
-                    'type'  => 'enum',
-                    'options'=>[],
-                ]
-            ],
+            'table'     =>  false,
             'form'      =>  [
-                'template'  =>  'text',
+                'template'  =>  'select',
                 'default'   =>  0,
             ]
         ],
@@ -109,7 +103,6 @@ class Config extends Base{
      */
     protected function setFields(){
         $this->fields['group']['options'] = config('app.config_group');
-        $this->fields['group']['table']['filter']['options']=config('app.config_group');
     }
     /**
      * 获取配置信息

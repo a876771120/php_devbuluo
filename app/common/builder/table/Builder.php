@@ -402,8 +402,26 @@ class Builder extends Dbuilder{
                 'placeholder' => $this->_search['placeholder'] != '' ? $this->_search['placeholder'] : '请输入'. implode('/', $_temp_fields),
             ];
         }
-        // 组装高级搜索
-        
+        // 处理高级搜索
+        if($this->_searchArea){
+            $_temp_fields = [];
+            foreach ($this->_searchArea as $key => $field) {
+                if (is_numeric($key)) {
+                    if(empty($this->_model)){
+                        throw new Exception("请先设置模型", 9004);
+                    }
+                    $fieldConfig = $this->_model->getFieldConfig($field);
+                    if(empty($fieldConfig)){
+                        unset($this->_search[$key]);
+                        continue;
+                    }
+                    $_temp_fields[$field] = !empty($fieldConfig['title'])?$fieldConfig['title']:'';
+                } else {
+                    $_temp_fields[$key]   = $field;
+                }
+            }
+            $this->_searchArea = $_temp_fields;
+        }
         // 组装列
         foreach ($this->_vars['columns'] as $index => &$column) {
             if(is_string($column)){
@@ -429,6 +447,27 @@ class Builder extends Dbuilder{
                 // 状态模板
                 $column['template']='<input type="checkbox" dui-switch data-field="'.$column['field'].'" value="{{'.$column['field'].'}}" inactive-value="'.$column['options']['inactiveValue'].'" 
                 active-value="'.$column['options']['activeValue'].'"/>';
+            }
+            // 组装高级查询
+            if(!empty($column['filter'])){
+                if($column['filter']===true){
+                    $column['filter'] = [
+                        'type'=>!empty($column['type']) ? $column['type'] : 'string',
+                    ];
+                }
+            }else{
+                if(!empty($this->_searchArea[$column['field']])){
+                    $column['filter'] = [
+                        'type'=>!empty($column['type']) ? $column['type'] : 'string',
+                    ];
+                    if($column['filter']['type']=='enum'){
+                        if(empty($column['options'])){
+                            unset($column['filter']);
+                        }
+                    }else{
+                        $column['filter']['options'] = $column['options'];
+                    }
+                }
             }
             // 删除为空的配置信息
             foreach ($column as $key => $value) {
