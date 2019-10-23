@@ -148,21 +148,13 @@ class Base extends Model{
     }
     /**
      * 获取列表数据
-     * @param array $where 条件
      * @param array $field  查询字段
      * @param array $order  排序
-     * @param integer $page 页数
-     * @param integer $size 每页显示条数
-     * @param array $with   联合查询条件
      * @author 刘勤 <876771120@qq.com>
      * @return void
      */
-    public function buildQuery($where=[],$field=[],$order=[],$page=1,$size=10,$joins=[]){
-        // dump('进来了');die;
-        $queryBuilder = $this->where($where);
-        foreach ($joins as $key => $condition) {
-            
-        }
+    public function buildQuery($field=[],$order=[]){
+        $queryBuilder = $this->where([]);
         // 字段设置
         $queryBuilder = $queryBuilder->field($field);
         // 排序设置
@@ -179,10 +171,6 @@ class Base extends Model{
                 }
             });
         }
-        // $list = $queryBuilder->paginate([
-        //     'list_rows'=> $size,
-        //     'page'=>$page
-        // ]);
         return $queryBuilder;
     }
 

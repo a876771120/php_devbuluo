@@ -43,18 +43,90 @@ define('admin',['jquery','element','pjax','nprogress','popup'],function($,elemen
                     target      = othis.attr('jump-target'),                        //跳转目标
                     method      = othis.attr('jump-method') || 'get',               //提交方式，post还是get
                     form_name   = othis.attr('jump-form'),                          //提交数据所在的form表单
-                    text        = othis.attr('jump-text'),                          //跳转提示信息
-                    title       = othis.attr('jump-title'),                         //跳转提示标题
-                    form        = $('form[name="'+form_name+'"]');                  //表单
+                    text        = othis.attr('jump-text')||'确定要执行该操作吗？',     //跳转提示信息
+                    title       = othis.attr('jump-title')||'提示',                 //跳转提示标题
+                    form        = $('form[name="'+form_name+'"]'),                  //表单
+                    formData    = form.serialize()||'',                             //数据
+                    thisPopup   = '',
+                    goAjax = function(){
+                        // 提交数据
+                        $.ajax({
+                            url:url,
+                            method:method,
+                            data:formData,
+                            dataType:'json',
+                            success:function(data){
+                                if(data.code==1){
+                                    popup.message(data.message,{
+                                        type:'success',
+                                        onClose:function(){
+                                            var currUrl = window.location.href;
+                                            $.pjax({url:currUrl,container: SELECTOR.pjax_container})
+                                        }
+                                    });
+                                }else{
+                                    popup.message(data.message,{type:'error'})
+                                }
+                            },
+                            error:function(error){
+                                popup.message(error.responseJSON.message,{type:'error'})
+                                thisPopup.close();
+                            }
+                        })
+                    };
                 // 不管是什么操作必须得有url
                 if(url){
                     if(type=='submit'){// 表单提交
-                        
+                        // 如果是table的多行数据提交
+                        if(!formData && $('#'+form_name)[0] && $('#'+form_name)[0].table){
+                            var othisTable = $('#'+form_name)[0].table;
+                            var pk = $('#'+form_name)[0].pk;
+                            var checkData = othisTable.getCheckedData();
+                            var ids = [];
+                            $.each(checkData,function(i,rowData){
+                                if(rowData[pk]){
+                                    ids.push(rowData[pk]);
+                                }else{
+                                    ids.push(rowData);
+                                }
+                            })
+                            formData = {ids:ids};
+                            method = 'post';
+                        }
+                        if(othis.hasClass('confirm')){
+                            thisPopup = popup.confirm(text,{
+                                btns:['确定','取消'],
+                                title:title,
+                                modalClose:true
+                            },function(){
+                                goAjax();
+                            },function(){
+                                // 取消不做任何处理
+                                thisPopup.close();
+                            })
+                        }else{
+                            goAjax();
+                        }
                     }else{//其他链接跳转
                         if(mode=='_pjax'){//pjax方式
                             if(location.pathname==url) return false;
                             $.pjax({url:url,container: SELECTOR.pjax_container});
-                        }else if(target=='_ajax'){
+                        }else if(mode=='_ajax'){
+                            if(othis.hasClass('confirm')){
+                                thisPopup = popup.confirm(text,{
+                                    btns:['确定','取消'],
+                                    title:title,
+                                    modalClose:true
+                                },function(){
+                                    goAjax();
+                                },function(){
+                                    // 取消不做任何处理
+                                    thisPopup.close();
+                                })
+                            }else{
+                                goAjax();
+                            }
+                        }else if(mode=='_pop'){
 
                         }
                     }
@@ -76,7 +148,6 @@ define('admin',['jquery','element','pjax','nprogress','popup'],function($,elemen
             $(window).on('resize',function(e){
                 $(SELECTOR.adminbox).removeClass(CLASS.open).removeClass(CLASS.shrink);
             })
-            
         },
         /**
          * 添加事件

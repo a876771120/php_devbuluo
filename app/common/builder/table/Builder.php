@@ -42,7 +42,7 @@ class Builder extends Dbuilder{
      * 高级搜索字段
      * @var array
      */
-    protected $_searchArea=[];
+    protected $_filterInfo=[];
 
     /**
      * 模板输出变量
@@ -50,6 +50,7 @@ class Builder extends Dbuilder{
      * @var array
      */
     protected $_vars=[
+        'pk'                =>'',   //数据表格主键
         'page_title'        =>'',   //页面标题
         'checkbox'          =>true, //是否有选择框
         'columns'           =>[],   //列集合
@@ -59,6 +60,7 @@ class Builder extends Dbuilder{
         'show_page'         =>true, //是否显示分页
         'tree_table'        =>[],   //树形表格
         'top_buttons'       =>[],   //顶部按钮
+        'right_buttons'     =>[],   //右侧操作按钮
     ];
     /**
      * 初始化
@@ -144,6 +146,17 @@ class Builder extends Dbuilder{
         return $this;
     }
     /**
+     * 设置数据表格的主键
+     * @param string $pk
+     * @return $this
+     */
+    public function setPk($pk=''){
+        if(!$pk){
+            $this->_vars['pk'] = $pk;
+        }
+        return $this;
+    }
+    /**
      * 添加一个table列
      *
      * @param array $attribute 列属性
@@ -198,7 +211,7 @@ class Builder extends Dbuilder{
                     'class'         => 'dui-button dui-button--primary',
                     'jump'          => '',
                     'href'          => $this->createBtnUrl($type,$param),
-                    'jump-target'   => '_pop'
+                    'jump-mode'   => '_pop'
                 ];
                 break;
             // 启用按钮
@@ -293,7 +306,119 @@ class Builder extends Dbuilder{
         }
         return $this;
     }
+    /**
+     * 添加一个右侧操作按钮
+     * @param string $type  类型
+     * @param array $attribute  其他属性
+     * @param array $param  额外参数
+     * @author 刘勤 <876771120@qq.om>
+     * @return $this
+     */
+    public function addRightButton($type = '', $attribute = [], $param = []){
+        $newParam['id'] = '{{$thisTablePk}}';
+        $param = array_merge($newParam,$param);
+        //根据不同的类型构建属性
+        switch ($type) {
+            // 新增按钮
+            case 'edit':
+                // 默认属性
+                $btn_attribute = [
+                    'title'         => '修改',
+                    'class'         => 'dui-button dui-button--mini dui-button--primary',
+                    'jump'          => '',
+                    'href'          => $this->createBtnUrl($type,$param),
+                    'jump-mode'     => '_pop'
+                ];
+                break;
+            // 启用按钮
+            case 'enable':
+                // 默认属性
+                $btn_attribute = [
+                    'title'         => '启用',
+                    'class'         => 'dui-button dui-button--mini dui-button--success confirm',
+                    'jump'          => '',
+                    'href'          => $this->createBtnUrl($type,$param),
+                    'jump-mode'     => '_ajax',
+                ];
+                break;
+            // 禁用按钮
+            case 'disable':
+                // 默认属性
+                $btn_attribute = [
+                    'title'         => '禁用',
+                    'class'         => 'dui-button dui-button--mini dui-button--warning confirm',
+                    'jump'          => '',
+                    'href'          => $this->createBtnUrl($type,$param),
+                    'jump-mode'     => '_ajax',
+                ];
+                break;
+            // 禁用按钮
+            case 'delete':
+                // 默认属性
+                $btn_attribute = [
+                    'title'         => '删除',
+                    'class'         => 'dui-button dui-button--mini dui-button--danger confirm',
+                    'jump'          => '',
+                    'href'          => $this->createBtnUrl($type,$param),
+                    'jump-mode'     => '_ajax',
+                ];
+                break;
+            // 自定义按钮
+            default:
+                // 默认属性
+                $btn_attribute = [
+                    'title'         => '定义按钮',
+                    'class'         => 'dui-button dui-button--mini dui-button--default',
+                    'jump'          => '',
+                    'href'          => 'javascript:void(0);'
+                ];
+                break;
+        }
+        // 合并自定义属性
+        if ($attribute && is_array($attribute)) {
+            $btn_attribute = array_merge($btn_attribute, $attribute);
+        }
+        // 判断权限
+        if(session('member_auth.role_id') != 1){
+            // 如果没有生成
+            if($this->checkBtnAuth($btn_attribute)===false){
+                return $this;
+            }
+        }
+        // 替换链接
+        $this->_vars['right_buttons'][] = $btn_attribute;
+        return $this;
+    }
 
+    /**
+     * 一次性添加多个右侧操作按钮
+     * @param array|string $buttons 按钮类型
+     * 例如：
+     * $builder->addRightButtons('add');
+     * $builder->addRightButtons('add,delete');
+     * $builder->addRightButtons(['add', 'delete']);
+     * $builder->addRightButtons(['add' => ['model' => '__USER__'], 'delete']);
+     * $builder->addRightButtons(['add' => ['attribute'=>['title'=>'新增'],'param'=>['uid'=>1]]])
+     * @author 刘勤 <876771120@qq.com>
+     * @return $this
+     */
+    public function addRightButtons($buttons = []){
+        if (!empty($buttons)) {
+            $buttons = is_array($buttons) ? $buttons : explode(',', $buttons);
+            foreach ($buttons as $key => $value) {
+                if (is_numeric($key)) {
+                    $this->addRightButton($value);
+                } else {
+                    if(is_array($value) && !empty($value['param']) && !empty($value['attribute'])){
+                        $this->addRightButton($key, $value['attribute'],$value['param']);
+                    }else{
+                        $this->addRightButton($key, $value);
+                    }
+                }
+            }
+        }
+        return $this;
+    }
     /**
      * 添加简单的搜索
      * @param array $field 搜索字段
@@ -316,9 +441,9 @@ class Builder extends Dbuilder{
      * @author 刘勤 <876771120@qq.com>
      * @return $this
      */
-    public function setSearchArea($fields = []){
+    public function setFilterInfo($fields = []){
         if (!empty($fields)) {
-            $this->_searchArea = is_string($fields) ? explode(',', $fields) : $fields;
+            $this->_filterInfo = is_string($fields) ? explode(',', $fields) : $fields;
         }
         return $this;
     }
@@ -334,12 +459,14 @@ class Builder extends Dbuilder{
         $url = $this->app.'/'.$this->controller.'/'.$type;
         // 查询数据库
         $menu = Menu::getMenuByUrl($url);
-        // 解析参数
-        parse_str(!empty($menu['param'])?$menu['param']:'',$orgParam);
-        // 合并参数
-        $param = array_merge($orgParam);
+        if(is_string($param)){
+            // 解析参数
+            parse_str(!empty($menu['param'])?$menu['param']:'',$orgParam);
+            // 合并参数
+            $param = array_merge($orgParam);
+        }
         // 返回url
-        return (string)url($url,$param);
+        return strtolower(urldecode((string)url($url,$param)));
     }
     /**
      * 检查按钮是否有权限
@@ -367,6 +494,10 @@ class Builder extends Dbuilder{
      * @return void
      */
     protected function compileTable(){
+        // 设置表的主键
+        if($this->_model){
+            $this->_vars['pk'] = $this->_model->getPk();
+        }
         // 组装顶部按钮
         foreach ($this->_vars['top_buttons'] as &$button) {
             // 编译html的属性
@@ -403,9 +534,9 @@ class Builder extends Dbuilder{
             ];
         }
         // 处理高级搜索
-        if($this->_searchArea){
+        if($this->_filterInfo){
             $_temp_fields = [];
-            foreach ($this->_searchArea as $key => $field) {
+            foreach ($this->_filterInfo as $key => $field) {
                 if (is_numeric($key)) {
                     if(empty($this->_model)){
                         throw new Exception("请先设置模型", 9004);
@@ -420,7 +551,7 @@ class Builder extends Dbuilder{
                     $_temp_fields[$key]   = $field;
                 }
             }
-            $this->_searchArea = $_temp_fields;
+            $this->_filterInfo = $_temp_fields;
         }
         // 组装列
         foreach ($this->_vars['columns'] as $index => &$column) {
@@ -456,7 +587,7 @@ class Builder extends Dbuilder{
                     ];
                 }
             }else{
-                if(!empty($this->_searchArea[$column['field']])){
+                if(!empty($this->_filterInfo[$column['field']])){
                     $column['filter'] = [
                         'type'=>!empty($column['type']) ? $column['type'] : 'string',
                     ];
@@ -465,7 +596,7 @@ class Builder extends Dbuilder{
                             unset($column['filter']);
                         }
                     }else{
-                        $column['filter']['options'] = $column['options'];
+                        $column['filter'] = array_merge($column['filter'],$this->_filterInfo[$column['field']]);
                     }
                 }
             }
@@ -483,6 +614,38 @@ class Builder extends Dbuilder{
                 'type' =>'checkbox',
                 'fixed'=>true
             ]);
+        }
+        // 构建右侧操作按钮
+        if($this->_vars['right_buttons']){
+            $right_btns_with = 0;
+            // 组装右侧按钮
+            foreach ($this->_vars['right_buttons'] as &$button) {
+                $len = mb_strlen($button['title'],'UTF-8');
+                $font_with = $len*12;
+                $right_btns_with += $font_with+18;
+                $right_btns_with += !empty($button['icon'])?16:0;
+                // 编译html的属性
+                $button['attribute'] = $this->compileHtmlAttr($button);
+                $newButton = "<a {$button['attribute']}>";
+                if (isset($button['icon']) && $button['icon'] != '') {
+                    $newButton .= '<i class="'.$button['icon'].'"></i> ';
+                }
+                $newButton .= "{$button['title']}</a>";
+                if($this->_model){
+                    $pk = $this->_model->getPk();
+                    $newButton = str_replace('$thistablepk', $pk, $newButton);
+                }
+                $button = $newButton;
+            }
+            
+            $this->_vars['columns'][] = [
+                'field'=>'',
+                'title'=>'操作',
+                'align'=>'center',
+                'fixed'=>'right',
+                'width'=>$right_btns_with+60,
+                'template'=>'<div class="dui-button-group">'.join('',$this->_vars['right_buttons']).'</div>'
+            ];
         }
         // 设置默认ajax请求地址
         if(empty($this->_vars['ajax_info']['url'])){

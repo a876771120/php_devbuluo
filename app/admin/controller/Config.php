@@ -12,56 +12,44 @@ namespace app\admin\controller;
 
 use app\admin\controller\Common;
 use app\common\builder\Dbuilder;
-
-use app\admin\model\Config as ConfigModel;
-use think\facade\App;
-use think\facade\Db;
 /**
  * 配置管理控制器
  * @package app\admin\controller
  * @author 刘勤 <876771120@qq.com>
  */
 class Config extends Common{
-    
     /**
-     * 管理列表页面
-     *
+     * 顶部按钮配置
+     * @var array
+     */
+    protected $top_buttons=['add','enable','disable','delete'];
+    /**
+     * 右侧操作按钮
+     * @var array
+     */
+    protected $right_buttons = ['edit','enable','disable','delete'];
+    /**
+     * 顶部搜索信息
+     * @var array
+     */
+    protected $search_info = ['name','title'];
+    /**
+     * 首页
      * @return void
+     * @author 刘勤 <876771120@qq.com>
      */
     public function index(){
-        $model = $this->loadModel();
-        $group = input('group','base');
-        // 如果是post则表示在请求数据
-        if(request()->isAjax() && request()->isPost()){
-            $field = $model->getQueryField();
-            $filter = $this->getFilter();
-            $order = $this->getOrder();
-            $where[] = ['group','=',$group];
-            // dump($filter);die;
-            $list = $model->buildQuery([],$field,$order)->where($where)->where($filter['sql'],$filter['param'])->paginate([
-                'list_rows'=> input('size',10),
-                'page' => input('page',1),
-            ]);
-            dump($model->getlastSql());die;
-            // dump($list->getCollection());die;
-            return json(['code'=>1,'msg'=>'获取成功','count'=>$list->total(),'data'=>$list->getCollection()]);
-        }
-        $tabNav = [];
+        // 设置当前选中分组
+        $this->group_curr = input('group','base');
+        // 设置分组查询条件
+        $this->group_where[] = ['group','=',$this->group_curr];
+        //设置分组
         foreach (config('app.config_group') as $name => $title) {
             $item['title']=$title;
             $item['name'] = $name;
             $item['href'] = strtolower((string)url('index',['group'=>$name]));
-            $tabNav[] = $item;
+            $this->group_info[] = $item;
         }
-        return Dbuilder::create('table')
-        ->setPageTitle('配置管理')
-        ->setAjaxInfo(['url'=>url('index',['group'=>$group])])
-        ->setTabNav($tabNav,$group)
-        ->setModel($model)
-        ->addColumns($model->getTableConfig())
-        ->addTopButtons('add,enable,disable,delete')
-        ->setSearch(['name','title'])
-        ->setSearchArea(['name','title'])
-        ->view();
+        return call_user_func(array('parent', __FUNCTION__));
     }
 }

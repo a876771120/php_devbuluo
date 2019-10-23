@@ -151,16 +151,16 @@
         },
         {
             "name": "opis/closure",
-            "version": "3.4.0",
+            "version": "3.4.1",
             "source": {
                 "type": "git",
                 "url": "https://github.com/opis/closure.git",
-                "reference": "60a97fff133b1669a5b1776aa8ab06db3f3962b7"
+                "reference": "e79f851749c3caa836d7ccc01ede5828feb762c7"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/opis/closure/zipball/60a97fff133b1669a5b1776aa8ab06db3f3962b7",
-                "reference": "60a97fff133b1669a5b1776aa8ab06db3f3962b7",
+                "url": "https://api.github.com/repos/opis/closure/zipball/e79f851749c3caa836d7ccc01ede5828feb762c7",
+                "reference": "e79f851749c3caa836d7ccc01ede5828feb762c7",
                 "shasum": "",
                 "mirrors": [
                     {
@@ -214,7 +214,7 @@
                 "serialization",
                 "serialize"
             ],
-            "time": "2019-09-02T21:07:33+00:00"
+            "time": "2019-10-19T18:38:51+00:00"
         },
         {
             "name": "psr/cache",
@@ -436,12 +436,12 @@
             "source": {
                 "type": "git",
                 "url": "https://github.com/top-think/framework.git",
-                "reference": "5f4562ab7ed21d36b60ea56974c887318cf861b2"
+                "reference": "778fe7ef85a38edfede66b9ae682a89d9204d757"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/top-think/framework/zipball/5f4562ab7ed21d36b60ea56974c887318cf861b2",
-                "reference": "5f4562ab7ed21d36b60ea56974c887318cf861b2",
+                "url": "https://api.github.com/repos/top-think/framework/zipball/778fe7ef85a38edfede66b9ae682a89d9204d757",
+                "reference": "778fe7ef85a38edfede66b9ae682a89d9204d757",
                 "shasum": "",
                 "mirrors": [
                     {
@@ -496,7 +496,7 @@
                 "orm",
                 "thinkphp"
             ],
-            "time": "2019-10-19T14:48:32+00:00"
+            "time": "2019-10-23T02:50:53+00:00"
         },
         {
             "name": "topthink/think-captcha",
@@ -600,16 +600,16 @@
         },
         {
             "name": "topthink/think-multi-app",
-            "version": "v1.0.8",
+            "version": "v1.0.9",
             "source": {
                 "type": "git",
                 "url": "https://github.com/top-think/think-multi-app.git",
-                "reference": "fecfa58459c1cf0596ffe29a4f9aeb453c5e8b68"
+                "reference": "6ca23bf1e261f6c1a257e4023925ca641b23fd15"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/top-think/think-multi-app/zipball/fecfa58459c1cf0596ffe29a4f9aeb453c5e8b68",
-                "reference": "fecfa58459c1cf0596ffe29a4f9aeb453c5e8b68",
+                "url": "https://api.github.com/repos/top-think/think-multi-app/zipball/6ca23bf1e261f6c1a257e4023925ca641b23fd15",
+                "reference": "6ca23bf1e261f6c1a257e4023925ca641b23fd15",
                 "shasum": "",
                 "mirrors": [
                     {
@@ -646,7 +646,7 @@
                 }
             ],
             "description": "thinkphp6 multi app support",
-            "time": "2019-10-17T10:47:14+00:00"
+            "time": "2019-10-21T13:20:13+00:00"
         },
         {
             "name": "topthink/think-orm",
@@ -654,12 +654,12 @@
             "source": {
                 "type": "git",
                 "url": "https://github.com/top-think/think-orm.git",
-                "reference": "1752dfab0dabdda06b1ce49ceb16374875541726"
+                "reference": "02affaaccade2cdd8bbb2d2f5d15e46113e6eb50"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/top-think/think-orm/zipball/1752dfab0dabdda06b1ce49ceb16374875541726",
-                "reference": "1752dfab0dabdda06b1ce49ceb16374875541726",
+                "url": "https://api.github.com/repos/top-think/think-orm/zipball/02affaaccade2cdd8bbb2d2f5d15e46113e6eb50",
+                "reference": "02affaaccade2cdd8bbb2d2f5d15e46113e6eb50",
                 "shasum": "",
                 "mirrors": [
                     {
@@ -697,7 +697,7 @@
                 "database",
                 "orm"
             ],
-            "time": "2019-10-18T14:43:21+00:00"
+            "time": "2019-10-23T02:16:50+00:00"
         },
         {
             "name": "topthink/think-template",

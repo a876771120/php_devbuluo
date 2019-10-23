@@ -8,9 +8,13 @@ define('buildtable',['jquery','popup','form'],function($,popup,form){
 
     },
     BuildTable={
-        render:function(tableParam){
+        render:function(tableParam,pk){
             // 设置当前table实例
             thisTable = tableParam;
+            // 设置实例给原table元素
+            thisTable.config.el[0].table=thisTable;
+            // 设置原始数据表的主键属性
+            thisTable.config.el[0].pk = pk;
             // 初始化搜索框
             thisSearch = new searchInput();
         }

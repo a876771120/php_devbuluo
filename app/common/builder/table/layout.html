@@ -45,6 +45,7 @@
                                     {$field|htmlspecialchars}
                                 </li>
                                 {/volist}
+                                <div x-arrow="" class="popper__arrow"></div>
                             </ul>
                         </div>
                         <input type="text" class="dui-input__inner" name="keyword" placeholder="{$search.placeholder}">
@@ -79,7 +80,7 @@ dui.use(['table','buildtable'],function(table,buildtable){
         columns:[{:json_encode($columns,true)}]
     });
     // 初始化buildTable
-    buildtable.render(thisTable);
+    buildtable.render(thisTable,'{$pk}');
 })
 </script>
 {/block}

@@ -1,29 +1,34 @@
 <?php
 // +----------------------------------------------------------------------
-// | ThinkPHP [ WE CAN DO IT JUST THINK IT ]
+// | ThinkPHP [ WE CAN DO IT JUST THINK ]
 // +----------------------------------------------------------------------
-// | Copyright (c) 2006-2018 http://thinkphp.cn All rights reserved.
+// | Copyright (c) 2006~2019 http://thinkphp.cn All rights reserved.
 // +----------------------------------------------------------------------
 // | Licensed ( http://www.apache.org/licenses/LICENSE-2.0 )
 // +----------------------------------------------------------------------
 // | Author: liu21st <liu21st@gmail.com>
 // +----------------------------------------------------------------------
-namespace think\app;
+declare (strict_types = 1);
 
-use think\Service as BaseService;
+namespace think\response;
 
-class Service extends BaseService
+use think\Cookie;
+use think\Response;
+
+/**
+ * Html Response
+ */
+class Html extends Response
 {
-    public function register()
+    /**
+     * 输出type
+     * @var string
+     */
+    protected $contentType = 'text/html';
+
+    public function __construct(Cookie $cookie, $data = '', int $code = 200)
     {
-        $this->app->middleware->unshift(MultiApp::class);
-
-        $this->commands([
-            'build' => command\Build::class,
-        ]);
-
-        $this->app->bind([
-            'think\route\Url' => Url::class,
-        ]);
+        $this->init($data, $code);
+        $this->cookie = $cookie;
     }
 }
