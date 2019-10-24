@@ -40,7 +40,9 @@ class Config extends Base{
         ],
         'title'=>[
             'title'     =>  '配置标题',           //标题
-            'filter'    =>  true
+            'table'    =>  [
+                'filter'=>true
+            ]
         ],
         'type'=>[
             'title'     =>  '类型',           //标题
@@ -73,7 +75,8 @@ class Config extends Base{
                 ]
             ],
             'form'      =>  [
-                'template'  =>  'text',
+                'template'  =>  'switch',       //模板
+                'options'=>['inactiveValue'=>0,'activeValue'=>1],
                 'default'   =>  0,
             ]
         ],

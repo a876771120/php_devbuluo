@@ -43,6 +43,11 @@ class Builder extends Dbuilder{
      * @var array
      */
     protected $_filterInfo=[];
+    /**
+     * 树形表格配置信息
+     * @var array
+     */
+    protected $_treeTable=[];
 
     /**
      * 模板输出变量
@@ -53,6 +58,7 @@ class Builder extends Dbuilder{
         'pk'                =>'',   //数据表格主键
         'page_title'        =>'',   //页面标题
         'checkbox'          =>true, //是否有选择框
+        'table_tree'        =>[],   //树形表格配置
         'columns'           =>[],   //列集合
         'tab_nav'           =>[],   //顶部导航
         'dataTable_id'      =>'',   //数据表格的id
@@ -82,6 +88,18 @@ class Builder extends Dbuilder{
     public function setPageTitle($title=''){
         if($title){
             $this->_vars['page_title'] = $title;
+        }
+        return $this;
+    }
+    /**
+     * 设置设置是否是树形表格
+     * @param array $cfg 配置信息
+     * @return $this
+     * @author 刘勤 <876771120@qq.com>
+     */
+    public function setTreeTable($cfg=[]){
+        if($cfg){
+            $this->_treeTable = $cfg;
         }
         return $this;
     }
@@ -552,6 +570,10 @@ class Builder extends Dbuilder{
                 }
             }
             $this->_filterInfo = $_temp_fields;
+        }
+        // 处理是否是树形表格
+        if($this->_treeTable){
+            $this->_vars['tree_table'] = $this->_treeTable;
         }
         // 组装列
         foreach ($this->_vars['columns'] as $index => &$column) {

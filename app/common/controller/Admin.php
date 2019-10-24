@@ -144,7 +144,7 @@ class Admin extends Base{
             ]);
         }else if(request()->isAjax()){
             $response = json([
-                'code'=>-1,
+                'code'=>1,
                 'msg'=>$msg,
                 'url'=>$url,
                 'wait'=>$wait,

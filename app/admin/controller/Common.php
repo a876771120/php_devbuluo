@@ -73,6 +73,26 @@ class Common extends Admin{
      */
     protected $search_info;
     /**
+     * 是否是树形table
+     * @var array
+     */
+    protected $table_tree =false;
+    /**
+     * 列表是否有选择框
+     * @var boolean
+     */
+    protected $checkbox = true;
+    /**
+     * 数据
+     * @var array
+     */
+    protected $list = [];
+    /**
+     * 数据量
+     * @var integer
+     */
+    protected $total=0;
+    /**
      * 获取当前模型
      * @param string $name  模型名称，如设置config，则获取在当前应用下找到model\config
      * @return $this->model;
@@ -269,17 +289,30 @@ class Common extends Admin{
             if($filter['sql']){
                 $listBuilder = $listBuilder->where($filter['sql'],$filter['param']);
             }
-            // 获取列表数据分页
-            $list = $listBuilder->paginate([
-                'list_rows'=> input('size',10),
-                'page' => input('page',1),
-            ]);
-            return json(['code'=>1,'msg'=>'获取成功','count'=>$list->total(),'data'=>$list->getCollection()]);
+            // 判断是否是treeTable
+            if(!$this->table_tree){
+                // 获取列表数据分页
+                $this->list = $listBuilder->paginate([
+                    'type' => 'bootstrap',
+                    'var_page' => 'page',
+                    'list_rows'=> input('size',10),
+                    'page' => input('page',1),
+                ]);
+                $this->total = $this->list->total();
+                $this->list = $this->list->getCollection();
+            }else{
+                // 获取列表数据分页
+                $this->list = $listBuilder->select();
+                $this->total = count($this->list);
+            }
+            return json(['code'=>1,'msg'=>'获取成功','count'=>$this->total,'data'=>$this->list]);
          }
         $url_param = $this->group_curr ? ['group'=>$this->group_curr] : [];
          // 显示列表
          return Dbuilder::create('table')
             ->setPageTitle($this->page_title)
+            ->setCheckbox($this->checkbox)
+            ->setTreeTable($this->table_tree)
             ->setAjaxInfo(['url'=>$this->ajax_url ? $this->ajax_url: url('index',$url_param)])
             ->setTabNav($this->group_info,$this->group_curr)
             ->setModel($model)
@@ -288,8 +321,6 @@ class Common extends Admin{
             ->addRightButtons($this->right_buttons)
             ->setSearch($this->search_info)
             ->view();
-
-
     }
 
     /**
@@ -380,7 +411,7 @@ class Common extends Admin{
         if (false !== $result) {
             Cache::clear();
             // 记录行为日志
-            $this->writeLog('');
+            // $this->writeLog('');
             $this->success('操作成功');
         } else {
             $this->error('操作失败');

@@ -49,6 +49,9 @@ define('admin',['jquery','element','pjax','nprogress','popup'],function($,elemen
                     formData    = form.serialize()||'',                             //数据
                     thisPopup   = '',
                     goAjax = function(){
+                        if(thisPopup && thisPopup.close){
+                            thisPopup.close();
+                        }
                         // 提交数据
                         $.ajax({
                             url:url,
@@ -57,7 +60,7 @@ define('admin',['jquery','element','pjax','nprogress','popup'],function($,elemen
                             dataType:'json',
                             success:function(data){
                                 if(data.code==1){
-                                    popup.message(data.message,{
+                                    popup.message(data.msg,{
                                         type:'success',
                                         onClose:function(){
                                             var currUrl = window.location.href;
@@ -65,7 +68,7 @@ define('admin',['jquery','element','pjax','nprogress','popup'],function($,elemen
                                         }
                                     });
                                 }else{
-                                    popup.message(data.message,{type:'error'})
+                                    popup.message(data.msg,{type:'error'})
                                 }
                             },
                             error:function(error){

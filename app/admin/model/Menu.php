@@ -12,18 +12,60 @@ namespace app\admin\model;
 
 use app\common\helper\PhpTree;
 use app\member\model\Role as RoleModel;
+use app\common\model\Base;
 use think\Exception;
-use think\Model;
 /**
  * 配置模型
  * @package app\admin\model
  * @author 刘勤 <876771120@qq.com>
  */
-class Menu extends Model{
+class Menu extends Base{
     // 设置当前模型名称
     protected $name = 'AdminMenu';
     // 自动写入时间戳
     protected $autoWriteTimestamp = true;
+    // 字段设置
+    protected $fields = [
+        'id'    =>[
+            'title'     =>  'ID',
+            'type'      =>  'integer',
+            'table'     =>  false,
+            'form'      =>  [               
+                'template'  =>  'hidden',
+                'default'   =>  0
+            ]
+        ],
+        'pid'   =>[
+            'title'     =>'上级编号',
+            'type'      =>  'integer',
+            'table'     =>  false,
+        ],
+        'title'=>[
+            'title'     =>  '菜单标题',
+        ],
+        'app'=>[
+            'title'     =>  '应用',
+            'table'     =>  false,
+            'form'      =>  [
+                'template'  =>  'select',
+                'default'   =>  0,
+            ]
+        ],
+        'state'=>[
+            'title'     =>  '状态',
+            'type'      =>  'integer',
+            'table'     =>  [
+                'width'     =>  80,
+                'template'  =>  'switch',
+                'options'=>['inactiveValue'=>0,'activeValue'=>1],
+            ],
+            'form'      =>  [
+                'template'  =>  'switch',
+                'options'=>['inactiveValue'=>0,'activeValue'=>1],
+                'default'   =>  0,
+            ]
+        ],
+    ];
     /**
      * 根据菜单id获取当前访问节点数组，如果没有id则获取当前节点数组
      * @param string $id 当前访问的菜单节点如果没有指定，则取当前节点

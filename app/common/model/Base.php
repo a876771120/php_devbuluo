@@ -9,6 +9,11 @@
 // | 开源协议 ( http://www.apache.org/licenses/LICENSE-2.0 )
 // +----------------------------------------------------------------------
 namespace app\common\model;
+
+use app\admin\model\App;
+use app\common\utils\Hash;
+use think\helper\Str;
+use think\Exception;
 use think\Model;
 /**
  * 配置模型
@@ -78,7 +83,7 @@ class Base extends Model{
                     $this->_form[$field] = $formConfig;
                 }
                 // 初始化类型转换设置
-                if(!empty($config['type'])){
+                if(isset($config['type'])){
                     $this->type[$field] = $config['type'];
                 }
                 $this->_query_field[] = $field;
@@ -111,7 +116,6 @@ class Base extends Model{
             }
         }
     }
-
     /**
      * 获取form表单配置信息
      * @param string $field 字段名称
@@ -159,10 +163,9 @@ class Base extends Model{
         $queryBuilder = $queryBuilder->field($field);
         // 排序设置
         $queryBuilder = $queryBuilder->order($order);
-        // 修改器
+        // 获取器
         $getAttr = $this->getAttrConfig();
         foreach ($getAttr as $key => $options) {
-            // dump($options);die;
             $queryBuilder = $queryBuilder->withAttr($key,function($value, $data)use($options){
                 if(!empty($options['attrs'][$value])){
                     return $options['attrs'][$value];
@@ -173,16 +176,38 @@ class Base extends Model{
         }
         return $queryBuilder;
     }
-
     /**
-     * 获取联合查询条件
-     * @author 刘勤 <876771120@qq.com>
-     * @return array
+     * 获取数据
+     * @param array $data 要获取的数据
+     * @return void
      */
-    public function getQueryWidth(){
-
+    public function getArray($data = null){
+        if ($data === null) {
+            $data = $this;
+        }
+        if (!is_object($data)) {
+            return $data;
+        }
+        if (strpos('think\model\Collection', get_class($data)) === false) {
+            $assoc = array_keys(Hash::normalize((array)$data->assoc));
+            $data = $data->toArray();
+            $midd_data = [];
+            foreach ($data as $key => $value) {
+                if ((!in_array(parse_name($key, 1), (array)$assoc))) {
+                    $midd_data[$key] = $value;
+                    continue;
+                }
+                $midd_data[parse_name($key, 1)] = $value ? $value : [];
+            }
+            return $midd_data;
+        } else {
+            $return_data = [];
+            foreach ($data as $key => $value) {
+                $return_data[$key] = $this->getArray($value);
+            }
+            return $return_data;
+        }
     }
-
     /**
      * 获取修改器属性
      * @author 刘勤 <876771120@qq.com>
