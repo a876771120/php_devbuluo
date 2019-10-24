@@ -57,76 +57,11 @@ class Admin extends Base{
     }
     /**
      * 初始化方法
-     *
+     * @author 刘勤 <876771120@qq.com>
      * @return void
      */
     protected function init(){
 
-    }
-
-    /**
-     * 构建查询条件
-     * @author 刘勤 <876771120@qq.com>
-     * @return array
-     */
-    protected function buildMap($where=[]){
-        $where = $where ? $where : input('where',[]);
-        $sql = '';
-        foreach ($where as $key => $item) {
-            if($item['mode']=='group'){
-                $sql .= ' '.$item['prefix'].' (';
-                $sql .=$this->buildMap($item['children']);
-                $sql .= ')';
-            }else{
-                switch ($item['type']) {
-                    case 'eq':
-                        $sql .= ($sql? ' '.$item['prefix'].' ':'').$item['field'].' = "'.$item['value'].'"';
-                        break;
-                    case 'neq':
-                        $sql .= ($sql? ' '.$item['prefix'].' ':'').$item['field'].' <> "'.$item['value'].'"';
-                        break;
-                    case 'gt':
-                        $sql .= ($sql? ' '.$item['prefix'].' ':'').$item['field'].' > '.$item['value'];
-                        break;
-                    case 'gte':
-                        $sql .= ($sql? ' '.$item['prefix'].' ':'').$item['field'].' >= '.$item['value'];
-                        break;
-                    case 'lt':
-                        $sql .= ($sql? ' '.$item['prefix'].' ':'').$item['field'].' < '.$item['value'];
-                        break;
-                    case 'lte':
-                        $sql .= ($sql? ' '.$item['prefix'].' ':'').$item['field'].' <= '.$item['value'];
-                        break;
-                    case 'contain':
-                        $sql .= ($sql? ' '.$item['prefix'].' ':'').$item['field'].' LIKE "%'.$item['value'].'%"';
-                        break;
-                    case 'notContain':
-                        $sql .= ($sql? ' '.$item['prefix'].' ':'').$item['field'].' NOT LIKE "%'.$item['value'].'%"';
-                        break;
-                    case 'between':
-                        $sql .= ($sql? ' '.$item['prefix'].' ':'').$item['field'].' BETWEEN '.explode(',',$item['value'])[0].' AND '.explode(',',$item['value'])[1];
-                        break;
-                    default:
-                        # code...
-                        break;
-                }
-            }
-        }
-        return $sql?$sql:[];
-    }
-    /**
-     * 构建排序方式
-     * @author 刘勤 <876771120@qq.com>
-     * @return string
-     */
-    protected function buildOrder($order=[]){
-        $order = !empty($order['field']) ? $order : input('sort',[]);
-        if(!empty($order['field'])){
-            $order = ($this->model->alias && count(explode('.',$order['field']))<=1)?($this->model->alias.'.'.$order['field']):$order['field'].(!empty($order['sort'])?' '.$order['sort']:'');
-        }else{
-            $order = [];
-        }
-        return $order;
     }
     /**
      * 检查是否已经登录，没有登录则跳转到登录页面
@@ -142,7 +77,6 @@ class Admin extends Base{
             $this->redirect(url('member/publics/login'));
         }
     }
-    
     /**
      * 操作错误跳转的快捷方法
      * @access protected
@@ -151,6 +85,7 @@ class Admin extends Base{
      * @param  mixed     $data 返回的数据
      * @param  integer   $wait 跳转等待时间
      * @param  array     $header 发送的Header信息
+     * @author 刘勤 <876771120@qq.com>
      * @return void
      */
     protected function error($msg = '', string $url = null, $data = '', int $wait = 3, array $header = []){
@@ -191,6 +126,7 @@ class Admin extends Base{
      * @param  mixed     $data 返回的数据
      * @param  integer   $wait 跳转等待时间
      * @param  array     $header 发送的Header信息
+     * @author 刘勤 <876771120@qq.com>
      * @return void
      */
     protected function success($msg = '', string $url = null, $data = '', int $wait = 3, array $header = []){

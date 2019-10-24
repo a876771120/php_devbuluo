@@ -90,8 +90,13 @@ define('admin',['jquery','element','pjax','nprogress','popup'],function($,elemen
                                     ids.push(rowData);
                                 }
                             })
-                            formData = {ids:ids};
+                            formData = {};
+                            formData[pk+'s'] = ids;
                             method = 'post';
+                            if(ids.length==0){
+                                popup.message('请选择数据后操作',{type:'error'})
+                                return false;
+                            }
                         }
                         if(othis.hasClass('confirm')){
                             thisPopup = popup.confirm(text,{

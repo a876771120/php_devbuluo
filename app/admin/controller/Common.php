@@ -12,8 +12,10 @@ namespace app\admin\controller;
 
 use app\common\controller\Admin;
 use app\common\builder\Dbuilder;
+use app\admin\model\Menu as MenuModel;
 use think\Exception;
 use think\facade\App;
+use think\facade\Cache;
 /**
  * 公共控制器
  * @package app\admin\controller
@@ -244,7 +246,6 @@ class Common extends Admin{
     }
     /**
      * 列表页
-     * @return void
      * @author 刘勤 <876771120@qq.com>
      */
     public function index(){
@@ -289,5 +290,111 @@ class Common extends Admin{
             ->view();
 
 
+    }
+
+    /**
+     * 启用
+     * @author 刘勤 <876771120@qq.com>
+     * @throws \think\Exception
+     * @throws \think\exception\PDOException
+     */
+    public function enable(){
+        return $this->setState('enable');
+    }
+
+    /**
+     * 禁用
+     * @author 刘勤 <876771120@qq.com>
+     * @throws \think\Exception
+     * @throws \think\exception\PDOException
+     */
+    public function disable(){
+        return $this->setState('disable');
+    }
+
+    /**
+     * 删除
+     * @author 刘勤 <876771120@qq.com>
+     * @throws \think\Exception
+     * @throws \think\exception\PDOException
+     */
+    public function delete(){
+        return $this->setState('delete');
+    }
+
+
+    /**
+     * 快速编辑
+     * @author 刘勤 <876771120@qq.com>
+     * @throws \think\Exception
+     * @throws \think\exception\PDOException
+     */
+    public function quickEdit(){
+
+    }
+
+    /**
+     * 设置状态
+     * @param string $type 状态类型
+     * @author 刘勤 <876771120@qq.com>
+     * @throws \think\Exception
+     * @throws \think\exception\PDOException
+     */
+    final protected function setState($type = ''){
+        $Model  = $this->model;
+        if(!$Model){
+            $Model = $this->loadModel();
+        }
+        $pk = $Model->getPK();
+        $requestKey = $pk.'s';
+        $ids   = (array)($this->request->isPost() ? input('post.'.$requestKey.'/a') : input('param.'.$requestKey));
+        $field = input('param.field', 'state');
+        empty($ids) && $this->error('缺少参数：'.$requestKey);
+        // 定义核心表
+        $table_core = [
+            config('database.prefix').'admin_member',//用户表
+            config('database.prefix').'admin_role',//后台角色表
+            config('database.prefix').'admin_perm',//后台团队表
+            config('database.prefix').'admin_module',//模块表
+        ];
+        // 禁止操作核心表的主要数据
+        if (in_array($Model->getTable(), $table_core) && in_array('1', $ids)) {
+            $this->error('禁止操作');
+        }
+        $result = false;
+        $where[] = [$pk,'in',$ids];
+        switch ($type) {
+            case 'disable': // 禁用
+                $result = $Model->where($where)->update([$field=>0]);
+                break;
+            case 'enable': // 启用
+                $result = $Model->where($where)->update([$field=>1]);
+                break;
+            case 'delete': // 删除
+                $result = $Model->where($where)->delete();
+                break;
+            default:
+                $this->error('非法操作');
+                break;
+        }
+        if (false !== $result) {
+            Cache::clear();
+            // 记录行为日志
+            $this->writeLog('');
+            $this->success('操作成功');
+        } else {
+            $this->error('操作失败');
+        }
+    }
+
+    /**
+     * 写入日志功能
+     * @param string $remark 要记录的日志信息
+     * @return true||string
+     * @author 刘勤 <876771120@qq.com>
+     */
+    protected function writeLog($remark=''){
+        //获取当前访问信息
+        dump(MenuModel::getLocation());die;
     }
 }

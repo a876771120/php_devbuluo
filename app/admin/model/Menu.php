@@ -12,6 +12,7 @@ namespace app\admin\model;
 
 use app\common\helper\PhpTree;
 use app\member\model\Role as RoleModel;
+use think\Exception;
 use think\Model;
 /**
  * 配置模型
