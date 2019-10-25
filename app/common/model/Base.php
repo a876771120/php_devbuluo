@@ -22,226 +22,101 @@ use think\Model;
  */
 class Base extends Model{
     /**
-     * 字段配置信息
+     * 列的定义
      * @var array
      */
     protected $fields = [];
     /**
-     * form表单配置信息
+     * 表格字段
      * @var array
      */
-    protected $_form = [];
+    protected $listColumns = [];
     /**
-     * 数据表格的配置信息
+     * 表单字段
      * @var array
      */
-    protected $_table = [];
+    protected $formItems =[];
     /**
-     * 查询的字段
+     * 获取器配置
      * @var array
      */
-    protected $_query_field=[];
+    protected $getter = [];
     /**
-     * 修改器配置
-     * @var array
-     */
-    protected $_attrs=[];
-    /**
-     * 架构函数
-     * @access public
-     * @param array $data 数据
+     * 重写初始化方法
+     * @param array $data
      */
     public function __construct(array $data = []){
-        // 设置字段信息
-        $this->setFields();
+        // 初始化列设置
+        $this->initFields();
         // 父类初始化
         parent::__construct($data);
-        // 初始化字段设置
+        // 初始化列的设置根据列配置
         if(!empty($this->fields)){
-            foreach ($this->fields as $field => $config) {
-                $tableConfig = [];$formConfig=[];
-                // 设置字段
-                $tableConfig['field'] = $formConfig['field'] = $field;
-                $tableConfig['type'] = $formConfig['type'] = isset($config['type'])?$config['type']:'string';;
-                $tableConfig['title'] = $formConfig['title'] = isset($config['title'])?$config['title']:$field;
-                // 设置修改器字段
-                if(!empty($config['options'])){
-                    $this->_attrs[$field]['attrs']=$config['options'];
-                    $this->_attrs[$field]['default']=!empty($config['default'])?$config['default']:'';
+            foreach ($this->fields as $field => $info) {
+                // 必须是当前表的数据才类型转换
+                if(count(explode('.',$field))<2){
+                    $this->type[$field]=isset($info['type'])?$info['type']:'string'; 
                 }
-                $tableConfig['options'] = $formConfig['options'] = !empty($config['options']) ? $config['options']:[];
-                // 如果table配置信息不为空并且不是为false
-                if(!(isset($config['table']) && $config['table']==false)){
-                    $config['table'] = $config['table'] ?? [];
-                    $tableConfig = array_merge($tableConfig,(!empty($config['table'])?$config['table']:[]));
-                    $tableConfig['template'] = !empty($tableConfig['template'])?$tableConfig['template']:'';
-                    $this->_table[$field] = $tableConfig;
+                // 修改器的配置
+                if(isset($info['options'])){
+                    // 配置
+                    $this->getter[$field]['options'] = $info['options'];
+                    $this->getter[$field]['default'] = isset($info['default'])?$info['default']:'';
                 }
-                if(!(isset($config['form']) && $config['form']==false)){
-                    $formConfig = array_merge($formConfig,(!empty($config['form'])?$config['form']:[]));
-                    $tableConfig['template'] = !empty($tableConfig['template'])?$tableConfig['template']:'text';
-                    $this->_form[$field] = $formConfig;
+                // 设置表格显示字段
+                if(!(isset($info['list']) && $info['list']===false)){
+                    $listItem = [];
+                    // 字段
+                    $listItem['field'] = $field;
+                    // 标题
+                    $listItem['title'] = isset($info['title']) ? $info['title']:$field;
+                    // 合并属性
+                    $listItem = array_merge($listItem,isset($info['list'])?$info['list']:[]);
+                    // 添加一个列
+                    $this->listColumns[] = $listItem;
                 }
-                // 初始化类型转换设置
-                if(isset($config['type'])){
-                    $this->type[$field] = $config['type'];
+                // 设置表单字段
+                if(!(isset($info['form']) && $info['form']===false)){
+                    $formItem = [];
+                    // 字段
+                    $formItem['field'] = $field;
+                    // 标题
+                    $formItem['title'] = isset($info['title']) ? $info['title']:$field;
+                    // 合并属性
+                    $formItem = array_merge($formItem,isset($info['form'])?$info['form']:[]);
+                    // 添加一个列
+                    $this->formItems[] = $formItem;
                 }
-                $this->_query_field[] = $field;
             }
         }
     }
     /**
-     * 设置字段信息方法
-     * @author 刘勤 <876771120@qq.com>
+     * 初始化列设置
      * @return void
      */
-    protected function setFields(){
+    protected function initFields(){
         
     }
-    
     /**
-     * 获取fields配置信息
-     * @param string $field 字段名称
-     * @author 刘勤 <876771120@qq.com>
+     * 获取表格的配置信息
      * @return array
+     * @author 刘勤 <a876771120@qq.com>
      */
-    public function getFieldConfig($field=''){
-        if(!$field){
-            return $this->fields;
-        }else{
-            if(!empty($this->fields[$field])){
-                return $this->fields[$field];
-            }else{
-                return null;
-            }
-        }
-    }
-    /**
-     * 获取form表单配置信息
-     * @param string $field 字段名称
-     * @author 刘勤 <876771120@qq.com>
-     * @return array
-     */
-    public function getFormConfig($field=''){
-        if(!$field){
-            return $this->_form;
-        }else{
-            if(!empty($this->_form[$field])){
-                return $this->_form[$field];
-            }else{
-                return null;
-            }
-        }
-    }
-    /**
-     * 获取table的配置信息
-     * @param string $field 字段名称
-     * @author 刘勤 <876771120@qq.com>
-     * @return array
-     */
-    public function getTableConfig($field=''){
-        if(!$field){
-            return $this->_table;
-        }else{
-            if(!empty($this->_table[$field])){
-                return $this->_table[$field];
-            }else{
-                return null;
-            }
-        }
-    }
-    /**
-     * 获取列表数据
-     * @param array $field  查询字段
-     * @param array $order  排序
-     * @author 刘勤 <876771120@qq.com>
-     * @return void
-     */
-    public function buildQuery($field=[],$order=[]){
-        $queryBuilder = $this->where([]);
-        // 字段设置
-        $queryBuilder = $queryBuilder->field($field);
-        // 排序设置
-        $queryBuilder = $queryBuilder->order($order);
-        // 获取器
-        $getAttr = $this->getAttrConfig();
-        foreach ($getAttr as $key => $options) {
-            $queryBuilder = $queryBuilder->withAttr($key,function($value, $data)use($options){
-                if(!empty($options['attrs'][$value])){
-                    return $options['attrs'][$value];
-                }else{
-                    return !empty($options[$value]['default']) ? $options[$value]['default']:'';
-                }
-            });
-        }
-        return $queryBuilder;
-    }
-    /**
-     * 获取数据
-     * @param array $data 要获取的数据
-     * @return void
-     */
-    public function getArray($data = null){
-        if ($data === null) {
-            $data = $this;
-        }
-        if (!is_object($data)) {
-            return $data;
-        }
-        if (strpos('think\model\Collection', get_class($data)) === false) {
-            $assoc = array_keys(Hash::normalize((array)$data->assoc));
-            $data = $data->toArray();
-            $midd_data = [];
-            foreach ($data as $key => $value) {
-                if ((!in_array(parse_name($key, 1), (array)$assoc))) {
-                    $midd_data[$key] = $value;
-                    continue;
-                }
-                $midd_data[parse_name($key, 1)] = $value ? $value : [];
-            }
-            return $midd_data;
-        } else {
-            $return_data = [];
-            foreach ($data as $key => $value) {
-                $return_data[$key] = $this->getArray($value);
-            }
-            return $return_data;
-        }
-    }
-    /**
-     * 获取修改器属性
-     * @author 刘勤 <876771120@qq.com>
-     * @return array
-     */
-    public function getAttrConfig(){
-        if($this->_attrs){
-            return $this->_attrs;
+    public function getListColumns():array{
+        if($this->listColumns){
+            return $this->listColumns;
         }
         return [];
     }
-
     /**
-     * 获取查询的字段
-     * @author 刘勤 <876771120@qq.com>
+     * 获取表单的配置信息
      * @return array
+     * @author 刘勤 <876771120@qq.com>
      */
-    public function getQueryField(){
-        if(!empty($this->_query_field)){
-            if(!in_array($this->getPk(),$this->_query_field)){
-                array_unshift($this->_query_field,$this->getPk());
-            }
-            return $this->_query_field;
-        }else{
-            return [];
+    public function getFromItems():array{
+        if($this->formItems){
+            return $this->formItems;
         }
-    }
-
-    /**
-     * 获取字段定义
-     * @author 刘勤 <876771120@qq.com>
-     * @return array
-     */
-    public function getSchema(){
-        return $this->schema;
+        return [];
     }
 }

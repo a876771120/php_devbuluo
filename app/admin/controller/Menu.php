@@ -13,6 +13,7 @@ namespace app\admin\controller;
 use app\admin\controller\Common;
 use app\admin\model\App;
 use app\common\builder\Dbuilder;
+use app\admin\model\Menu as MenuModel;
 /**
  * 配置管理控制器
  * @package app\admin\controller
@@ -59,7 +60,7 @@ class Menu extends Common{
             $item['title']=$title;
             $item['name'] = $name;
             $item['href'] = strtolower((string)url('index',['group'=>$name]));
-            $this->group_info[] = $item;
+            $this->group_list[] = $item;
         }
         return call_user_func(array('parent', __FUNCTION__));
     }

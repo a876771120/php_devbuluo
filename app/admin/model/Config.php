@@ -20,92 +20,47 @@ class Config extends Base{
     protected $autoWriteTimestamp = true;
     // 设置当前模型名称
     protected $name = 'AdminConfig';
-    // 字段定义
+    // 列的配置信息
     protected $fields=[
         'id'=>[
-            'title'     =>  'ID',           //标题
-            'type'      =>  'integer',      //类型
-            'table'     =>  false,          //table列的显示样式，如果为false则表示该列隐藏
-            'form'      =>  [               
-                'template'  =>  'hidden',
-                'default'   =>  0
-            ]                               //form的固有属性
+            'title'=>'ID',
+            'type'=>'integer',
+            'list'=>false,
+            'form'=>[
+                'template'=>'hidden',
+            ]
         ],
         'name'=>[
-            'title'     =>  '配置名称',           //标题
-            'table'     =>  [
-                'sort'      =>true,
-                'filter'    =>true
+            'title'=>'配置名',
+            'list'=>[
+                'filter'=>true
             ]
         ],
         'title'=>[
-            'title'     =>  '配置标题',           //标题
-            'table'    =>  [
+            'title'=>'配置标题',
+            'list'=>[
                 'filter'=>true
-            ]
-        ],
-        'type'=>[
-            'title'     =>  '类型',           //标题
-            'table'     =>  [
-                'width'     =>  80,             //列表页面的宽度
-            ],
-            'form'      =>  [
-                'template'  =>  'text',
-                'default'   =>  0,
-            ]
-        ],
-        'group'=>[
-            'title'     =>  '分组',           //标题
-            'table'     =>  false,
-            'form'      =>  [
-                'template'  =>  'select',
-                'default'   =>  0,
             ]
         ],
         'state'=>[
-            'title'     =>  '状态',           //标题
-            'type'      =>  'integer',
-            'table'     =>  [
-                'width'     =>  80,             //列表页面的宽度
-                'template'  =>  'switch',       //模板
-                'options'=>['inactiveValue'=>0,'activeValue'=>1],
+            'title'=>'状态',
+            'type'=>'integer',
+            'list'=>[
+                'template'=>'switch',
+                'options'=>['activeValue'=>1,'inactiveValue'=>0],
                 'filter'=>[
-                    'type'  =>'enum',
-                    'options'=>[0=>'禁用',1=>'启用']
+                    'type'=>'enum',
+                    'options'=>[1=>'启用',0=>'禁用']
                 ]
-            ],
-            'form'      =>  [
-                'template'  =>  'switch',       //模板
-                'options'=>['inactiveValue'=>0,'activeValue'=>1],
-                'default'   =>  0,
             ]
-        ],
-        'create_time'=>[
-            'title'     =>  '创建时间',           //创建时间
-            'table'     => [
-                'width' => 180,
-                'filter'=>true
-            ],
-            'type'      =>  'timestamp',
-            'form'      =>  false
-        ],
-        'update_time'=>[
-            'title'     =>  '创建时间',           //创建时间
-            'table'     => [
-                'width' => 180,
-                'filter'=> true
-            ],
-            'type'      =>  'timestamp',
-            'form'      =>  false
-        ],
+        ]
     ];
     /**
-     * 初始化字段方法
-     * @author 刘勤 <876771120@qq.com>
+     * 初始化方法
      * @return void
      */
-    protected function setFields(){
-        $this->fields['group']['options'] = config('app.config_group');
+    protected function initFields(){
+        
     }
     /**
      * 获取配置信息

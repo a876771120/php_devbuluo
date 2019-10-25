@@ -55,7 +55,7 @@ class Builder extends Dbuilder{
      * @var array
      */
     protected $_vars=[
-        'pk'                =>'',   //数据表格主键
+        'pk'                =>'id',   //数据表格主键
         'page_title'        =>'',   //页面标题
         'checkbox'          =>true, //是否有选择框
         'table_tree'        =>[],   //树形表格配置
@@ -532,14 +532,6 @@ class Builder extends Dbuilder{
             $_temp_fields = [];
             foreach ($this->_search['fields'] as $key => $field) {
                 if (is_numeric($key)) {
-                    if(empty($this->_model)){
-                        throw new Exception("请先设置模型", 9004);
-                    }
-                    $fieldConfig = $this->_model->getFieldConfig($field);
-                    if(empty($fieldConfig)){
-                        unset($this->_search[$key]);
-                        continue;
-                    }
                     $_temp_fields[$field] = !empty($fieldConfig['title'])?$fieldConfig['title']:'';
                 } else {
                     $_temp_fields[$key]   = $field;
@@ -556,14 +548,6 @@ class Builder extends Dbuilder{
             $_temp_fields = [];
             foreach ($this->_filterInfo as $key => $field) {
                 if (is_numeric($key)) {
-                    if(empty($this->_model)){
-                        throw new Exception("请先设置模型", 9004);
-                    }
-                    $fieldConfig = $this->_model->getFieldConfig($field);
-                    if(empty($fieldConfig)){
-                        unset($this->_search[$key]);
-                        continue;
-                    }
                     $_temp_fields[$field] = !empty($fieldConfig['title'])?$fieldConfig['title']:'';
                 } else {
                     $_temp_fields[$key]   = $field;
@@ -577,16 +561,6 @@ class Builder extends Dbuilder{
         }
         // 组装列
         foreach ($this->_vars['columns'] as $index => &$column) {
-            if(is_string($column)){
-                if(empty($this->_model)){
-                    throw new Exception("请先设置模型", 9004);
-                }
-                $column = $this->_model->getTableConfig($column);
-                if(empty($newColumn)){
-                    unset($this->_vars['columns'][$index]);
-                    continue;
-                }
-            }
             // 如果类型是编辑框，如排序字段，可以修改排序
             if(!empty($column['template']) && $column['template']=='text.edit'){
                 $column['template']='<div class="dui-input">
@@ -655,8 +629,8 @@ class Builder extends Dbuilder{
                 $newButton .= "{$button['title']}</a>";
                 if($this->_model){
                     $pk = $this->_model->getPk();
-                    $newButton = str_replace('$thistablepk', $pk, $newButton);
                 }
+                $newButton = str_replace('$thistablepk', $pk, $newButton);
                 $button = $newButton;
             }
             
