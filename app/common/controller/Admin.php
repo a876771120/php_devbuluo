@@ -31,7 +31,7 @@ class Admin extends Base{
      */
     protected function initialize(){
         // 设置后台layout模板
-        View::engine()->assign(['_admin_base_layout'=>config('app.admin_layout_path')]);
+        $this->assign(['_admin_base_layout'=>config('app.admin_layout_path')]);
         // 传递pop参数
         $this->assign('_pop',$this->request->get('_pop'));
         // 是否显示面包屑导航
@@ -159,7 +159,6 @@ class Admin extends Base{
         }
         throw new HttpResponseException($response);
     }
-
     /**
      * 渲染视图
      * @param string $template  自定义显示模板

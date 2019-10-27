@@ -13,6 +13,7 @@ namespace app\admin\model;
 use app\common\helper\PhpTree;
 use app\member\model\Role as RoleModel;
 use app\common\model\Base;
+use think\facade\Db;
 use think\Exception;
 /**
  * 配置模型
@@ -22,8 +23,107 @@ use think\Exception;
 class Menu extends Base{
     // 设置当前模型名称
     protected $name = 'AdminMenu';
-    // 自动写入时间戳
-    protected $autoWriteTimestamp = true;
+    /**
+     * 初始化列设置
+     * @return void
+     */
+    public function initFields(){
+        $appoption = $this->getOptionModule();
+        $menuOption = $this->getMenuTree(0,'',input('group',key($appoption)));
+        $this->fields = [
+            'id'=>[
+                'title'=>'ID',
+                'type'=>'integer',
+                'list'=>false,
+                'form'=>[
+                    'template'=>'hidden'
+                ]
+            ],
+            'app'=>[
+                'title'=>'所属应用',
+                'list'=>false,
+                'form'=>[
+                    'template'=>'select',
+                    'attr'=>[
+                        'linkage-field'=>'pid',
+                        'linkage-url'=>url('/admin/ajax/getAppMenu'),
+                    ],
+                    'options'=>$appoption,
+                    'value'=>input('group',key($appoption))
+                ]
+            ],
+            'pid'=>[
+                'title'=>'上级菜单',
+                'list'=>false,
+                'form'=>[
+                    'template'=>'select',
+                    'options'=>$menuOption,
+                    'value'=>input('pid')
+                ]
+            ],
+            'title'=>[
+                'title'=>'菜单标题',
+            ],
+            'url_value'=>[
+                'title'=>'菜单地址',
+            ],
+            'icon'=>[
+                'title'=>'图标',
+                'list'=>[
+                    'template'=>'icon'
+                ],
+            ],
+            'sort'=>[
+                'title'=>'排序',
+                'list'=>[
+                    'template'=>'text.edit',
+                    'width'=>80,
+                    'align'=>'center'
+                ],
+                'form'=>[
+                    'value'=>100
+                ]
+            ],
+            'state'=>[
+                'title'=>'状态',
+                'type'=>'integer',
+                'list'=>[
+                    'template'=>'switch',
+                    'options'=>['active-value'=>1,'inactive-value'=>0]
+                ],
+                'form'=>[
+                    'template'=>'switch',
+                    'options'=>['active-value'=>1,'inactive-value'=>0],
+                    'value'=>1
+                ]
+            ],
+            'create_time'=>[
+                'title'=>'创建时间',
+                'list'=>[
+                    'width'=>180,
+                    'align'=>'center'
+                ],
+                'form'=>false
+            ],
+            'update_time'=>[
+                'title'=>'修改时间',
+                'list'=>[
+                    'width'=>180,
+                    'align'=>'center'
+                ],
+                'form'=>false
+            ]
+        ];
+    }
+    /**
+     * 获取所属模块选项
+     * @author 刘勤 <876771120@qq.com>
+     * @return array
+     */
+    public function getOptionModule(){
+        $data = Db::name('AdminApp')->column('title','name');
+        return $data;
+    }
     /**
      * 根据菜单id获取当前访问节点数组，如果没有id则获取当前节点数组
      * @param string $id 当前访问的菜单节点如果没有指定，则取当前节点
@@ -106,7 +206,6 @@ class Menu extends Base{
         }
         return $menus;
     }
-
     /**
      * 获取菜单根据url，如果url为空则根据当前访问的url
      * @param string $url 要获取菜单信息的url，如：admin/member/index
@@ -143,5 +242,58 @@ class Menu extends Base{
             }
         }
         return $menu;
+    }
+
+    /**
+     * 获取树形节点
+     * @param int $id 需要隐藏的节点id
+     * @param string $default 默认第一个节点项，默认为“顶级节点”，如果为false则不显示，也可传入其他名称
+     * @param string $app 所属应用
+     * @author 刘勤 <876771120@qq.com>
+     * @return mixed
+     */
+    public static function getMenuTree($id = 0, $default = '', $app = ''){
+        $result[0] = '顶级节点';
+        $where = [
+            ['state', '>=', 0]
+        ];
+        if ($app != '') {
+            $where[] = ['app', '=', $app];
+        }
+        // 排除指定节点及其子节点
+        if ($id !== 0) {
+            $hide_ids = array_merge([$id], self::getChildsId($id));
+            $where[]  = ['id', 'not in', $hide_ids];
+        }
+        // 获取节点
+        $menus = PhpTree::toList(Db::name('AdminMenu')->where($where)->order('pid,id')->column('id,pid,title','id'));
+        foreach ($menus as $menu) {
+            $result[$menu['id']] = $menu['title_display'];
+        }
+        // 设置默认节点项标题
+        if ($default != '') {
+            $result[0] = $default;
+        }
+
+        // 隐藏默认节点项
+        if ($default === false) {
+            unset($result[0]);
+        }
+
+        return $result;
+    }
+
+    /**
+     * 获取所有子节点id
+     * @param int $pid 父级id
+     * @return array
+     * @author 刘勤 <876771120@qq.com>
+     */
+    public static function getChildsId($pid = 0){
+        $ids = self::where('pid', $pid)->column('id');
+        foreach ($ids as $value) {
+            $ids = array_merge($ids, self::getChildsId($value));
+        }
+        return $ids;
     }
 }

@@ -1,0 +1,30 @@
+<div class="dui-form-item">
+    <label class="dui-form-item__label">{$formItem.title}</label>
+    <div class="dui-form-item__content">
+        <select dui-select placeholder="{$formItem.placeholder|default='请选择'.$formItem.title}"
+        {if isset($formItem.value)}dui-value="{$formItem.value}"{/if}
+        name="{$formItem.field}"
+        dui-filter="{$formItem.field}"
+        {notempty name="formItem.attr"}
+        {volist name="formItem.attr" id="attr"}
+         {$key}="{$attr}"
+        {/volist}
+        {/notempty}
+        >
+            {volist name="formItem.options" id="option"}
+            <option value="{$key}" 
+            {if !empty($formItem['attr']['multiple']) && $formItem['attr']['multiple']=="true"}
+            {in name="key" value="$formItem.value|default=''"}selected="selected"{/in}
+            {else/}
+            {if isset($formItem.value) && ((string)$formItem.value == (string)$key)}selected{/if}
+            {/if}
+            >{$option}</option>
+            {/volist}
+        </select>
+        {notempty name="formItem.tips"}
+        <div class="dui-form-item__tips">
+            {$formItem.tips}
+        </div>
+        {/notempty}
+    </div>
+</div>

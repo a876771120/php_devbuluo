@@ -658,12 +658,12 @@
         "source": {
             "type": "git",
             "url": "https://github.com/top-think/framework.git",
-            "reference": "54fd4c2264c813026de5b7f31ffcff62e0ebfae5"
+            "reference": "0c67b3e7544a49f2a1ae9263efa00d7779462673"
         },
         "dist": {
             "type": "zip",
-            "url": "https://api.github.com/repos/top-think/framework/zipball/54fd4c2264c813026de5b7f31ffcff62e0ebfae5",
-            "reference": "54fd4c2264c813026de5b7f31ffcff62e0ebfae5",
+            "url": "https://api.github.com/repos/top-think/framework/zipball/0c67b3e7544a49f2a1ae9263efa00d7779462673",
+            "reference": "0c67b3e7544a49f2a1ae9263efa00d7779462673",
             "shasum": "",
             "mirrors": [
                 {
@@ -690,7 +690,7 @@
             "mockery/mockery": "^1.2",
             "phpunit/phpunit": "^7.0"
         },
-        "time": "2019-10-25T09:08:47+00:00",
+        "time": "2019-10-25T11:10:21+00:00",
         "type": "library",
         "installation-source": "dist",
         "autoload": {
@@ -884,12 +884,12 @@
         "source": {
             "type": "git",
             "url": "https://github.com/top-think/think-orm.git",
-            "reference": "40a59f5e28dd5ff1825732cb2868a451bc330662"
+            "reference": "aac60421e1a8ac81aea6251e971250fb1aed683c"
         },
         "dist": {
             "type": "zip",
-            "url": "https://api.github.com/repos/top-think/think-orm/zipball/40a59f5e28dd5ff1825732cb2868a451bc330662",
-            "reference": "40a59f5e28dd5ff1825732cb2868a451bc330662",
+            "url": "https://api.github.com/repos/top-think/think-orm/zipball/aac60421e1a8ac81aea6251e971250fb1aed683c",
+            "reference": "aac60421e1a8ac81aea6251e971250fb1aed683c",
             "shasum": "",
             "mirrors": [
                 {
@@ -905,7 +905,7 @@
             "psr/simple-cache": "^1.0",
             "topthink/think-helper": "^3.1"
         },
-        "time": "2019-10-25T08:03:42+00:00",
+        "time": "2019-10-25T13:33:48+00:00",
         "type": "library",
         "installation-source": "dist",
         "autoload": {

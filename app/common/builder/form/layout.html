@@ -1,0 +1,76 @@
+{extend name="$_admin_base_layout" /}
+{block name="title"}{if !$_pop}{if !empty($page_title)}{$page_title}{else/}{$_location[count($_location)-1]['title']}{/if}{/if}{/block}
+{block name="content"}
+{if !$_pop}
+<div class="dui-tabs dui-tabs__card" dui-tabs>
+    <div class="dui-tabs__header">
+        <div class="dui-tabs__nav">
+            {if (!empty($tab_nav))}
+            {volist name="tab_nav.list" id="nav"}
+            <div class="dui-tabs__item{if $nav.name == $tab_nav.curr} is-active{/if}"{if !($nav.name == $tab_nav.curr)}{if $_pop}jump-target="thisForm"{/if} jump jump-url="{$nav.href}"{/if}>{$nav.title}</div>
+            {/volist}
+            {else/}
+            <div class="dui-tabs__item is-active">{if !empty($page_title)}{$page_title}{else/}{$_location[count($_location)-1]['title']}{/if}</div>
+            {/if}
+        </div>
+    </div>
+    <div class="dui-tabs__content">
+{/if}
+        <form class="dui-form" dui-form method="{$ajax_info.type}" name="{$form_id}" id="{$form_id}" action="{$ajax_info.url}">
+            {notempty name="form_items"}
+            {volist name="form_items" id="formItem"}
+                {switch name="formItem.template"}
+                    {case value="hidden"}
+                    {// 隐藏表单 }
+                    {include file="../app/common/builder/form/items/hidden.html"/}
+                    {/case}
+                    {case value="text"}
+                    {// 单行文本 }
+                    {include file="../app/common/builder/form/items/text.html"/}
+                    {/case}
+                    {case value="textarea"}
+                    {// 多行文本 }
+                    {include file="../app/common/builder/form/items/textarea.html"/}
+                    {/case}
+                    {case value="switch"}
+                    {// 开关 }
+                    {include file="../app/common/builder/form/items/switch.html"/}
+                    {/case}
+                    {case value="radio"}
+                    {// 单选框 }
+                    {include file="../app/common/builder/form/items/radio.html"/}
+                    {/case}
+                    {case value="checkbox"}
+                    {// 多选框 }
+                    {include file="../app/common/builder/form/items/checkbox.html"/}
+                    {/case}
+                    {case value="select"}
+                    {// 多选框 }
+                    {include file="../app/common/builder/form/items/select.html"/}
+                    {/case}
+                {/switch}
+            {/volist}
+            {/notempty}
+            {empty name="_pop"}
+            <div class="dui-form-item">
+                <div class="dui-form-item__content">
+                    <button type="submit" class="dui-button dui-button--primary" jump jump-form="{$form_id}">
+                        提交
+                    </button>
+                    <button type="button" class="dui-button dui-button--default" onclick="javascript:history.back(-1);return false;">
+                        返回
+                    </button>
+                </div>
+            </div>
+            {/empty}
+        </form>
+{if !$_pop}
+    </div>
+</div>
+{/if}
+<script>
+dui.use(['buildform'],function(buildform){
+    buildform.render(document.getElementById('{$form_id}'));
+})
+</script>
+{/block}

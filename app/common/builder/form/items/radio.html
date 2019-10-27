@@ -1,0 +1,18 @@
+<div class="dui-form-item">
+    <label class="dui-form-item__label">{$formItem.title}</label>
+    <div class="dui-form-item__content">
+        {notempty name="formItem.attr['buttoned']"}
+        <div class="dui-radio-group">
+        {/notempty}  
+            {volist name="formItem.options" id="title"}
+            <input type="radio" dui-radio name="{$formItem.field}" value="{$key}" label="{$title}"
+            {eq name="key" value="$formItem.value|default=''"}checked="checked"{/eq}
+            {notempty name="formItem.attr['buttoned']"} buttoned="true"{/notempty} 
+            {notempty name="formItem.attr['bordered']"} bordered="true"{/notempty}
+            {notempty name="formItem.attr['disabled']"} disabled="disabled"{/notempty}>
+            {/volist}
+        {notempty name="formItem.attr['buttoned']"}
+        </div>
+        {/notempty}
+    </div>
+</div>

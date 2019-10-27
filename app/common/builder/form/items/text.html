@@ -1,0 +1,19 @@
+<div class="dui-form-item">
+    <label class="dui-form-item__label">{$formItem.title}</label>
+    <div class="dui-form-item__content">
+        <div class="dui-input{notempty name="formItem.attr.disabled"} is-disabled{/notempty}{notempty name="formItem.attr.readonly"} is-disabled{/notempty}">
+            <input type="text" class="dui-input__inner" name="{$formItem.field}" value="{$formItem.value|default=''}" placeholder="{$formItem.placeholder|default='请输入'.$formItem.title}"
+            {notempty name="formItem.attr"}
+            {volist name="formItem.attr" id="attr"}
+             {$key}="{$attr}"
+            {/volist}
+            {/notempty}
+            >
+        </div>
+        {notempty name="formItem.tips"}
+        <div class="dui-form-item__tips">
+            {$formItem.tips}
+        </div>
+        {/notempty}
+    </div>
+</div>

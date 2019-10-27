@@ -1,3 +1,4 @@
+{if !$_pop}
 {if !request()->isPjax()}
 <!DOCTYPE html>
 <html lang="zh">
@@ -24,7 +25,9 @@
         <title>{block name="title"}{$_location[count($_location)-1]['title']}{/block} | {:config('app.web_site_title')}-devbuluo</title>
         {/if}
         <div class="dui-admin__body">
+{/if}
             {block name='content'}{/block}
+{if !$_pop}
         </div>
         {if request()->isPjax()}
         <script>
@@ -35,4 +38,5 @@
     </div>
 </div>
 </html>
+{/if}
 {/if}

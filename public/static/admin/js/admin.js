@@ -27,7 +27,7 @@ define('admin',['jquery','element','pjax','nprogress','popup'],function($,elemen
          * 初始化后台js
          */
         render:function(){
-            var that = this;
+            var that = this,bodyLoading;thisPopup=null;
             //初始化事件管理
             $(document).delegate('*[dui-event]','click',function(e){
                 var name = $(this).attr('dui-event');
@@ -44,11 +44,10 @@ define('admin',['jquery','element','pjax','nprogress','popup'],function($,elemen
                     method      = othis.attr('jump-method') || 'get',               //提交方式，post还是get
                     form_name   = othis.attr('jump-form'),                          //提交数据所在的form表单
                     text        = othis.attr('jump-text')||'确定要执行该操作吗？',     //跳转提示信息
-                    title       = othis.attr('jump-title')||'提示',                 //跳转提示标题
+                    title       = othis.attr('jump-title')||othis.attr('title')||'提示',//跳转提示标题
                     form        = $('form[name="'+form_name+'"]'),                  //表单
                     formData    = form.serialize()||'',                             //数据
-                    thisPopup   = '',
-                    goAjax = function(){
+                    goAjax = function(close){
                         if(thisPopup && thisPopup.close){
                             thisPopup.close();
                         }
@@ -77,43 +76,96 @@ define('admin',['jquery','element','pjax','nprogress','popup'],function($,elemen
                             }
                         })
                     };
+                // console.log(type,othis);return false;
                 // 不管是什么操作必须得有url
-                if(url){
+                if(url || type=='submit'){
                     if(type=='submit'){// 表单提交
-                        // 如果是table的多行数据提交
-                        if(!formData && $('#'+form_name)[0] && $('#'+form_name)[0].table){
-                            var othisTable = $('#'+form_name)[0].table;
-                            var pk = $('#'+form_name)[0].pk;
-                            var checkData = othisTable.getCheckedData();
-                            var ids = [];
-                            $.each(checkData,function(i,rowData){
-                                if(rowData[pk]){
-                                    ids.push(rowData[pk]);
-                                }else{
-                                    ids.push(rowData);
+                        if(form.get(0) && "FORM" === form.get(0).nodeName){
+                            method = form.attr('method');
+                            url = form.attr('action');
+                            if(thisPopup && thisPopup.loading && form.parents('.dui-popup')[0]){
+                                thisPopup.loading.show();
+                            }else{
+                                bodyLoading.show();
+                            }
+                            // 提交数据
+                            $.ajax({
+                                url:url,
+                                method:method,
+                                data:formData,
+                                dataType:'json',
+                                success:function(data){
+                                    if(data.code==1){
+                                        if(thisPopup && thisPopup.close){
+                                            thisPopup.close();
+                                        }
+                                        popup.message(data.msg,{
+                                            type:'success',
+                                            onClose:function(){
+                                                var currUrl = (data.url ? data.url: window.location.href);
+                                                console.log(currUrl);
+                                                $.pjax({url:currUrl,container: SELECTOR.pjax_container})
+                                                // $.pjax.reload('#pjax-container')
+                                            }
+                                        });
+                                    }else{
+                                        popup.message(data.msg,{type:'error'})
+                                    }
+                                },
+                                error:function(error){
+                                    try {
+                                        res = error.responseJSON.message;
+                                    } catch (error) {
+                                        res = '网络请求失败';
+                                    }
+                                    popup.message(res,{type:'error'})
+                                },
+                                complete:function(){
+                                    if(thisPopup && thisPopup.loading && form.parents('.dui-popup')[0]){
+                                        thisPopup.loading.close();
+                                    }else{
+                                        bodyLoading.close();
+                                    }
                                 }
                             })
-                            formData = {};
-                            formData[pk+'s'] = ids;
-                            method = 'post';
-                            if(ids.length==0){
-                                popup.message('请选择数据后操作',{type:'error'})
-                                return false;
-                            }
-                        }
-                        if(othis.hasClass('confirm')){
-                            thisPopup = popup.confirm(text,{
-                                btns:['确定','取消'],
-                                title:title,
-                                modalClose:true
-                            },function(){
-                                goAjax();
-                            },function(){
-                                // 取消不做任何处理
-                                thisPopup.close();
-                            })
+                            return false;
                         }else{
-                            goAjax();
+                            // 如果是table的多行数据提交
+                            if(!formData && $('#'+form_name)[0] && $('#'+form_name)[0].table){
+                                var othisTable = $('#'+form_name)[0].table;
+                                var pk = $('#'+form_name)[0].pk;
+                                var checkData = othisTable.getCheckedData();
+                                var ids = [];
+                                $.each(checkData,function(i,rowData){
+                                    if(rowData[pk]){
+                                        ids.push(rowData[pk]);
+                                    }else{
+                                        ids.push(rowData);
+                                    }
+                                })
+                                formData = {};
+                                formData[pk+'s'] = ids;
+                                method = 'post';
+                                if(ids.length==0){
+                                    popup.message('请选择数据后操作',{type:'error'})
+                                    return false;
+                                }
+                            }
+                            if(othis.hasClass('confirm')){
+                                thisPopup = popup.confirm(text,{
+                                    btns:['确定','取消'],
+                                    title:title,
+                                    modalClose:true
+                                },function(){
+                                    goAjax();
+                                },function(){
+                                    // 取消不做任何处理
+                                    thisPopup.close();
+                                })
+                            }else{
+                                goAjax();
+                            }
+                            return false;
                         }
                     }else{//其他链接跳转
                         if(mode=='_pjax'){//pjax方式
@@ -135,12 +187,55 @@ define('admin',['jquery','element','pjax','nprogress','popup'],function($,elemen
                                 goAjax();
                             }
                         }else if(mode=='_pop'){
-
+                            thisPopup = window.thisPopup =  popup.dialog({
+                                title:title,
+                                content:'',
+                                offset:['15%','auto'],
+                                move:false,
+                                modalClose:true,
+                                showFooter:true,
+                                // height:$(window).width()<=768?'90%':'70%',
+                                width:$(window).width()<=768?'90%':'50%',
+                                showFooter:true,
+                                onClose:function(){
+                                    window.thisPopup = null;
+                                },
+                                done:function(cfg){
+                                    var that = this;
+                                    var contentDiv = that.content;
+                                    $.ajax({
+                                        url:url+'?_pop=1',
+                                        method:method,
+                                        dataType:'html',
+                                        success:function(html){
+                                            // 设置内容
+                                            contentDiv.html(html);
+                                            that.loading = popup.loading({target:contentDiv[0]});
+                                            // 设置按钮事件
+                                            var enterBtn = that.footer.find('button.dui-button--primary');
+                                            var formName = contentDiv.find('form').attr('name');
+                                            enterBtn.attr('jump','').attr('type','submit').attr('jump-form',formName);
+                                            thisPopup.transition.show();
+                                        },
+                                        error:function(error){
+                                            contentDiv.html(error.responseText||'网络请求错误，未获取到页面');
+                                            thisPopup.transition.show();
+                                        }
+                                    })
+                                    return false;
+                                },
+                                btn1:function(){
+                                    thisPopup.close();
+                                }
+                            })
+                            console.log(thisPopup);
                         }
                     }
                 }
                 return false;
             })
+            // 给body 添加一个加载动画
+            bodyLoading = popup.loading({target:$('body')[0]})
             // 设置pjax开始监听
             $(document).on('pjax:start', function(e){ 
                 nprogress.start();

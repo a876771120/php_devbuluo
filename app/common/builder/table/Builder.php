@@ -99,7 +99,7 @@ class Builder extends Dbuilder{
      */
     public function setTreeTable($cfg=[]){
         if($cfg){
-            $this->_treeTable = $cfg;
+            $this->_vars['tree_table'] = $cfg;
         }
         return $this;
     }
@@ -314,8 +314,8 @@ class Builder extends Dbuilder{
                 if (is_numeric($key)) {
                     $this->addTopButton($value);
                 } else {
-                    if(is_array($value) && !empty($value['param']) && !empty($value['attribute'])){
-                        $this->addTopButton($key, $value['attribute'],$value['param']);
+                    if(is_array($value) && !empty($value['param'])){
+                        $this->addTopButton($key, !empty($value['attribute'])?$value['attribute']:[],$value['param']);
                     }else{
                         $this->addTopButton($key, $value);
                     }
@@ -427,8 +427,9 @@ class Builder extends Dbuilder{
                 if (is_numeric($key)) {
                     $this->addRightButton($value);
                 } else {
-                    if(is_array($value) && !empty($value['param']) && !empty($value['attribute'])){
-                        $this->addRightButton($key, $value['attribute'],$value['param']);
+                    if(is_array($value) && !empty($value['param'])){
+                        $this->addRightButton($key, !empty($value['attribute'])?$value['attribute']:[],
+                        $value['param']);
                     }else{
                         $this->addRightButton($key, $value);
                     }
@@ -461,7 +462,15 @@ class Builder extends Dbuilder{
      */
     public function setFilterInfo($fields = []){
         if (!empty($fields)) {
-            $this->_filterInfo = is_string($fields) ? explode(',', $fields) : $fields;
+            if(is_string($fields)){
+                $this->_filterInfo = [];
+                $temp = explode(',', $fields);
+                foreach ($temp as $i => $field) {
+                    $this->_filterInfo[$field] = true;
+                }
+            }else{
+                $this->_filterInfo =  $fields;
+            }
         }
         return $this;
     }
@@ -532,7 +541,11 @@ class Builder extends Dbuilder{
             $_temp_fields = [];
             foreach ($this->_search['fields'] as $key => $field) {
                 if (is_numeric($key)) {
-                    $_temp_fields[$field] = !empty($fieldConfig['title'])?$fieldConfig['title']:'';
+                    $column = $this->_model->getFieldConfig($field);
+                    if(!$column){
+                        throw new Exception('请在模型'.get_class($this->_model).'里面设置字段'.$field.'设置相关信息', 9305);
+                    }
+                    $_temp_fields[$field] = isset($column['title'])?$column['title']:$column['field'];
                 } else {
                     $_temp_fields[$key]   = $field;
                 }
@@ -543,37 +556,39 @@ class Builder extends Dbuilder{
                 'placeholder' => $this->_search['placeholder'] != '' ? $this->_search['placeholder'] : '请输入'. implode('/', $_temp_fields),
             ];
         }
-        // 处理高级搜索
-        if($this->_filterInfo){
-            $_temp_fields = [];
-            foreach ($this->_filterInfo as $key => $field) {
-                if (is_numeric($key)) {
-                    $_temp_fields[$field] = !empty($fieldConfig['title'])?$fieldConfig['title']:'';
-                } else {
-                    $_temp_fields[$key]   = $field;
-                }
-            }
-            $this->_filterInfo = $_temp_fields;
-        }
-        // 处理是否是树形表格
-        if($this->_treeTable){
-            $this->_vars['tree_table'] = $this->_treeTable;
-        }
         // 组装列
         foreach ($this->_vars['columns'] as $index => &$column) {
-            // 如果类型是编辑框，如排序字段，可以修改排序
-            if(!empty($column['template']) && $column['template']=='text.edit'){
-                $column['template']='<div class="dui-input">
-                    <input type="text" class="dui-input__inner dui-table__input" value="{{'.$column['field'].'}}">
-                </div>';
-            }else if(!empty($column['template']) && $column['template']=='switch'){
-                // 居中显示
-                if(empty($column['align'])){
-                    $column['align'] = 'center';
+            if(isset($column['template'])){
+                switch ($column['template']) {
+                    // 可编辑的文本显示
+                    case 'text.edit':
+                        $column['template']='<div class="dui-input dui-input--mini">
+                            <input type="text" class="dui-input__inner dui-table__input" value="{{'.$column['field'].'}}">
+                        </div>';
+                        break;
+                    // 开关
+                    case 'switch':
+                        if(empty($column['width'])){
+                            $column['width'] = 80;
+                        }
+                        // 居中显示
+                        if(empty($column['align'])){
+                            $column['align'] = 'center';
+                        }
+                        // 状态模板
+                        $column['template']='<input type="checkbox" dui-switch data-field="'.$column['field'].'" value="{{'.$column['field'].'}}" inactive-value="'.$column['options']['inactive-value'].'" 
+                        active-value="'.$column['options']['active-value'].'"/>';
+                        break;
+                    case 'icon':
+                        if(empty($column['width'])){
+                            $column['width'] = 60;
+                        }
+                        $column['template'] = '<i class="{{'.$column['field'].'}}"></i>';
+                        break;
+                    default:
+                        # code...
+                        break;
                 }
-                // 状态模板
-                $column['template']='<input type="checkbox" dui-switch data-field="'.$column['field'].'" value="{{'.$column['field'].'}}" inactive-value="'.$column['options']['inactiveValue'].'" 
-                active-value="'.$column['options']['activeValue'].'"/>';
             }
             // 组装高级查询
             if(!empty($column['filter'])){
@@ -583,16 +598,15 @@ class Builder extends Dbuilder{
                     ];
                 }
             }else{
-                if(!empty($this->_filterInfo[$column['field']])){
-                    $column['filter'] = [
-                        'type'=>!empty($column['type']) ? $column['type'] : 'string',
-                    ];
-                    if($column['filter']['type']=='enum'){
-                        if(empty($column['options'])){
-                            unset($column['filter']);
-                        }
-                    }else{
-                        $column['filter'] = array_merge($column['filter'],$this->_filterInfo[$column['field']]);
+                // 如果设置了过滤信息
+                if(isset($this->_filterInfo[$column['field']])){
+                    // 过滤信息为数组
+                    if(is_array($this->_filterInfo[$column['field']])){
+                        $column['filter'] = $this->_filterInfo[$column['field']];
+                    }else if($this->_filterInfo[$column['field']]===true){
+                        $column['filter'] = [
+                            'type'=>!empty($column['type']) ? $column['type'] : 'string',
+                        ];
                     }
                 }
             }
@@ -645,7 +659,11 @@ class Builder extends Dbuilder{
         }
         // 设置默认ajax请求地址
         if(empty($this->_vars['ajax_info']['url'])){
-            $this->_vars['ajax_info']['url'] = (string)url($this->app.'/'.$this->controller.'/'.$this->action,input('get.'));
+            $params = [];
+            if(input('group')){
+                $params['group'] = input('group');
+            }
+            $this->_vars['ajax_info']['url'] = (string)url($this->app.'/'.$this->controller.'/'.$this->action,$params);
         }
         // 设置请求类型
         if(empty($this->_vars['ajax_info']['type'])){

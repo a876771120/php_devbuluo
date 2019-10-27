@@ -29,8 +29,8 @@ class Dbuilder{
     public function __construct()
     {
         $this->app = app('http')->getName();
-        $this->controller = request()->controller();
-        $this->action = request()->action();
+        $this->controller = request()->controller(true);
+        $this->action = request()->action(true);
         // 构造器始化
         $this->initialize();
     }

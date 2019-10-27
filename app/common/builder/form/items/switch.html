@@ -1,0 +1,11 @@
+<div class="dui-form-item">
+    <label class="dui-form-item__label">{$formItem.title}</label>
+    <div class="dui-form-item__content">
+        <input type="checkbox" dui-switch name="{$formItem.field}" value="{$formItem.value|default=''}" 
+        {notempty name="formItem.options"}
+        {volist name="formItem.options" id="option"}
+         {$key}="{$option}"
+        {/volist}
+        {/notempty}>
+    </div>
+</div>

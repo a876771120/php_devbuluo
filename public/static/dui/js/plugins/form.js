@@ -1,1 +1,805 @@
-!function(e,i){"object"==typeof exports&&"undefined"!=typeof module?module.exports=i(require("jquery")):"function"==typeof define&&define.amd?define("form",["jquery"],i):(e=e||self).form=i(e.jQuery)}(this,function(y){"use strict";y=y&&y.hasOwnProperty("default")?y.default:y;function o(e,i,t){return new o.Item[i](e,t)}function e(a,e){var o=this,i={name:String,disabled:{type:[Boolean,String],default:!1},label:String,value:String,bordered:Boolean,indeterminate:Boolean,buttoned:Boolean,checked:{type:[Boolean,String],default:!1},state:{type:[Boolean,String],default:!1},items:String};dui.setData(a,"checkbox",{},e),dui.setProps(a,"checkbox",i),o.el=a;var l=o.config=y.extend(!0,{},a.vnode.props.checkbox),t=o.template=['<div class="dui-checkbox'+(l.buttoned?"-button":"")+(l.checked?" is-checked":"")+(l.disabled?" is-disabled":"")+(l.bordered?" is-bordered":"")+'">',l.buttoned?"":'<span class="dui-checkbox__input'+(l.checked?" is-checked":"")+(l.disabled?" is-disabled":"")+'">','<span class="dui-checkbox'+(l.buttoned?"-button":"")+'__inner">'+(l.buttoned?l.label:"")+"</span>",l.buttoned?"":"</span>",l.buttoned?"":l.label?'<span class="dui-checkbox__label">'+l.label+"</span>":"","</div>"].join(""),c=o.$showDom=y(t),n=(y(a).parents(p.form),p.checkbox,l.items,"."+S.checkbox+(l.buttoned?"-button":"")+"__inner"),s=y(a).prev(n);l.indeterminate&&y(a).removeAttr("name"),s[0]&&s.parents("."+S.checkbox).after(a)&&s.parents("."+S.checkbox).remove(),y(a).after(c)&&c.find(n).after(a),a.checked=!(!l.checked||!0===l.indeterminate),l.disabled||dui.on(c[0],"click",function(e){var i=c,t=y(a),n=t.prop("checked");l.indeterminate&&(n=!i.find("."+S.checkboxInput).hasClass("is-indeterminate")&&!!i.hasClass("is-checked")),o.setChecked(!n),t[0]&&t.change&&t.change(),a.vnode.event.checkbox&&a.vnode.event.checkbox.change&&a.vnode.event.checkbox.change.call(a,t.prop("checked"))})}function i(e,i){var n=this,t=n.elements={},a={name:String,multiple:{type:[Boolean,String],default:!1},disabled:{type:[Boolean,String],default:!1},size:String,clearable:Boolean,placeholder:String,filterable:Boolean,original:Boolean};function o(){t.clickDom.removeClass("is-focuse"),g.removeClass("is-reverse"),n.isShow=!1,n.transition.hide()}n.state={inited:!1},dui.setData(e,"checkbox",i),dui.setProps(e,"checkbox",a);var l,c=n.config=y.extend(!0,{},e.vnode.props.checkbox),s=y(e).next("."+S.select),d=n.value=c.multiple?[]:"",r=n.optData=function n(e){var a=[];return y(e).children().each(function(e,i){var t={};"optgroup"===i.tagName.toLowerCase()?(t.label=y(i).attr("label"),t.type="group",0<i.children.length&&(t.childrens=n(i))):"option"===i.tagName.toLowerCase()&&(t.type="item",t.label=y(i).text(),t.value=y(i).val(),t.selected=void 0!==y(i).attr("selected"),t.disabled=void 0!==y(i).attr("disabled")),a.push(t)}),a}(e),u=n.tags=(l={},y(e).find("option").each(function(e,i){var t=y(i).text(),n=y(i).val(),a=y('<span class="dui-tag dui-tag--info dui-tag--small dui-tag--light"><span class="dui-select__tags-text">'+t+'</span><i class="dui-tag__close dui-icon-close"></i></span>')[0];a.value=n,l[n]=a}),l),p=n.optHtml=['<div class="dui-select-dropdown dui-popper'+(c.multiple?" is-multiple":"")+'" style="display:none">','<ul class="dui-select-dropdown__list">'+function t(e){var n="";return y.each(e,function(e,i){"group"==i.type?n+='<ul class="dui-select-group__wrap"><li class="dui-select-group__title">'+i.label+"</li><li>"+function(){if(i.childrens)return'<ul class="dui-select-group">'+t(i.childrens)+"</ul>"}()+"</li></ul>":"item"==i.type&&(n+='<li class="dui-select-dropdown__item'+(i.disabled?" is-disabled":"")+(i.selected?" selected":"")+'" dui-value="'+i.value+'"><span>'+i.label+"</span></li>")}),n}(r)+"</ul>",'<div x-arrow="" class="popper__arrow"></div>',"</div>"].join(" "),h=['<div class="'+S.select+(c.size?" "+S.select+"--"+c.size:"")+'">',c.multiple?'<div class="dui-select__tags"><span></span></div>':"",'<div class="dui-input'+(c.size?" dui-input--"+c.size:"")+" dui-input--suffix"+(c.disabled?" is-disabled":"")+'">','<input class="dui-input__inner dui-input--suffix"'+(c.filterable?"":' readonly="readonly"')+' placeholder="'+c.placeholder+'"'+(c.disabled?'disabled="disabled"':"")+">",'<span class="dui-input__suffix">','<span class="dui-input__suffix-inner">','<i class="dui-select__caret dui-input__icon dui-icon-arrow-up"></i>',c.clearable?'<i class="dui-select__caret dui-input__icon '+S.selectClearable+'" style="display:none"></i>':"","</span>","</span>","</div>","</div>"].join(""),f=t.original=y(e),v=t.emptyDom=y(['<p class="dui-select-dropdown__empty">无匹配数据</p>'].join("")),b=t.clickDom=y(h),m=(t.input=t.clickDom.find(".dui-input"),t.inputInner=t.clickDom.find(".dui-input__inner")),g=t.caret=t.clickDom.find(".dui-select__caret"),k=t.optDom=y(p),_=t.opts=k.find("."+S.selectOption);n.scrollbar=dui.addScrollBar(k.find(".dui-select-dropdown__list")[0],{wrapClass:"dui-select-dropdown__wrap"}),s[0]&&s.remove(),y(e).css("display","none").after(b),b.append(k),k.css("min-width",m.outerWidth());var w=b[0],x=k[0],C={top:"bottom",bottom:"top"};n.popper=dui.addPopper(w,x,{arrowOffset:35,onCreate:function(e){n.transition=dui.transition(x,{name:"dui-zoom-in-"+C[e._options.placement]})},onUpdate:function(e){n.transition.data.name="dui-zoom-in-"+C[e.placement],k.css("min-width",b.outerWidth())}}),c.multiple?f.find("option[selected]").each(function(e,i){var t=y(i).val();-1==y.inArray(t,d)&&n.value.push(t)}):f.find("option[selected]").each(function(e,i){n.value=y(i).val()}),n.setValue(),c.disabled||(dui.on(b[0],"click",function(e){e.stopPropagation(),n.isShow?o():(y("body").append(x),t.input.addClass("is-focuse"),g.addClass("is-reverse"),k.css("min-width",b.outerWidth()),n.popper.updatePopper(),n.isShow=!0,n.transition.show())}),_.on("click",function(e){var i=y(this),t=i.attr("dui-value");c.multiple?i.hasClass("selected")?n.value.splice(y.inArray(t,d),1):-1==y.inArray(t,d)&&n.value.push(t):(n.value=t,o()),n.setValue()}),y.each(u,function(i,e){dui.on(e.children[1],"click",function(e){e.stopPropagation(),n.value.splice(y.inArray(i,n.value),1),n.setValue()})}),c.clearable&&(b.hover(function(){0<n.value.length&&(b.find(".dui-icon-arrow-up").css("display","none"),b.find("."+S.selectClearable).css("display",""))},function(e){b.find(".dui-icon-arrow-up").css("display",""),b.find("."+S.selectClearable).css("display","none")}),b.find("."+S.selectClearable).on("click",function(e){e.stopPropagation(),d=n.value=c.multiple?[]:"",n.setValue()})),c.filterable&&m.on("input",function(e){var a=this.value,i=e.keyCode;if(9===i||13===i||37===i||38===i||39===i||40===i)return!1;_.each(function(e,i){var t=y(i),n=t.text();t[-1===n.indexOf(a)?"addClass":"removeClass"](S.hide)}),y(k).find(".dui-select-group__wrap").each(function(e,i){var t=y(i);t.find("."+S.selectOption+"."+S.hide).length==t.find("."+S.selectOption).length?t.addClass(S.hide):t.removeClass(S.hide)}),k.find("."+S.selectOption+"."+S.hide).length==_.length?(y(n.scrollbar.scroll).addClass("is-empty"),y(n.scrollbar.scroll).after(v)):(y(n.scrollbar.scroll).removeClass("is-empty"),v.remove())}),dui.on(document,"click",function(e){var i=y(e.target);if(t.optDom.find(i)[0]||t.optDom[0]==i[0])return!1;"none"!=t.optDom.css("display")&&o()}))}var p={form:"[dui-form]",switch:'input[type="checkbox"][dui-switch]',checkbox:'input[type="checkbox"][dui-checkbox]',radio:'input[type="radio"][dui-radio]',select:"select[dui-select]"},S={switch:"dui-switch",switchCore:"dui-switch__core",switchLabelLeft:"dui-switch__label--left",switchLabelRight:"dui-switch__label--right",checkbox:"dui-checkbox",checkboxInput:"dui-checkbox__input",radio:"dui-radio",radioInput:"dui-radio__input",radioGroup:"dui-radio-group",select:"dui-select",selectOption:"dui-select-dropdown__item",selectClearable:"dui-icon-circle-close",hide:"dui-hide"};return o.Item=o.prototype={init:function(n,e,i){(this.el=n).vnode&&delete n.vnode,dui.setData(n,"form",{rule:!1},e);return y(n).off("submit").on("submit",function(e){var i=n.vnode.data.form,t=n.vnode.event.form;return t.submit&&"function"==typeof t.submit&&t.submit.call(n,e),i.rule,!0}),i||o.render(n),this},switch:function(n,e){var a=this,o={name:{type:String,default:""},activeValue:{type:[Boolean,String,Number],default:!0},inactiveValue:{type:[Boolean,String,Number],default:!1},skin:{type:[String],default:"label-out"},value:{type:[Boolean,String,Number],default:!1},disabled:{type:Boolean,default:!1},activeText:String,inactiveText:String,activeColor:String,inactiveColor:String,clearable:{type:Boolean,default:!1},width:{type:Number,default:40}};a.el=n,a.originalValue||(a.originalValue=n.value),dui.setData(n,"switch",{},e),dui.setProps(n,"switch",o);var l=a.config=y.extend(!0,{},n.vnode.props.switch);a.template=['<div class="dui-switch'+(l.activeValue==l.value?" is-checked":"")+" "+l.skin+'">',"label-out"==l.skin&&a.config.inactiveText?'<span class="dui-switch__label dui-switch__label--left'+(l.inactiveValue==l.value?" is-active":"")+'"><span>'+l.inactiveText+"</span></span>":"",'<span class="dui-switch__core" style="width: '+l.width+"px;"+(l.activeValue==l.value?"border-color:"+l.activeColor+";background-color:"+l.activeColor+";":"border-color:"+l.inactiveColor+";background-color:"+l.inactiveColor+";")+'">'+("label-in"==l.skin?"<em>"+(l.activeValue==l.value?l.activeText:l.inactiveText)+"</em>":"")+"</span>","label-out"==l.skin&&a.config.activeText?'<span class="dui-switch__label dui-switch__label--right'+(l.activeValue==l.value?" is-active":"")+'"><span>'+l.activeText+"</span></span>":"","</div>"].join(""),y(n).prop("checked",!0);var c=a.$showDom=y(a.template),i=y(n).next("."+S.switch);return i[0]&&(n.value=a.originalValue)&&i.remove(),y(n).after(c),dui.on(c[0],"click",function(e){if(!l.disabled){var i=y(a.el),t=i.val();dui.convertProp(t,o.value.type)==a.config.activeValue?(i.val(a.config.inactiveValue),c.removeClass("is-checked"),c.find("."+S.switchLabelLeft).addClass("is-active"),c.find("."+S.switchLabelRight).removeClass("is-active"),"label-in"==l.skin&&c.find("."+S.switchCore).find("em").text(l.inactiveText),c.find("."+S.switchCore).css("background",l.inactiveColor),c.find("."+S.switchCore).css("border-color",l.inactiveColor)):(i.val(a.config.activeValue),c.addClass("is-checked"),c.find("."+S.switchLabelLeft).removeClass("is-active"),c.find("."+S.switchLabelRight).addClass("is-active"),"label-in"==l.skin&&c.find("."+S.switchCore).find("em").text(l.activeText),c.find("."+S.switchCore).css("background",l.activeColor),c.find("."+S.switchCore).css("border-color",l.activeColor)),i[0]&&i.change&&i.change(),n.vnode.event.switch&&n.vnode.event.switch.change&&n.vnode.event.switch.change.call(n,i.val())}}),a},checkbox:e,radio:function(t,e){var i=this,n={name:String,value:{type:[Boolean,Number,String],default:""},label:{type:[Boolean,Number,String],default:""},bordered:Boolean,disabled:{type:[Boolean,String],default:!1},buttoned:Boolean,checked:{type:[Boolean,String],default:!1}};dui.setData(t,"checkbox",{},e),dui.setProps(t,"checkbox",n);var a=i.config=y.extend(!0,{},t.vnode.props.checkbox),o=0<y(t).parents("."+S.radioGroup).length?y(t).parents("."+S.radioGroup):y(t).parents(p.form),l=a.buttoned?"is-active":"is-checked",c=1==o.find(p.radio+'[name="'+a.name+'"][checked]').length&&a.checked?" "+l:(y(t).prop("checked",!1),y(t).removeAttr("checked"),""),s=i.template=['<div class="dui-radio'+(a.buttoned?"-button":"")+(a.bordered?" is-bordered":"")+(c?" "+l:"")+(a.disabled?" is-disabled":"")+'">',a.buttoned?"":'<span class="dui-radio__input'+(c?" is-checked":"")+(a.disabled?" is-disabled":"")+'">','<span class="dui-radio'+(a.buttoned?"-button":"")+'__inner">'+(a.buttoned?a.label:"")+"</span>",a.buttoned?"":"</span>",a.buttoned?"":'<span class="dui-radio__label">'+a.label+"</span>","</div>"].join(""),d=i.$showDom=y(s),r="."+S.radio+(a.buttoned?"-button":"")+"__inner",u=y(t).prev(r);u[0]&&u.parents("."+S.radio).after(t)&&u.parents("."+S.radio).remove(),y(t).after(d)&&d.find(r).after(t),d.on("click",function(e){if(!a.disabled){var i=y(t);!1===i.prop("checked")&&(o.find(p.radio+'[name="'+a.name+'"]').prop("checked",!1),i.prop("checked",!0),o.find(p.radio+'[name="'+a.name+'"]').parents("."+S.radio+(a.buttoned?"-button":"")).removeClass(l),"is-checked"==l&&o.find(p.radio+'[name="'+a.name+'"]').parents("."+S.radioInput).removeClass(l),d.addClass(l),"is-checked"==l&&i.parents("."+S.radioInput).addClass(l),i[0]&&i.change&&i.change(),t.vnode.event.radio&&t.vnode.event.radio.change&&t.vnode.event.radio.change.call(t,i.prop("checked")))}})},select:i},o.render=function(e,i,t,n){t=t?'[dui-filter="'+t+'"]':"";var a={switch:function(){y(e).find(p.switch+t).each(function(e,i){i.switchClass=new o.Item.switch(i,n)})},checkbox:function(){y(e).find(p.checkbox).each(function(e,i){i.checkboxClass=new o.Item.checkbox(i,n)})},radio:function(){y(e).find(p.radio).each(function(e,i){i.radioClass=new o.Item.radio(i,n)})},select:function(){y(e).find(p.select).each(function(e,i){i.selectClass=new o.Item.select(i,n)})}};e.vnode&&new o.Item.init(e,{},!0),i?a[i]&&a[i]():y.each(a,function(e,i){i()})},o.init=function(e,t){e=e?'[dui-filter="'+e+'"]':"";var i=y(p.form+e),n=[];return i.each(function(e,i){n.push(new o.Item.init(i,t))}),1<n.length?n:n[0]},i.prototype.setValue=function(e){var t=this,i=t.config,n=t.elements,a=n.optDom.find("."+S.selectOption),o=n.clickDom.find(".dui-select__tags>span");if(e&&(t.value=e),0==t.value.length?(n.inputInner.val(""),n.original.val(null),i.multiple&&n.inputInner.attr("placeholder",i.placeholder)):(n.original.val(t.value),i.multiple&&n.inputInner.attr("placeholder","")),o.html(""),a.removeClass("selected"),i.multiple){y.each(t.value,function(e,i){n.optDom.find("."+S.selectOption+'[dui-value="'+i+'"]').addClass("selected"),o.append(t.tags[i])});var l=parseFloat(o.parent().outerHeight()),c=parseFloat(n.inputInner.outerHeight());c<l||36<c?n.inputInner.css("height",parseFloat(l)+6):n.inputInner.css("height","")}else{var s=n.optDom.find("."+S.selectOption+'[dui-value="'+t.value+'"]');s.addClass("selected"),n.inputInner.val(s.text())}if(t.popper.updatePopper(),t.state.inited){var d=n.original[0].vnode.event;n.original.change&&n.original.change(),d.select&&d.select.change&&"function"==typeof d.select.change&&d.select.change.call(n.original,t.value)}else t.state.inited=!0},e.prototype.setChecked=function(e){var i=this.config,t=this.el,n=y(t),a=n.parents(".dui-checkbox"),o="is-checked";"indeterminate"===e&&i.indeterminate?(n.prop("checked",!1),a.find("."+S.checkboxInput).removeClass("is-checked").addClass("is-indeterminate"),a.removeClass("is-checked"),i.buttoned||a.find("."+S.checkboxInput).removeClass("is-checked")):(!0===e?(i.indeterminate?n.prop("checked",!1):n.prop("checked",!0),a.addClass(o),i.buttoned||a.find("."+S.checkboxInput).addClass(o)):(n.prop("checked",!1),a.removeClass(o),i.buttoned||a.find("."+S.checkboxInput).removeClass(o)),i.indeterminate&&a.find("."+S.checkboxInput).removeClass("is-indeterminate"))},o.init(),o});
+(function (global, factory) {
+    typeof exports === 'object' && typeof module !== 'undefined' ? module.exports = factory(require('jquery')) :
+    typeof define === 'function' && define.amd ? define('form', ['jquery'], factory) :
+    (global = global || self, global.form = factory(global.jQuery));
+}(this, function ($) { 'use strict';
+
+    $ = $ && $.hasOwnProperty('default') ? $['default'] : $;
+
+    var form = function form(el, type, option) {
+      return new form.Item[type](el, option);
+    },
+        Switch = function Switch(el, options) {
+      var that = this,
+          props = {
+        name: {
+          type: String,
+          default: ''
+        },
+        //表单名称
+        activeValue: {
+          type: [Boolean, String, Number],
+          default: true
+        },
+        inactiveValue: {
+          type: [Boolean, String, Number],
+          default: false
+        },
+        skin: {
+          type: [String],
+          default: 'label-out'
+        },
+        value: {
+          type: [Boolean, String, Number],
+          default: false
+        },
+        //选中的值
+        disabled: {
+          type: Boolean,
+          default: false
+        },
+        //禁用
+        activeText: String,
+        inactiveText: String,
+        activeColor: String,
+        inactiveColor: String,
+        clearable: {
+          type: Boolean,
+          default: false
+        },
+        width: {
+          type: Number,
+          default: 40
+        }
+      };
+      that.el = el;
+      !that.originalValue ? that.originalValue = el.value : '';
+      dui.setData(el, 'switch', {}, options);
+      dui.setProps(el, 'switch', props);
+      var config = that.config = $.extend(true, {}, el.vnode.props.switch);
+      that.template = ['<div class="dui-switch' + function () {
+        return config.activeValue == config.value ? ' is-checked' : '';
+      }() + ' ' + config.skin + '">', function () {
+        if (config.skin == 'label-out') {
+          return that.config.inactiveText ? '<span class="dui-switch__label dui-switch__label--left' + function () {
+            return config.inactiveValue == config.value ? " is-active" : '';
+          }() + '"><span>' + config.inactiveText + '</span></span>' : '';
+        }
+
+        return '';
+      }(), '<span class="dui-switch__core" style="width: ' + config.width + 'px;' + function () {
+        return config.activeValue == config.value ? 'border-color:' + config.activeColor + ';' + 'background-color:' + config.activeColor + ';' : 'border-color:' + config.inactiveColor + ';' + 'background-color:' + config.inactiveColor + ';';
+      }() + '">' + function () {
+        if (config.skin == 'label-in') {
+          return '<em>' + function () {
+            return config.activeValue == config.value ? config.activeText : config.inactiveText;
+          }() + '</em>';
+        }
+
+        return '';
+      }() + '</span>', function () {
+        if (config.skin == 'label-out') {
+          return that.config.activeText ? '<span class="dui-switch__label dui-switch__label--right' + function () {
+            return config.activeValue == config.value ? " is-active" : '';
+          }() + '"><span>' + config.activeText + '</span></span>' : '';
+        }
+
+        return '';
+      }(), '</div>'].join(''); //设置checkbox选中
+
+      $(el).prop("checked", true); //判断是否已经渲染过了
+
+      var $dom = that.$showDom = $(that.template),
+          hasRender = $(el).next('.' + ClassName.switch); //如果已经渲染了，就移除渲染的元素
+
+      hasRender[0] && (el.value = that.originalValue) && hasRender.remove();
+      $(el).after($dom); //设置点击事件
+
+      dui.on($dom[0], 'click', function (e) {
+        if (config.disabled) {
+          return;
+        } //获取当前值
+
+
+        var othis = $(that.el),
+            value = othis.val();
+
+        if (dui.convertProp(value, props.value.type) == that.config.activeValue) {
+          //设置当前是选中
+          othis.val(that.config.inactiveValue); //设置当前没有选中
+
+          $dom.removeClass('is-checked'); //移除选中样式
+
+          $dom.find('.' + ClassName.switchLabelLeft).addClass('is-active');
+          $dom.find('.' + ClassName.switchLabelRight).removeClass('is-active');
+
+          if (config.skin == 'label-in') {
+            $dom.find('.' + ClassName.switchCore).find('em').text(config.inactiveText);
+          } //颜色
+
+
+          $dom.find('.' + ClassName.switchCore).css('background', config.inactiveColor); //颜色
+
+          $dom.find('.' + ClassName.switchCore).css('border-color', config.inactiveColor);
+        } else {
+          //设置当前是选中
+          othis.val(that.config.activeValue);
+          $dom.addClass('is-checked'); //移除选中样式
+
+          $dom.find('.' + ClassName.switchLabelLeft).removeClass('is-active');
+          $dom.find('.' + ClassName.switchLabelRight).addClass('is-active');
+
+          if (config.skin == 'label-in') {
+            $dom.find('.' + ClassName.switchCore).find('em').text(config.activeText);
+          } //颜色
+
+
+          $dom.find('.' + ClassName.switchCore).css('background', config.activeColor); //颜色
+
+          $dom.find('.' + ClassName.switchCore).css('border-color', config.activeColor);
+        } //手动回调一下
+
+
+        othis[0] && othis.change && othis.change();
+        el.vnode.event.switch && el.vnode.event.switch.change && el.vnode.event.switch.change.call(el, othis.val());
+      });
+      return that;
+    },
+        Checkbox = function Checkbox(el, options) {
+      var that = this,
+          props = {
+        name: String,
+        disabled: {
+          type: [Boolean, String],
+          default: false
+        },
+        label: String,
+        value: String,
+        bordered: Boolean,
+        indeterminate: Boolean,
+        buttoned: Boolean,
+        checked: {
+          type: [Boolean, String],
+          default: false
+        },
+        state: {
+          type: [Boolean, String],
+          default: false
+        },
+        items: String
+      };
+      dui.setData(el, 'checkbox', {}, options);
+      dui.setProps(el, 'checkbox', props);
+      that.el = el; // 配置信息
+
+      var config = that.config = $.extend(true, {}, el.vnode.props.checkbox),
+          // 模板
+      template = that.template = ['<div class="dui-checkbox' + (config.buttoned ? '-button' : '') + (config.checked ? ' is-checked' : '') + (config.disabled ? ' is-disabled' : '') + (config.bordered ? ' is-bordered' : '') + '">', config.buttoned ? '' : '<span class="dui-checkbox__input' + (config.checked ? ' is-checked' : '') + (config.disabled ? ' is-disabled' : '') + '">', '<span class="dui-checkbox' + (config.buttoned ? '-button' : '') + '__inner">' + (config.buttoned ? config.label : '') + '</span>', config.buttoned ? '' : '</span>', config.buttoned ? '' : function () {
+        return config.label ? '<span class="dui-checkbox__label">' + config.label + '</span>' : '';
+      }(), '</div>'].join(''),
+          // 显示的jquery元素
+      $showDom = that.$showDom = $(template),
+          // 当前所属的form
+      thisForm = $(el).parents(Selector.form),
+          // 赛选器
+      filter = Selector.checkbox + '[name="' + config.items + '"]',
+          // 选中样式
+      checkClass = "is-checked",
+          // 是否已经渲染过的选择器
+      hasRenderSelector = '.' + ClassName.checkbox + (config.buttoned ? '-button' : '') + '__inner',
+          // 用来判断是否已经渲染过的元素
+      hasRender = $(el).prev(hasRenderSelector); // 如果是用来做全选的则去除掉name
+
+      config.indeterminate && $(el).removeAttr('name'); // 判断是否已经渲染过,已经渲染过就删除掉
+
+      hasRender[0] && // 先把原始元素移动到显示元素的兄弟节点
+      hasRender.parents('.' + ClassName.checkbox + (config.buttoned ? '-button' : '')).after(el) && // 移除显示元素
+      hasRender.parents('.' + ClassName.checkbox + (config.buttoned ? '-button' : '')).remove(); // 插入显示元素
+
+      $(el).after($showDom) && // 隐藏原始元素
+      $showDom.find(hasRenderSelector).after(el); // 设置元素的选中状态
+
+      el.checked = config.checked && config.indeterminate !== true ? true : false; // 设置事件
+      // 如果disabled
+
+      if (config.disabled) {
+        return;
+      }
+
+      dui.on($showDom[0], 'click', function (e) {
+        // 当前被点击的对象
+        var othis = $showDom,
+            // 当前被点击的checkbox
+        thisCheckbox = $(el),
+            // 当前的选择状态
+        checked = thisCheckbox.prop('checked'); // 如果是用来当做全选的元素
+
+        if (config.indeterminate) {
+          if (othis.find('.' + ClassName.checkboxInput).hasClass('is-indeterminate')) {
+            checked = false;
+          } else {
+            if (othis.hasClass(checkClass)) {
+              checked = true;
+            } else {
+              checked = false;
+            }
+          }
+        }
+
+        that.setChecked(!checked); //手动回调一下
+
+        thisCheckbox[0] && thisCheckbox.change && thisCheckbox.change();
+        el.vnode.event.checkbox && el.vnode.event.checkbox.change && el.vnode.event.checkbox.change.call(el, thisCheckbox.prop('checked'));
+      });
+    },
+        Radio = function Radio(el, options) {
+      var that = this,
+          props = {
+        name: String,
+        value: {
+          type: [Boolean, Number, String],
+          default: ''
+        },
+        label: {
+          type: [Boolean, Number, String],
+          default: ''
+        },
+        bordered: Boolean,
+        //是否有边框
+        disabled: {
+          type: [Boolean, String],
+          default: false
+        },
+        //是否禁用
+        buttoned: Boolean,
+        //是否已按钮的样式
+        checked: {
+          type: [Boolean, String],
+          default: false
+        } //是否选中
+
+      };
+      dui.setData(el, 'checkbox', {}, options);
+      dui.setProps(el, 'checkbox', props);
+
+      var config = that.config = $.extend(true, {}, el.vnode.props.checkbox),
+          group = $(el).parents('.' + ClassName.radioGroup).length > 0 ? $(el).parents('.' + ClassName.radioGroup) : $(el).parents(Selector.form),
+          checkClass = config.buttoned ? 'is-active' : 'is-checked',
+          mrchecked = function () {
+        if (group.find(Selector.radio + '[name="' + config.name + '"][checked]').length == 1 && config.checked) {
+          return ' ' + checkClass;
+        } else {
+          $(el).prop('checked', false);
+          $(el).removeAttr('checked');
+          return '';
+        }
+      }(),
+          template = that.template = ['<div class="dui-radio' + (config.buttoned ? '-button' : '') + (config.bordered ? ' is-bordered' : '') + (mrchecked ? ' ' + checkClass : '') + (config.disabled ? ' is-disabled' : '') + '">', !config.buttoned ? '<span class="dui-radio__input' + (mrchecked ? ' is-checked' : '') + (config.disabled ? ' is-disabled' : '') + '">' : '', '<span class="dui-radio' + (config.buttoned ? '-button' : '') + '__inner">' + (config.buttoned ? config.label : '') + '</span>', !config.buttoned ? '</span>' : '', !config.buttoned ? '<span class="dui-radio__label">' + config.label + '</span>' : '', '</div>'].join(''),
+          $dom = that.$showDom = $(template),
+          hasRenderSelector = '.' + ClassName.radio + (config.buttoned ? '-button' : '') + '__inner',
+          hasRender = $(el).prev(hasRenderSelector);
+
+      hasRender[0] && hasRender.parents('.' + ClassName.radio + (config.buttoned ? '-button' : '')).after(el) && hasRender.parents('.' + ClassName.radio + (config.buttoned ? '-button' : '')).remove();
+      $(el).after($dom) && $dom.find(hasRenderSelector).after(el); //设置事件
+
+      $dom.on('click', function (e) {
+        if (config.disabled) {
+          return;
+        }
+
+        var othis = $(el),
+            thischecked = othis.prop('checked');
+
+        if (thischecked === false) {
+          //没有选中则设置选中
+          group.find(Selector.radio + '[name="' + config.name + '"]').prop('checked', false);
+          othis.prop('checked', true); //设置选中样式
+          //首先设置其他选择框为不选中
+
+          group.find(Selector.radio + '[name="' + config.name + '"]').parents('.' + ClassName.radio + (config.buttoned ? '-button' : '')).removeClass(checkClass);
+          checkClass == 'is-checked' ? group.find(Selector.radio + '[name="' + config.name + '"]').parents('.' + ClassName.radioInput).removeClass(checkClass) : ''; //然后再设置当前选择框选中
+
+          $dom.addClass(checkClass);
+          checkClass == 'is-checked' ? othis.parents('.' + ClassName.radioInput).addClass(checkClass) : ''; //手动回调一下
+
+          othis[0] && othis.change && othis.change();
+          el.vnode.event.radio && el.vnode.event.radio.change && el.vnode.event.radio.change.call(el, othis.prop('checked'));
+        }
+      });
+    },
+        Select = function Select(el, options) {
+      var that = this,
+          elements = that.elements = {},
+          props = {
+        name: String,
+        //表单提交名
+        multiple: {
+          type: [Boolean, String],
+          default: false
+        },
+        //多选
+        disabled: {
+          type: [Boolean, String],
+          default: false
+        },
+        //是否禁用
+        size: String,
+        //大小
+        clearable: Boolean,
+        //是否有清除按钮
+        placeholder: String,
+        //没有选中的显示值
+        filterable: Boolean,
+        //是否允许搜索
+        original: Boolean //是否原始
+
+      };
+      that.state = {
+        inited: false
+      };
+      dui.setData(el, 'checkbox', options);
+      dui.setProps(el, 'checkbox', props);
+
+      var config = that.config = $.extend(true, {}, el.vnode.props.checkbox),
+          hasRender = $(el).next('.' + ClassName.select),
+          getOptData = function getOptData(elem) {
+        var res = [];
+        var childrens = $(elem).children();
+        childrens.each(function (i, opt) {
+          var item = {};
+
+          if (opt.tagName.toLowerCase() === 'optgroup') {
+            item.label = $(opt).attr('label');
+            item.type = 'group';
+
+            if (opt.children.length > 0) {
+              item.childrens = getOptData(opt);
+            }
+          } else if (opt.tagName.toLowerCase() === 'option') {
+            item.type = 'item';
+            item.label = $(opt).text();
+            item.value = $(opt).val();
+            item.selected = typeof $(opt).attr('selected') !== "undefined" ? true : false;
+            item.disabled = typeof $(opt).attr('disabled') !== "undefined" ? true : false;
+          }
+
+          res.push(item);
+        });
+        return res;
+      },
+          getOptHtml = function getOptHtml(data) {
+        var returnHtml = '';
+        $.each(data, function (i, item) {
+          if (item.type == 'group') {
+            returnHtml += '<ul class="dui-select-group__wrap"><li class="dui-select-group__title">' + item.label + '</li><li>' + function () {
+              if (item.childrens) {
+                return '<ul class="dui-select-group">' + getOptHtml(item.childrens) + '</ul>';
+              }
+            }() + '</li></ul>';
+          } else if (item.type == 'item') {
+            returnHtml += '<li class="dui-select-dropdown__item' + (item.disabled ? ' is-disabled' : '') + (item.selected ? ' selected' : '') + '" dui-value="' + item.value + '"><span>' + item.label + '</span></li>';
+          }
+        });
+        return returnHtml;
+      },
+          getAlltag = function getAlltag() {
+        var tags = {};
+        $(el).find('option').each(function (i, opt) {
+          var title = $(opt).text(),
+              val = $(opt).val(); //添加元素到tagdom
+
+          var thisTag = $('<span class="dui-tag dui-tag--info dui-tag--small dui-tag--light">' + '<span class="dui-select__tags-text">' + title + '</span>' + '<i class="dui-tag__close dui-icon-close"></i>' + '</span>')[0];
+          thisTag.value = val;
+          tags[val] = thisTag;
+        });
+        return tags;
+      },
+          show = function show() {
+        $('body').append(pop); // 设置input的focuse状态
+
+        elements.input.addClass('is-focuse'); // 给选项角标添加样式
+
+        caret.addClass('is-reverse'); // 设置弹出框的宽度
+
+        optDom.css('min-width', clickDom.outerWidth()); // 手动修改一下
+
+        that.popper.updatePopper(); // 设置当前的显示状态
+
+        that.isShow = true; // 显示元素方法
+
+        that.transition.show();
+      },
+          hide = function hide() {
+        // 取消input的focuse状态
+        elements.clickDom.removeClass('is-focuse'); // 给选项角标添加样式
+
+        caret.removeClass('is-reverse'); // 设置当前的显示状态
+
+        that.isShow = false; // 隐藏元素方法
+
+        that.transition.hide();
+      },
+          value = that.value = config.multiple ? [] : '',
+          optData = that.optData = getOptData(el),
+          tags = that.tags = getAlltag(),
+          optHtml = that.optHtml = ['<div class="dui-select-dropdown dui-popper' + (config.multiple ? ' is-multiple' : '') + '" style="display:none">', '<ul class="dui-select-dropdown__list">' + getOptHtml(optData) + '</ul>', '<div x-arrow="" class="popper__arrow"></div>', '</div>'].join(' '),
+          clickHtml = ['<div class="' + ClassName.select + (config.size ? ' ' + ClassName.select + '--' + config.size : '') + '">', // 是否有多选
+      config.multiple ? '<div class="dui-select__tags"><span></span></div>' : '', '<div class="dui-input' + (config.size ? ' dui-input--' + config.size : '') + ' dui-input--suffix' + (config.disabled ? ' is-disabled' : '') + '">', '<input class="dui-input__inner dui-input--suffix"' + (!config.filterable ? ' readonly="readonly"' : '') + ' placeholder="' + config.placeholder + '"' + (config.disabled ? 'disabled="disabled"' : '') + '>', // 显示箭头按钮
+      '<span class="dui-input__suffix">', '<span class="dui-input__suffix-inner">', '<i class="dui-select__caret dui-input__icon dui-icon-arrow-up"></i>', //清除按钮
+      config.clearable ? '<i class="dui-select__caret dui-input__icon ' + ClassName.selectClearable + '" style="display:none"></i>' : '', '</span>', '</span>', '</div>', '</div>'].join(''),
+          // 原始的元素 select
+      original = elements.original = $(el),
+          // 没有option显示
+      emptyDom = elements.emptyDom = $(['<p class="dui-select-dropdown__empty">' + '无匹配数据' + '</p>'].join('')),
+          // 点击元素
+      clickDom = elements.clickDom = $(clickHtml),
+          // 输入框外部元素
+      input = elements.input = elements.clickDom.find('.dui-input'),
+          // 输入框内部元素
+      inputInner = elements.inputInner = elements.clickDom.find('.dui-input__inner'),
+          // caret元素
+      caret = elements.caret = elements.clickDom.find('.dui-select__caret'),
+          // popper显示元素
+      optDom = elements.optDom = $(optHtml),
+          // 选项元素
+      opts = elements.opts = optDom.find('.' + ClassName.selectOption); // 给选项添加滚动条
+
+
+      that.scrollbar = dui.addScrollBar(optDom.find('.dui-select-dropdown__list')[0], {
+        wrapClass: 'dui-select-dropdown__wrap'
+      }); // 添加显示元素
+
+      hasRender[0] && hasRender.remove();
+      $(el).css('display', 'none').after(clickDom); // 添加选项元素
+
+      clickDom.append(optDom);
+      optDom.css('min-width', inputInner.outerWidth()); // 设置popper
+
+      var ref = clickDom[0],
+          pop = optDom[0];
+      var x = {
+        top: 'bottom',
+        'bottom': 'top'
+      };
+      that.popper = dui.addPopper(ref, pop, {
+        arrowOffset: 35,
+        onCreate: function onCreate(data) {
+          that.transition = dui.transition(pop, {
+            name: 'dui-zoom-in-' + x[data._options.placement]
+          });
+        },
+        onUpdate: function onUpdate(data) {
+          that.transition.data.name = 'dui-zoom-in-' + x[data.placement];
+          optDom.css('min-width', clickDom.outerWidth());
+        }
+      }); // 设置默认值
+
+      if (config.multiple) {
+        //多选
+        original.find('option[selected]').each(function (i, slt) {
+          var val = $(slt).val();
+
+          if ($.inArray(val, value) == -1) {
+            that.value.push(val);
+          }
+        });
+      } else {
+        //单选
+        original.find('option[selected]').each(function (i, slt) {
+          that.value = $(slt).val();
+        });
+      }
+
+      that.setValue();
+      if (config.disabled) return; // 设置事件
+
+      dui.on(clickDom[0], 'click', function (e) {
+        e.stopPropagation();
+
+        if (that.isShow) {
+          hide();
+        } else {
+          show();
+        }
+      }); // 设置选项点击事件
+
+      opts.on('click', function (e) {
+        var othis = $(this),
+            val = othis.attr('dui-value');
+
+        if (config.multiple) {
+          if (othis.hasClass('selected')) {
+            that.value.splice($.inArray(val, value), 1);
+          } else {
+            if ($.inArray(val, value) == -1) {
+              that.value.push(val);
+            }
+          }
+        } else {
+          that.value = val; // 关闭选项显示页面
+
+          hide();
+        }
+
+        that.setValue();
+      }); // 设置tag的关闭事件
+
+      $.each(tags, function (v, tag) {
+        dui.on(tag.children[1], 'click', function (e) {
+          e.stopPropagation();
+          that.value.splice($.inArray(v, that.value), 1);
+          that.setValue();
+        });
+      }); // 设置显示清除按钮和点击事件
+
+      if (config.clearable) {
+        clickDom.hover(function () {
+          if (that.value.length > 0) {
+            clickDom.find('.dui-icon-arrow-up').css('display', 'none');
+            clickDom.find('.' + ClassName.selectClearable).css('display', '');
+          }
+        }, function (e) {
+          clickDom.find('.dui-icon-arrow-up').css('display', '');
+          clickDom.find('.' + ClassName.selectClearable).css('display', 'none');
+        });
+        clickDom.find('.' + ClassName.selectClearable).on('click', function (e) {
+          e.stopPropagation();
+          value = that.value = config.multiple ? [] : '';
+          that.setValue();
+        });
+      } // 搜索
+
+
+      if (config.filterable) {
+        inputInner.on('input', function (e) {
+          var value = this.value,
+              keyCode = e.keyCode;
+
+          if (keyCode === 9 || keyCode === 13 || keyCode === 37 || keyCode === 38 || keyCode === 39 || keyCode === 40) {
+            return false;
+          } // 判断是否存在选项
+
+
+          opts.each(function (i, opt) {
+            var othis = $(opt),
+                text = othis.text(),
+                isNot = text.indexOf(value) === -1; // 设置样式
+
+            othis[isNot ? 'addClass' : 'removeClass'](ClassName.hide);
+          }); // 如果有group的情况下
+
+          $(optDom).find('.dui-select-group__wrap').each(function (i, group) {
+            var othis = $(group); //判断选项和隐藏选项是否一样多是则隐藏自己，否则就显示
+
+            if (othis.find('.' + ClassName.selectOption + '.' + ClassName.hide).length == othis.find('.' + ClassName.selectOption).length) {
+              othis.addClass(ClassName.hide);
+            } else {
+              othis.removeClass(ClassName.hide);
+            }
+          }); // 判断没有选项个数和总体个数
+          // 搜索后的隐藏个数
+
+          var hideNum = optDom.find('.' + ClassName.selectOption + '.' + ClassName.hide).length; // 如果隐藏个数等于总个数
+
+          if (hideNum == opts.length) {
+            $(that.scrollbar.scroll).addClass('is-empty');
+            $(that.scrollbar.scroll).after(emptyDom);
+          } else {
+            $(that.scrollbar.scroll).removeClass('is-empty');
+            emptyDom.remove();
+          }
+        });
+      } // 给docment设置点击的时候关闭
+
+
+      dui.on(document, 'click', function (e) {
+        var othis = $(e.target); //不是当前元素
+
+        if (elements.optDom.find(othis)[0] || elements.optDom[0] == othis[0]) {
+          return false;
+        }
+
+        elements.optDom.css('display') != 'none' && hide();
+      });
+    },
+        Selector = {
+      form: '[dui-form]',
+      switch: 'input[type="checkbox"][dui-switch]',
+      checkbox: 'input[type="checkbox"][dui-checkbox]',
+      radio: 'input[type="radio"][dui-radio]',
+      select: 'select[dui-select]'
+    },
+        ClassName = {
+      switch: 'dui-switch',
+      switchCore: 'dui-switch__core',
+      switchLabelLeft: 'dui-switch__label--left',
+      switchLabelRight: 'dui-switch__label--right',
+      checkbox: 'dui-checkbox',
+      checkboxInput: 'dui-checkbox__input',
+      radio: 'dui-radio',
+      radioInput: 'dui-radio__input',
+      radioGroup: 'dui-radio-group',
+      select: 'dui-select',
+      selectOption: 'dui-select-dropdown__item',
+      selectClearable: 'dui-icon-circle-close',
+      hide: 'dui-hide'
+    };
+
+    form.Item = form.prototype = {
+      //初始化form
+      init: function init(el, options, rendered) {
+        var that = this;
+        that.el = el;
+
+        if (el.vnode) {
+          delete el.vnode;
+        }
+
+        dui.setData(el, 'form', {
+          rule: false
+        }, options);
+
+        var submit = function submit(e) {
+          var data = el.vnode.data.form;
+          var event = el.vnode.event.form;
+
+          if (event['submit'] && typeof event['submit'] === "function") {
+            event['submit'].call(el, e);
+          }
+
+          if (!data.rule) ;
+
+          return true;
+        }; // dui.off(el,'submit') && dui.on(el,'submit',submit);
+
+
+        $(el).off('submit').on('submit', submit); //初始化元素
+
+        !rendered ? form.render(el) : '';
+        return that;
+      },
+      switch: Switch,
+      checkbox: Checkbox,
+      radio: Radio,
+      select: Select
+    };
+
+    form.render = function (el, type, filter, options) {
+      var filter = filter ? '[dui-filter="' + filter + '"]' : '',
+          Item = {
+        switch: function _switch() {
+          $(el).find(Selector.switch + filter).each(function (i, swc) {
+            swc.switchClass = new form.Item.switch(swc, options);
+          });
+        },
+        checkbox: function checkbox() {
+          $(el).find(Selector.checkbox + filter).each(function (i, cbx) {
+            cbx.checkboxClass = new form.Item.checkbox(cbx, options);
+          });
+        },
+        radio: function radio() {
+          $(el).find(Selector.radio + filter).each(function (i, rdo) {
+            rdo.radioClass = new form.Item.radio(rdo, options);
+          });
+        },
+        select: function select() {
+          $(el).find(Selector.select + filter).each(function (i, slt) {
+            slt.selectClass = new form.Item.select(slt, options);
+          });
+        }
+      };
+      el.vnode ? new form.Item.init(el, {}, true) : '';
+      type ? Item[type] && Item[type]() : $.each(Item, function (key, item) {
+        item();
+      });
+    };
+
+    form.init = function (filter, options) {
+      var filter = filter ? '[dui-filter="' + filter + '"]' : '',
+          forms = $(Selector.form + filter);
+      var list = [];
+      forms.each(function (i, item) {
+        list.push(new form.Item.init(item, options));
+      });
+
+      if (list.length > 1) {
+        return list;
+      } else {
+        return list[0];
+      }
+    };
+
+    Select.prototype.setValue = function (data) {
+      var that = this,
+          config = that.config,
+          elements = that.elements,
+          opts = elements.optDom.find('.' + ClassName.selectOption),
+          tagdom = elements.clickDom.find('.dui-select__tags>span');
+      if (data) that.value = data;
+
+      if (that.value.length == 0) {
+        // 没有设置值
+        elements.inputInner.val(''), elements.original.val(null);
+        config.multiple && elements.inputInner.attr('placeholder', config.placeholder);
+      } else {
+        // 有值
+        elements.original.val(that.value);
+
+        if (config.multiple) {
+          elements.inputInner.attr('placeholder', '');
+        }
+      } // 清空tag样式
+
+
+      tagdom.html(''); // 清除选中样式
+
+      opts.removeClass('selected'); // 设置样式
+
+      if (config.multiple) {
+        //多选
+        $.each(that.value, function (i, v) {
+          var selOpt = elements.optDom.find('.' + ClassName.selectOption + '[dui-value="' + v + '"]');
+          selOpt.addClass('selected'); //设置tag
+
+          tagdom.append(that.tags[v]);
+        });
+        var tagHeight = parseFloat(tagdom.parent().outerHeight()),
+            inputInnerHeight = parseFloat(elements.inputInner.outerHeight()); // 设置文本框的高度
+
+        if (tagHeight > inputInnerHeight || inputInnerHeight > 36) {
+          elements.inputInner.css('height', parseFloat(tagHeight) + 6);
+        } else {
+          elements.inputInner.css('height', '');
+        }
+      } else {
+        //单选
+        var selOpt = elements.optDom.find('.' + ClassName.selectOption + '[dui-value="' + that.value + '"]');
+        selOpt.addClass('selected');
+        elements.inputInner.val(selOpt.text());
+      } // 跟新一下popper
+
+
+      that.popper.updatePopper(); // 设置回调函数
+
+      if (that.state.inited) {
+        var events = elements.original[0].vnode.event;
+        elements.original.change && elements.original.change();
+        events.select && events.select.change && typeof events.select.change === "function" && events.select.change.call(elements.original, that.value);
+      } else {
+        that.state.inited = true;
+      }
+    };
+
+    Checkbox.prototype.setChecked = function (checked) {
+      var that = this,
+          config = that.config,
+          el = that.el;
+      var thisCheckbox = $(el),
+          othis = thisCheckbox.parents('.dui-checkbox'),
+          checkClass = "is-checked";
+
+      if (checked === 'indeterminate' && config.indeterminate) {
+        thisCheckbox.prop('checked', false);
+        othis.find('.' + ClassName.checkboxInput).removeClass('is-checked').addClass('is-indeterminate');
+        othis.removeClass('is-checked');
+        !config.buttoned && othis.find('.' + ClassName.checkboxInput).removeClass('is-checked');
+      } else if (checked === true) {
+        //设置选中
+        !config.indeterminate ? thisCheckbox.prop('checked', true) : thisCheckbox.prop('checked', false);
+        othis.addClass(checkClass);
+        !config.buttoned && othis.find('.' + ClassName.checkboxInput).addClass(checkClass);
+        config.indeterminate && othis.find('.' + ClassName.checkboxInput).removeClass('is-indeterminate');
+      } else {
+        //设置不选中
+        thisCheckbox.prop('checked', false);
+        othis.removeClass(checkClass);
+        !config.buttoned && othis.find('.' + ClassName.checkboxInput).removeClass(checkClass);
+        config.indeterminate && othis.find('.' + ClassName.checkboxInput).removeClass('is-indeterminate');
+      }
+    };
+
+    form.init();
+
+    return form;
+
+}));

@@ -19,11 +19,6 @@ use app\common\builder\Dbuilder;
  */
 class Config extends Common{
     /**
-     * 顶部按钮配置
-     * @var array
-     */
-    protected $top_buttons=['add','enable','disable','delete'];
-    /**
      * 右侧操作按钮
      * @var array
      */
@@ -32,7 +27,7 @@ class Config extends Common{
      * 顶部搜索信息
      * @var array
      */
-    protected $search_info = ['name','title'];
+    protected $search = ['field','title'];
     /**
      * 首页
      * @return void
@@ -48,8 +43,19 @@ class Config extends Common{
             $item['title']=$title;
             $item['name'] = $name;
             $item['href'] = strtolower((string)url('index',['group'=>$name]));
-            $this->group_info[] = $item;
+            $this->group_list[] = $item;
         }
+        // 设置顶部按钮
+        $this->top_buttons = [
+            'add'=>[
+                'param'=>[
+                    'group'=>$this->group_curr
+                ]
+            ],
+            'enable',
+            'disable',
+            'delete'
+        ];
         return call_user_func(array('parent', __FUNCTION__));
     }
 }

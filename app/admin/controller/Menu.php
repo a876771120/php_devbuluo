@@ -21,16 +21,6 @@ use app\admin\model\Menu as MenuModel;
  */
 class Menu extends Common{
     /**
-     * 顶部按钮配置
-     * @var array
-     */
-    protected $top_buttons=['add','enable','disable','delete'];
-    /**
-     * 右侧操作按钮
-     * @var array
-     */
-    protected $right_buttons = ['edit','enable','disable','delete'];
-    /**
      * 不显示选择框
      * @var boolean
      */
@@ -39,7 +29,7 @@ class Menu extends Common{
      * 是否是树形table
      * @var array
      */
-    protected $table_tree =[
+    protected $tree_table =[
         'expandColumn'=>"title",//折叠图标显示在哪个列
     ];
 
@@ -62,6 +52,49 @@ class Menu extends Common{
             $item['href'] = strtolower((string)url('index',['group'=>$name]));
             $this->group_list[] = $item;
         }
+        // 设置顶部按钮
+        $this->top_buttons = [
+            'add'=>[
+                'param'=>[
+                    'group'=>$this->group_curr
+                ]
+            ],
+        ];
+        $this->right_buttons = [
+            'add'=>[
+                'title'=>'新增子菜单',
+                'jump'=>'',
+                'jump-mode'=>'_pop',
+                'href'=>urldecode((string)url('add',['group'=>$this->group_curr,'pid'=>'{{$thistablepk}}']))
+            ],
+            'edit',
+            'enable',
+            'disable',
+            'delete'
+        ];
         return call_user_func(array('parent', __FUNCTION__));
+    }
+    /**
+     * 添加
+     * @return void
+     */
+    public function add(){
+        if($this->request->isPost()){
+            $this->group_curr = input('app');
+            return call_user_func(array('parent', __FUNCTION__));
+        }
+        return call_user_func(array('parent', __FUNCTION__));
+    }
+    /**
+     * 修改
+     * @param integer $id
+     * @return void
+     */
+    public function edit($id = 0){
+        if($this->request->isPost()){
+            $this->group_curr = input('app');
+            return call_user_func(array('parent', __FUNCTION__),$id);
+        }
+        return call_user_func(array('parent', __FUNCTION__),$id);
     }
 }

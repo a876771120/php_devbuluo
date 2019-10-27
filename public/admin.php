@@ -11,7 +11,6 @@
 
 // [ 后台入口文件 ]
 namespace think;
-
 require __DIR__ . '/../vendor/autoload.php';
 
 // 定义后台入口文件
