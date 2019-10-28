@@ -89,7 +89,7 @@ class MultiApp
         $scriptName = $this->getScriptName();
         $defaultApp = $this->app->config->get('app.default_app', 'index');
         $admin = explode('.',$this->app->config->get('app.admin_entrance_file'))[0];
-        if ($this->name || !in_array($scriptName,['inde',$admin])) {
+        if ($this->name || !in_array($scriptName,['index',$admin])) {
             $appName = $this->name ?: $scriptName;
             $this->app->http->setBind();
         } else {

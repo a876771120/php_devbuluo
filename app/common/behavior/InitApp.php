@@ -18,7 +18,9 @@ class initApp{
         // 获取当前访问的文件
         $base_file  = Request::baseFile();
         // 配置使用默认的app
-        $defualt_layer = ['admin','common','index'];
+        $defualt_layer = ['admin','common','index','api'];
+        // 写入配置
+        config(['defualt_layer'=>$defualt_layer],'route');
         // 获取当前访问的应用，控制器，方法
         $path_array = explode('/',Request::pathinfo());
         // 当前访问的应用

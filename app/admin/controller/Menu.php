@@ -31,6 +31,7 @@ class Menu extends Common{
      */
     protected $tree_table =[
         'expandColumn'=>"title",//折叠图标显示在哪个列
+        'expandAll'=>true
     ];
 
     /**

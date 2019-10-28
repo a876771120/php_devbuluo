@@ -49,6 +49,9 @@ class Index extends Base{
                 'list'=>[
                     'filter'=>true,
                     'width'=>260
+                ],
+                'form'=>[
+                    'tips'=>'如：member/user/login，即为访问member(应用)/user(控制器)/login(方法)'
                 ]
             ],
             'group_hash'=>[

@@ -9,5 +9,3 @@
 // | Author: liu21st <liu21st@gmail.com>
 // +----------------------------------------------------------------------
 use think\facade\Route;
-
-Route::get('api/5ce78d450636c',"app\\member\\controller\\api\\Index@index");
