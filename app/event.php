@@ -5,7 +5,7 @@ return [
     ],
 
     'listen'    => [
-        'AppInit'  => ['app\\common\\behavior\\InitApp',],
+        'AppInit'  => [],
         'HttpRun'  => [],
         'HttpEnd'  => [],
         'LogLevel' => [],

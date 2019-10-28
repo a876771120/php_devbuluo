@@ -8,5 +8,5 @@ return [
     // Session初始化
     \think\middleware\SessionInit::class,
     // 初始化自定义配置文件
-    app\common\middleware\LoadConfig::class,
+    app\common\middleware\Config::class,
 ];
