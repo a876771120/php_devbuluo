@@ -12,12 +12,19 @@ namespace app\api\controller\admin;
 
 use app\common\builder\Dbuilder;
 use app\admin\controller\Common;
+use think\Exception;
 /**
  * 配置管理控制器
  * @package app\api\controller\admin
  * @author 刘勤 <876771120@qq.com>
  */
 class Index extends Common{
+    /**
+     * 右侧按钮
+     *
+     * @var array
+     */
+    protected $right_buttons=['edit','enable','disable','delete'];
     /**
      * 是否显示多选
      * @var boolean
@@ -33,31 +40,15 @@ class Index extends Common{
             return call_user_func(array('parent', __FUNCTION__));          
         }
         $this->top_buttons=[
-            'add',
-            'route'=>[
+            'add'=>[
+                'jump-mode'     => '_pjax',
+            ],
+            'refresh'=>[
                 'title'         => '刷新路由',
                 'class'         => 'dui-button dui-button--warning confirm',
                 'jump'          => '',
-                'href'          => (string)url('route'),
+                'href'          => (string)url('refresh'),
                 'jump-mode'     => '_ajax',
-            ],
-            'delete'
-        ];
-        $this->right_buttons=[
-            'edit',
-            'request'=>[
-                'title'         => '请求参数',
-                'class'         => 'dui-button dui-button--mini dui-button--success',
-                'jump'          => '',
-                'href'          => urldecode((string)url('api/field/request',['hash'=>"{{hash}}"])),
-                'jump-mode'     => '_pjax',
-            ],
-            'response'=>[
-                'title'         => '返回参数',
-                'class'         => 'dui-button dui-button--mini dui-button--warning',
-                'jump'          => '',
-                'href'          => urldecode((string)url('api/field/response',['hash'=>"{{hash}}"])),
-                'jump-mode'     => '_pjax',
             ],
             'delete'
         ];
@@ -68,7 +59,34 @@ class Index extends Common{
      * @return void
      * @author 刘勤 <876771120@qq.com>
      */
-    public function route(){
-
+    public function refresh(){
+        // 路由路径
+        $tplPath = app()->getBasePath().'api/data/Api.tpl';
+        // 路由模板路径
+        $apiRoutePath = app()->getRootPath().'route/api/Api.php';
+        // 支持的请求方式
+        $methodArr = ['*', 'POST', 'GET', 'PUT', 'DELETE', 'HEAD'];
+        // 获取模板内容
+        $tplStr = file_get_contents($tplPath);
+        // 获取所有的接口
+        $listInfo = $this->loadModel()->where('state','=',1)->select();
+        // 路由字符串
+        $routeStr = [];
+        // 组装路由字符串
+        foreach ($listInfo as &$rule) {
+            // 解析url
+            try {
+                list($app,$controller,$action) = explode('/',$rule['api_class']);
+            } catch (Exception $th) {
+                // 如果报错则表示没有输入应用则使用api应用
+                $app = 'api';
+                list($controller,$action) = explode('/',$rule['api_class']);
+            }
+            array_push($routeStr, "Route::rule('".addslashes($rule['hash'])."','app\\".$app."\\controller\\interface\\".$controller."@".$action."','".$methodArr[$rule['method']]."')->middleware(['ApiPermission','ApiAuth','ApiRequest','ApiLog']);");
+        }
+        $routeStr = str_replace('{$API_RULE}',implode(PHP_EOL,$routeStr),$tplStr);
+        // 写入路由文件
+        file_put_contents($apiRoutePath, $routeStr);
+        $this->success('路由刷新成功');
     }
 }

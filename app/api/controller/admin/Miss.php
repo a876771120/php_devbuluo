@@ -8,14 +8,17 @@
 // +----------------------------------------------------------------------
 // | 开源协议 ( http://www.apache.org/licenses/LICENSE-2.0 )
 // +----------------------------------------------------------------------
-namespace app\api\controller;
-use app\admin\controller\Common;
-use app\common\builder\Dbuilder;
-/**
- * 配置管理控制器
- * @package app\api\controller
- * @author 刘勤 <876771120@qq.com>
- */
-class App extends Common{
-    
+namespace app\api\controller\admin;
+use app\common\controller\Base;
+
+class Miss extends Base{
+    /**
+     * 没有路由的情况
+     * @return void
+     */
+    public function index(){
+        return view(app()->getBasePath().'/admin/view/public/error.html')->assign([
+            
+        ]);
+    }
 }

@@ -8,14 +8,7 @@
 // +----------------------------------------------------------------------
 // | 开源协议 ( http://www.apache.org/licenses/LICENSE-2.0 )
 // +----------------------------------------------------------------------
-namespace app\api\controller;
-use app\admin\controller\Common;
-use app\common\builder\Dbuilder;
-/**
- * 配置管理控制器
- * @package app\api\controller
- * @author 刘勤 <876771120@qq.com>
- */
-class Fields extends Common{
-    
-}
+use think\facade\Route;
+//MISS路由定义
+Route::miss('Miss/index');
+Route::rule('5db5c20c9abaa','app\api\controller\interface\publics@getAccessToken','POST')->middleware(['ApiPermission','ApiAuth','ApiRequest','ApiLog']);

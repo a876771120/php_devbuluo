@@ -1,12 +1,14 @@
 <?php
 // +----------------------------------------------------------------------
-// | ThinkPHP [ WE CAN DO IT JUST THINK ]
+// | devbuluo [ 基于thinkphp6框架 ]
 // +----------------------------------------------------------------------
-// | Copyright (c) 2006~2018 http://thinkphp.cn All rights reserved.
+// | 版权所有 2017~2020 devbuluo [ http://www.devbuluo.com ]
 // +----------------------------------------------------------------------
-// | Licensed ( http://www.apache.org/licenses/LICENSE-2.0 )
+// | 官方网站: http://www.devbuluo.com
 // +----------------------------------------------------------------------
-// | Author: liu21st <liu21st@gmail.com>
+// | 开源协议 ( http://www.apache.org/licenses/LICENSE-2.0 )
 // +----------------------------------------------------------------------
 use think\facade\Route;
-Route::get('5ce78d450636c',"app\\member\\controller\\api\\Index@index");
+//MISS路由定义
+Route::miss('Miss/index');
+{$API_RULE}

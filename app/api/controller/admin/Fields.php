@@ -16,6 +16,6 @@ use app\common\builder\Dbuilder;
  * @package app\api\controller\admin
  * @author 刘勤 <876771120@qq.com>
  */
-class Field extends Common{
+class Fields extends Common{
     
 }

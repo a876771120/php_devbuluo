@@ -8,28 +8,37 @@
 // +----------------------------------------------------------------------
 // | 开源协议 ( http://www.apache.org/licenses/LICENSE-2.0 )
 // +----------------------------------------------------------------------
-namespace app\api\controller;
-use app\admin\controller\Common;
-use app\common\builder\Dbuilder;
+declare(strict_types=1);
+namespace app\api\middleware;
+use think\App;
+use app\Request;
 /**
- * 配置管理控制器
- * @package app\api\controller
+ * api权限验证
+ * @package app\common\middleware
  * @author 刘勤 <876771120@qq.com>
  */
-class Group extends Common{
+class Log{
     /**
-     * 右侧操作按钮
-     * @var array
+     * 应用实例
+     * @var App
      */
-    protected $top_buttons = ['add','enable','disable','delete'];
+    protected $app;
     /**
-     * 右侧操作按钮
-     * @var array
+     * 初始化
+     * @param \think\App $app
+     * @author 刘勤 <876771120@qq.com>
      */
-    protected $right_buttons = ['edit','enable','disable','delete'];
+    public function __construct(App $app){
+        $this->app = $app;
+    }
     /**
-     * 顶部搜索信息
-     * @var array
+     * 处理请求
+     *
+     * @param Request $request
+     * @param \Closure $next
+     * @return Response
      */
-    protected $search = ['name','description'];
+    public function handle(Request $request, \Closure $next){
+        return $next($request);
+    }
 }
