@@ -92,8 +92,11 @@ class Index extends Base{
                         'type'=>'enum',
                         'options'=>[
                             '0'=>'不限',
-                            '1'=>'post',
-                            '2'=>'get'
+                            '1'=>'POST',
+                            '2'=>'GET',
+                            '3'=>'PUT',
+                            '4'=>'DELETE',
+                            '5'=>'HEAD'
                         ]
                     ]
                 ],
@@ -101,8 +104,11 @@ class Index extends Base{
                     'template'=>'select',
                     'options'=>[
                         '0'=>'不限',
-                        '1'=>'post',
-                        '2'=>'get'
+                        '1'=>'POST',
+                        '2'=>'GET',
+                        '3'=>'PUT',
+                        '4'=>'DELETE',
+                        '5'=>'HEAD'
                     ],
                     'value'=>0
                 ]
@@ -156,7 +162,13 @@ class Index extends Base{
                 ],
                 'form'=>[
                     'template'=>'switch',
-                    'options'=>['active-value'=>1,'inactive-value'=>0],
+                    'options'=>[
+                        '1'=>'启用',
+                        '2'=>'维护',
+                        '3'=>'开发',
+                        '4'=>'测试',
+                        '5'=>'BUG',
+                    ],
                     'value'=>1,
                 ]
             ],

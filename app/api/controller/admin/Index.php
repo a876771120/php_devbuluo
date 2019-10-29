@@ -55,6 +55,19 @@ class Index extends Common{
         return call_user_func(array('parent', __FUNCTION__));
     }
     /**
+     * 添加方法
+     * @return void
+     */
+    public function add(){
+        $this->model = $this->loadModel();
+        if($this->request->isPost()){
+
+        }
+        
+        $formItems = array_column($this->model->getFromItems(), null, 'field');
+        return view()->assign(['formItems'=>$formItems]);
+    }
+    /**
      * 刷新路由操作
      * @return void
      * @author 刘勤 <876771120@qq.com>
@@ -69,11 +82,11 @@ class Index extends Common{
         // 获取模板内容
         $tplStr = file_get_contents($tplPath);
         // 获取所有的接口
-        $listInfo = $this->loadModel()->where('state','=',1)->select();
+        $listInfo = $this->loadModel()->where('state','=',1)->column('api_class,method','hash');
         // 路由字符串
         $routeStr = [];
         // 组装路由字符串
-        foreach ($listInfo as &$rule) {
+        foreach ($listInfo as $hash=>&$rule) {
             // 解析url
             try {
                 list($app,$controller,$action) = explode('/',$rule['api_class']);
@@ -82,7 +95,7 @@ class Index extends Common{
                 $app = 'api';
                 list($controller,$action) = explode('/',$rule['api_class']);
             }
-            array_push($routeStr, "Route::rule('".addslashes($rule['hash'])."','app\\".$app."\\controller\\interface\\".$controller."@".$action."','".$methodArr[$rule['method']]."')->middleware(['ApiPermission','ApiAuth','ApiRequest','ApiLog']);");
+            array_push($routeStr, "Route::rule('".addslashes($hash)."','app\\".$app."\\controller\\interface\\".$controller."@".$action."','".$methodArr[$rule['method']]."')->middleware(['ApiPermission','ApiAuth','ApiRequest','ApiLog']);");
         }
         $routeStr = str_replace('{$API_RULE}',implode(PHP_EOL,$routeStr),$tplStr);
         // 写入路由文件

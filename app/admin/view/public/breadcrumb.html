@@ -1,14 +1,19 @@
-<div class="dui-breadcrumb">
-    {volist name="_location" id="breadcrumb"}
-    {if $key<4}
-    <span class="dui-breadcrumb__item">
-        {if $key==count($_location)-2 && count($_location)==4}
-        <a href="{:url($breadcrumb['url_value'])}" class="dui-breadcrumb__inner is-link">{$breadcrumb.title}</a>
+<div class="dui-admin__tool">
+    <div class="dui-breadcrumb">
+        {if count($_location)>=4}
+        <button class="dui-button dui-button--default breadcrumb-return" onclick="javascript:history.back(-1);return false;"><i class="dui-icon-back"></i> 返回{$_location[2]['title']}</button>
+        <button class="dui-button dui-button--primary dui-button--small" jump jump-form="api_index_add" type="submit">提交</button>
         {else/}
-        <span class="dui-breadcrumb__inner">{$breadcrumb.title}</span>
+        {volist name="_location" id="breadcrumb"}
+        <span class="dui-breadcrumb__item">
+            {if $key==count($_location)-2 && count($_location)==4}
+            <a href="{:url($breadcrumb['url_value'])}" class="dui-breadcrumb__inner is-link">{$breadcrumb.title}</a>
+            {else/}
+            <span class="dui-breadcrumb__inner">{$breadcrumb.title}</span>
+            {/if}
+            <span class="dui-breadcrumb__separator">/</span>
+        </span>
+        {/volist}
         {/if}
-        <span class="dui-breadcrumb__separator">/</span>
-    </span>
-    {/if}
-    {/volist}
+    </div>
 </div>
