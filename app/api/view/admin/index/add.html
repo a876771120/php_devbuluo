@@ -17,7 +17,7 @@
 }
 [name=state]+
 .dui-select{
-    width: 150px;
+    width: 120px;
 }
 [name=method]+
 .dui-select{
@@ -27,8 +27,46 @@
 .dui-select >input{
     text-align: center;
 }
+.dui-tabs__header{
+    background: #f5f7fa;
+}
+.dui-form--label-top
+.dui-form-item__label{
+    width: auto;
+    padding: 0px;
+}
+.dui-form--label-top
+.dui-form-item__content{
+    margin: 0px;
+}
+.dui-table td,
+.dui-table th{
+    padding: 5px 0;
+}
+.dui-table td .cell{
+    font-size: 13px;
+    height: auto;
+    line-height: normal;
+}
+.dui-table td .cell input{
+    border-color: transparent;
+    padding: 0 5px;
+}
+.dui-table td .cell input:hover{
+    border-color: #c0c4cc;
+}
+.dui-table td .cell input:focus{
+    border-color: #409eff;
+}
+.dui-table th{
+    background: #f5f7fa;
+}
+.dui-table--enable-row-hover
+tbody tr:hover td{
+    background: #f5f7fa;
+}
 </style>
-<form class="dui-form" dui-form method="POST" name="" id="api_index_add" action="{:url('add')}">
+<form class="dui-form" dui-form method="POST" name="" id="api_form" action="{:url('add')}">
     <div class="dui-card">
         <div class="dui-card__body">
             <div class="dui-form-item">
@@ -66,6 +104,10 @@
                                 selected="selected"
                                 {/if}>{$option}</option>
                                 {/volist}
+                                <option value="1">1111</option>
+                                <option value="1">1111</option>
+                                <option value="1">1111</option>
+                                <option value="1">1111</option>
                             </select>
                         </div>
                         <input type="text" class="dui-input__inner" name="hash" readonly="readonly" value="{$formItems['hash']['value']}">
@@ -93,17 +135,104 @@
     <div class="dui-tabs dui-tabs__card" dui-tabs style="margin-top: 15px;">
         <div class="dui-tabs__header">
             <div class="dui-tabs__nav">
-                <div class="dui-tabs__item is-active">请求头部</div>
-                <div class="dui-tabs__item">请求参数</div>
+                <div class="dui-tabs__item">请求头部</div>
+                <div class="dui-tabs__item is-active">请求参数</div>
                 <div class="dui-tabs__item">权限验证</div>
             </div>
         </div>
         <div class="dui-tabs__content">
-            <div class="dui-tabs__panel is-active">
+            <div class="dui-tabs__panel">
                 第一个
             </div>
-            <div class="dui-tabs__panel">
-                第二个
+            <div class="dui-tabs__panel is-active">
+                <div class="request_type">
+                    <div class="dui-radio-group">
+                        <input type="radio" dui-radio name="request_type" value="0" label="Form-data" checked="checked" buttoned="true">
+                        <input type="radio" dui-radio name="request_type" value="1" label="JSON" buttoned="true">
+                    </div>
+                    <div id="request-json">
+                        <div class="json_type dui-form--label-top">
+                            <div class="dui-form-item">
+                                <label class="dui-form-item__label">JSON根类型：</label>
+                                <div class="dui-form-item__content">
+                                    <select dui-select placeholder="请选择状态" name="state">
+                                        {volist name="formItems['state']['options']" id="option"}
+                                        <option value="{$key}" {if (string)$key==(string)$formItems['state']['value']}
+                                        selected="selected"
+                                        {/if}>{$option}</option>
+                                        {/volist}
+                                    </select>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="dui-table dui-table--border dui-table--enable-row-hover">
+                            <table cellspacing="0" cellpadding="0" border="0" width="100%">
+                                <thead>
+                                    <tr>
+                                        <th width="55"><div class="cell"></div></th>
+                                        <th width="300"><div class="cell">参数名</div></th>
+                                        <th width="150"><div class="cell">类型</div></th>
+                                        <th width="80"><div class="cell"><input type="checkbox" dui-checkbox name="requiredAll" value="1" label="必填" checked="checked"></div></th>
+                                        <th><div class="cell">说明</div></th>
+                                        <th><div class="cell">示例</div></th>
+                                        <th width="250"><div class="cell">操作</div></th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr>
+                                        <td><div class="cell">添加</div></td>
+                                        <td>
+                                            <div class="cell">
+                                                <div class="dui-input dui-input--mini">
+                                                    <input type="text" class="dui-input__inner dui-table__input" id="addRow" placeholder="参数名">
+                                                </div>
+                                            </div>
+                                        </td>
+                                        <td><div class="cell"></div></td>
+                                        <td><div class="cell"></div></td>
+                                        <td><div class="cell"></div></td>
+                                        <td><div class="cell"></div></td>
+                                        <td><div class="cell"></div></td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                    <div id="request-form">
+                        <div class="dui-table dui-table--border dui-table--enable-row-hover">
+                            <table cellspacing="0" cellpadding="0" border="0" width="100%">
+                                <thead>
+                                    <tr>
+                                        <th width="55"><div class="cell"></div></th>
+                                        <th width="300"><div class="cell">参数名</div></th>
+                                        <th width="150"><div class="cell">类型</div></th>
+                                        <th width="80"><div class="cell"><input type="checkbox" dui-checkbox name="requiredAll" value="1" label="必填" checked="checked"></div></th>
+                                        <th><div class="cell">说明</div></th>
+                                        <th><div class="cell">示例</div></th>
+                                        <th width="250"><div class="cell">操作</div></th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr>
+                                        <td><div class="cell">添加</div></td>
+                                        <td>
+                                            <div class="cell">
+                                                <div class="dui-input dui-input--mini">
+                                                    <input type="text" class="dui-input__inner dui-table__input" id="addRow" placeholder="参数名">
+                                                </div>
+                                            </div>
+                                        </td>
+                                        <td><div class="cell"></div></td>
+                                        <td><div class="cell"></div></td>
+                                        <td><div class="cell"></div></td>
+                                        <td><div class="cell"></div></td>
+                                        <td><div class="cell"></div></td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
             </div>
             <div class="dui-tabs__panel">
                 第三个
@@ -144,8 +273,8 @@
     </div>
 </form>
 <script>
-dui.use(['buildform'],function(buildform){
-    buildform.render(document.getElementById('api_index_add'));
+dui.use(['apiform'],function(ApiForm){
+    ApiForm.render(document.getElementById('api_form'));
 })
 </script>
 {/block}
