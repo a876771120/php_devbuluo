@@ -2,14 +2,123 @@
     typeof exports === 'object' && typeof module !== 'undefined' ? module.exports = factory(require('jquery')) :
     typeof define === 'function' && define.amd ? define('form', ['jquery'], factory) :
     (global = global || self, global.form = factory(global.jQuery));
-}(this, function ($) { 'use strict';
+}(this, (function ($) { 'use strict';
 
     $ = $ && $.hasOwnProperty('default') ? $['default'] : $;
 
-    var form = function form(el, type, option) {
-      return new form.Item[type](el, option);
+    var FORM_NODE = '[dui-form]',
+        INIT_FORM = '[dui-init]',
+        SWITCH = '[dui-switch]',
+        CHECKBOX = '[dui-checkbox]',
+        RADIO = '[dui-radio]',
+        SELECT = '[dui-select]',
+        // 提交验证方法
+    submit = function submit(e) {
+      var othis = $(this);
+      console.log(othis.serialize());
+      return false;
     },
-        Switch = function Switch(el, options) {
+        $doc = $(document);
+
+    function form(el, type, only) {
+      return form.render(el, type, only);
+    }
+    /**
+     * 自动渲染
+     */
+
+
+    form.init = function () {
+      var $forms = $(FORM_NODE + INIT_FORM);
+      $.each($forms, function (i, item) {
+        form.render(item);
+      });
+    };
+    /**
+     * 手动触发验证
+     */
+
+
+    form.submit = function (el) {};
+    /**
+     * 渲染表单
+     */
+
+
+    form.render = function (el, type, only) {
+      var $form = $(el ? el : FORM_NODE);
+      var items = {
+        switch: function _switch() {
+          if (only && only.nodeType) {
+            only.Switch = new Switch(only);
+          } else {
+            $form.find(SWITCH).each(function (i, swc) {
+              swc.Switch = new Switch(swc);
+            });
+          }
+        },
+        checkbox: function checkbox() {
+          if (only && only.nodeType) {
+            only.checkbox = new _checkbox(only);
+          } else {
+            $form.find(CHECKBOX).each(function (i, cbx) {
+              cbx.checkbox = new _checkbox(cbx);
+            });
+          }
+        },
+        radio: function radio() {
+          if (only && only.nodeType) {
+            only.radio = new _radio(only);
+          } else {
+            $form.find(RADIO).each(function (i, rdo) {
+              rdo.radio = new _radio(rdo);
+            });
+          }
+        },
+        select: function select() {
+          if (only && only.nodeType) {
+            only.select = new _select(only);
+          } else {
+            $form.find(SELECT).each(function (i, slt) {
+              slt.select = new _select(slt);
+            });
+          }
+        }
+      };
+      type ? items[type] && items[type]() : $.each(items, function (i, item) {
+        item();
+      }); // 重置表单验证
+
+      $form.on('reset', $form, function () {
+        form.render();
+      }); // 监听当前提交的表单
+
+      $form.off('submit', submit).on('submit', submit);
+    };
+    /**
+     * switch的方法
+     */
+
+
+    form.switch = function (el, options) {
+      return new Switch(el, options);
+    };
+    /**
+     * checkbox初始化方法
+     */
+
+
+    form.checkbox = function (el, options) {
+      return new _checkbox(el, options);
+    };
+    /**
+     * 开关渲染函数
+     * @param {Element} el 要初始化的元素
+     * @param {Object} options 初始化参数
+     */
+
+
+    function Switch(el, options) {
       var that = this,
           props = {
         name: {
@@ -29,6 +138,10 @@
           type: [String],
           default: 'label-out'
         },
+        checked: {
+          type: Boolean,
+          default: false
+        },
         value: {
           type: [Boolean, String, Number],
           default: false
@@ -43,25 +156,31 @@
         inactiveText: String,
         activeColor: String,
         inactiveColor: String,
-        clearable: {
-          type: Boolean,
-          default: false
-        },
         width: {
           type: Number,
           default: 40
         }
-      };
-      that.el = el;
-      !that.originalValue ? that.originalValue = el.value : '';
-      dui.setData(el, 'switch', {}, options);
-      dui.setProps(el, 'switch', props);
-      var config = that.config = $.extend(true, {}, el.vnode.props.switch);
-      that.template = ['<div class="dui-switch' + function () {
+      }; // 设置信息
+
+      var setting = that.setting = {
+        SELECTOR: '[dui-switch]',
+        CLASS: 'dui-switch',
+        LABEL_LEFT: '.dui-switch__label--left',
+        LABEL_RIGHT: '.dui-switch__label--right',
+        CORE: '.dui-switch__core'
+      }; // 设置原始元素
+
+      that.original = el; // 原始的value值
+
+      !that.originalValue ? that.originalValue = el.value : ''; // 获取配置信息
+
+      var config = that.config = dui.getProps(el, props); // 设置模板
+
+      var template = that.template = ['<div class="dui-switch' + function () {
         return config.activeValue == config.value ? ' is-checked' : '';
       }() + ' ' + config.skin + '">', function () {
         if (config.skin == 'label-out') {
-          return that.config.inactiveText ? '<span class="dui-switch__label dui-switch__label--left' + function () {
+          return config.inactiveText ? '<span class="dui-switch__label dui-switch__label--left' + function () {
             return config.inactiveValue == config.value ? " is-active" : '';
           }() + '"><span>' + config.inactiveText + '</span></span>' : '';
         }
@@ -79,73 +198,90 @@
         return '';
       }() + '</span>', function () {
         if (config.skin == 'label-out') {
-          return that.config.activeText ? '<span class="dui-switch__label dui-switch__label--right' + function () {
+          return config.activeText ? '<span class="dui-switch__label dui-switch__label--right' + function () {
             return config.activeValue == config.value ? " is-active" : '';
           }() + '"><span>' + config.activeText + '</span></span>' : '';
         }
 
         return '';
-      }(), '</div>'].join(''); //设置checkbox选中
+      }(), '</div>'].join(''); // 设置为选中状态
 
-      $(el).prop("checked", true); //判断是否已经渲染过了
+      $(el).prop('checked', true); // 设置显示元素
 
-      var $dom = that.$showDom = $(that.template),
-          hasRender = $(el).next('.' + ClassName.switch); //如果已经渲染了，就移除渲染的元素
+      var $elem = that.$elem = $(template),
+          // 获取已经渲染了的元素
+      hasRender = $(el).next('.' + setting.CLASS); // 如果已经渲染了，就移除渲染的元素,还原默认值
 
-      hasRender[0] && (el.value = that.originalValue) && hasRender.remove();
-      $(el).after($dom); //设置点击事件
+      hasRender[0] && (el.value = that.originalValue) && (config.checked == false ? $(el).prop('checked', false) : '') && hasRender.remove(); // 添加显示元素在页面
 
-      dui.on($dom[0], 'click', function (e) {
-        if (config.disabled) {
-          return;
-        } //获取当前值
+      $(el).after($elem); // 设置点击事件
 
+      $elem.on('click', function (e) {
+        // 如果被禁用
+        if (config.disabled) return false; // 如果设置有beforeChange
 
-        var othis = $(that.el),
+        if (el.events && el.events.beforeChange) {
+          dui.trigger.call(el, 'beforeChange', done);
+        } else {
+          done();
+        }
+      }); // 设置完整函数
+
+      function done() {
+        //获取当前值
+        var othis = $(el),
             value = othis.val();
 
         if (dui.convertProp(value, props.value.type) == that.config.activeValue) {
           //设置当前是选中
           othis.val(that.config.inactiveValue); //设置当前没有选中
 
-          $dom.removeClass('is-checked'); //移除选中样式
+          $elem.removeClass('is-checked'); //移除选中样式
 
-          $dom.find('.' + ClassName.switchLabelLeft).addClass('is-active');
-          $dom.find('.' + ClassName.switchLabelRight).removeClass('is-active');
+          $elem.find(setting.LABEL_LEFT).addClass('is-active');
+          $elem.find(setting.LABEL_RIGHT).removeClass('is-active');
 
           if (config.skin == 'label-in') {
-            $dom.find('.' + ClassName.switchCore).find('em').text(config.inactiveText);
+            $elem.find(setting.CORE).find('em').text(config.inactiveText);
           } //颜色
 
 
-          $dom.find('.' + ClassName.switchCore).css('background', config.inactiveColor); //颜色
+          $elem.find(setting.CORE).css('background', config.inactiveColor); //颜色
 
-          $dom.find('.' + ClassName.switchCore).css('border-color', config.inactiveColor);
+          $elem.find(setting.CORE).css('border-color', config.inactiveColor);
         } else {
           //设置当前是选中
           othis.val(that.config.activeValue);
-          $dom.addClass('is-checked'); //移除选中样式
+          $elem.addClass('is-checked'); //移除选中样式
 
-          $dom.find('.' + ClassName.switchLabelLeft).removeClass('is-active');
-          $dom.find('.' + ClassName.switchLabelRight).addClass('is-active');
+          $elem.find(setting.LABEL_LEFT).removeClass('is-active');
+          $elem.find(setting.LABEL_RIGHT).addClass('is-active');
 
           if (config.skin == 'label-in') {
-            $dom.find('.' + ClassName.switchCore).find('em').text(config.activeText);
+            $elem.find(setting.CORE).find('em').text(config.activeText);
           } //颜色
 
 
-          $dom.find('.' + ClassName.switchCore).css('background', config.activeColor); //颜色
+          $elem.find(setting.CORE).css('background', config.activeColor); //颜色
 
-          $dom.find('.' + ClassName.switchCore).css('border-color', config.activeColor);
+          $elem.find(setting.CORE).css('border-color', config.activeColor);
         } //手动回调一下
 
 
         othis[0] && othis.change && othis.change();
-        el.vnode.event.switch && el.vnode.event.switch.change && el.vnode.event.switch.change.call(el, othis.val());
-      });
+        el.events && el.events.beforeChange && dui.trigger.call(el, 'change', done);
+      }
+
       return that;
-    },
-        Checkbox = function Checkbox(el, options) {
+    }
+    /**
+     * 多选框渲染函数
+     * @param {Element} el 要初始化的元素
+     * @param {Object} options 初始化参数
+     */
+
+
+    function _checkbox(el, options) {
       var that = this,
           props = {
         name: String,
@@ -162,77 +298,215 @@
           type: [Boolean, String],
           default: false
         },
-        state: {
-          type: [Boolean, String],
-          default: false
-        },
         items: String
-      };
-      dui.setData(el, 'checkbox', {}, options);
-      dui.setProps(el, 'checkbox', props);
-      that.el = el; // 配置信息
-
-      var config = that.config = $.extend(true, {}, el.vnode.props.checkbox),
+      },
+          // 配置信息
+      config = that.config = $.extend(true, {}, dui.getProps(el, props)),
+          // 选中的样式
+      CHECKED = 'is-checked',
+          // 元素的样式
+      CLASS = 'dui-checkbox' + (config.buttoned ? '-button' : ''),
+          // 核心输入框
+      COREINPUT = 'dui-checkbox' + (config.buttoned ? '-button' : '') + '__input',
+          // 全选按钮，但是子元素没有全选的样式
+      INDETERMINATE = 'is-indeterminate',
+          // 是否已经渲染过的选择器
+      RENDERCLASS = '.' + CLASS + '__inner',
+          // 原始元素
+      $original = that.$original = $(el),
+          // 当前选中状态
+      currentChecked = config.checked = $(el).prop('checked'),
           // 模板
       template = that.template = ['<div class="dui-checkbox' + (config.buttoned ? '-button' : '') + (config.checked ? ' is-checked' : '') + (config.disabled ? ' is-disabled' : '') + (config.bordered ? ' is-bordered' : '') + '">', config.buttoned ? '' : '<span class="dui-checkbox__input' + (config.checked ? ' is-checked' : '') + (config.disabled ? ' is-disabled' : '') + '">', '<span class="dui-checkbox' + (config.buttoned ? '-button' : '') + '__inner">' + (config.buttoned ? config.label : '') + '</span>', config.buttoned ? '' : '</span>', config.buttoned ? '' : function () {
         return config.label ? '<span class="dui-checkbox__label">' + config.label + '</span>' : '';
       }(), '</div>'].join(''),
-          // 显示的jquery元素
-      $showDom = that.$showDom = $(template),
-          // 当前所属的form
-      thisForm = $(el).parents(Selector.form),
-          // 赛选器
-      filter = Selector.checkbox + '[name="' + config.items + '"]',
-          // 选中样式
-      checkClass = "is-checked",
-          // 是否已经渲染过的选择器
-      hasRenderSelector = '.' + ClassName.checkbox + (config.buttoned ? '-button' : '') + '__inner',
+          // 显示样式元素
+      $elem = that.$elem = $(template),
           // 用来判断是否已经渲染过的元素
-      hasRender = $(el).prev(hasRenderSelector); // 如果是用来做全选的则去除掉name
-
-      config.indeterminate && $(el).removeAttr('name'); // 判断是否已经渲染过,已经渲染过就删除掉
+      hasRender = $original.prev(RENDERCLASS); // 判断是否已经渲染过,已经渲染过就删除掉
 
       hasRender[0] && // 先把原始元素移动到显示元素的兄弟节点
-      hasRender.parents('.' + ClassName.checkbox + (config.buttoned ? '-button' : '')).after(el) && // 移除显示元素
-      hasRender.parents('.' + ClassName.checkbox + (config.buttoned ? '-button' : '')).remove(); // 插入显示元素
+      hasRender.parents('.' + CLASS).after(el) && // 移除显示元素
+      hasRender.parents('.' + CLASS).remove(); // 插入显示元素
 
-      $(el).after($showDom) && // 隐藏原始元素
-      $showDom.find(hasRenderSelector).after(el); // 设置元素的选中状态
+      $original.after($elem) && // 隐藏原始元素
+      $elem.find(RENDERCLASS).after(el); // 设置当前组的全选按钮
 
-      el.checked = config.checked && config.indeterminate !== true ? true : false; // 设置事件
-      // 如果disabled
+      if (config.indeterminate) {
+        // 删除掉name属性
+        $original.attr('name', ''); // 设置全选的控制
 
-      if (config.disabled) {
-        return;
-      }
+        that.groupAll(true);
+      } // 设置事件
+      // 如果禁用则没有任何事件
 
-      dui.on($showDom[0], 'click', function (e) {
-        // 当前被点击的对象
-        var othis = $showDom,
-            // 当前被点击的checkbox
-        thisCheckbox = $(el),
-            // 当前的选择状态
-        checked = thisCheckbox.prop('checked'); // 如果是用来当做全选的元素
 
-        if (config.indeterminate) {
-          if (othis.find('.' + ClassName.checkboxInput).hasClass('is-indeterminate')) {
-            checked = false;
-          } else {
-            if (othis.hasClass(checkClass)) {
-              checked = true;
-            } else {
-              checked = false;
-            }
-          }
+      if (config.disabled) return; // 点击事件
+
+      $elem.on('click', function (e) {
+        if (el.events && el.events.beforeChange) {
+          dui.trigger.call(el, 'beforeChange', done);
+        } else {
+          done();
         }
 
-        that.setChecked(!checked); //手动回调一下
+        function done() {
+          // 当前被点击的对象
+          var othis = $elem,
+              // 核心显示框
+          $core = othis.find('.' + COREINPUT),
+              // 当前的选择状态
+          checked = $original.prop('checked');
 
-        thisCheckbox[0] && thisCheckbox.change && thisCheckbox.change();
-        el.vnode.event.checkbox && el.vnode.event.checkbox.change && el.vnode.event.checkbox.change.call(el, thisCheckbox.prop('checked'));
+          if (config.indeterminate) {
+            if ($core.hasClass(INDETERMINATE)) {
+              // 设置为选中
+              othis.addClass(CHECKED).find($core).addClass(CHECKED).removeClass(INDETERMINATE); // 设置子节点选中
+
+              that.subset(true);
+            } else if (othis.hasClass(CHECKED)) {
+              // 设置为不选中
+              othis.removeClass(CHECKED).find($core).removeClass(CHECKED).removeClass(INDETERMINATE); // 设置子节点不选中
+
+              that.subset(false);
+            } else {
+              // 设置为选中
+              othis.addClass(CHECKED).find($core).addClass(CHECKED).removeClass(INDETERMINATE); // 设置子节点选中
+
+              that.subset(true);
+            }
+          } else {
+            // 如果是选中
+            if (checked === true) {
+              // 取消选中
+              $original.prop('checked', false); // 移除选中的class
+
+              othis.removeClass(CHECKED); // 如果是按钮的显示状态
+
+              !config.buttoned && othis.find('.' + COREINPUT).removeClass(CHECKED);
+            } else {
+              // 选中操作
+              $original.prop('checked', true); // 添加选中的class
+
+              othis.addClass(CHECKED); // 如果是按钮的显示状态
+
+              !config.buttoned && othis.find('.' + COREINPUT).addClass(CHECKED);
+            }
+
+            that.groupAll(false);
+          } // 触发原始事件
+
+
+          el.change && el.change(); // 触发dui管理事件
+
+          el.events && el.events.change && dui.trigger.call(el, 'change', done);
+        }
       });
-    },
-        Radio = function Radio(el, options) {
+    }
+    /**
+     * 设置全选的样式
+     */
+
+
+    _checkbox.prototype.groupAll = function (indeterminate) {
+      var that = this,
+          config = that.config,
+          // 原始元素
+      $original = that.$original,
+          // 全选按钮，但是子元素没有全选的样式
+      INDETERMINATE = 'is-indeterminate',
+          // 选中的样式
+      CHECKED = 'is-checked',
+          // 全选样式
+      COREINPUT = '.dui-checkbox__input',
+          // 影响元素的选择器
+      GROUPCLASS = '.dui-checkbox-check-group',
+          // 选择全部的按钮
+      $elem = function () {
+        if (indeterminate === true) {
+          return that.$elem;
+        } else {
+          return that.$original.parents(GROUPCLASS).find('[indeterminate]').parents('.dui-checkbox');
+        }
+      }(),
+          // 除开全选按钮外的其他按钮
+      $allCheckbox = $original.parents(GROUPCLASS).find(CHECKBOX + ':not("[indeterminate]")'),
+          // 选中的按钮
+      $allChecked = $original.parents(GROUPCLASS).find(CHECKBOX + ':checked:not("[indeterminate]")');
+
+      if ($allCheckbox.length == $allChecked.length && $allCheckbox.length > 0) {
+        // 添加选中的class
+        $elem.addClass(CHECKED).find(COREINPUT).removeClass(INDETERMINATE).addClass(CHECKED);
+      } else if ($allChecked.length > 0) {
+        // 添加选中的class
+        $elem.removeClass(CHECKED).find(COREINPUT).addClass(INDETERMINATE).removeClass(CHECKED);
+      } else {
+        $elem.removeClass(CHECKED).find(COREINPUT).removeClass(INDETERMINATE).removeClass(CHECKED);
+      }
+    };
+    /**
+     * 子元素的样式设置
+     */
+
+
+    _checkbox.prototype.subset = function (checked) {
+      var that = this,
+          config = that.config,
+          // 选中的样式
+      CHECKED = 'is-checked',
+          CLASS = '.dui-checkbox',
+          // 元素的样式
+      BUTTONCLASS = '.dui-checkbox-button',
+          // 核心输入框
+      COREINPUT = '.dui-checkbox' + (config.buttoned ? '-button' : '') + '__input',
+          // 当前分组组样式名
+      GROUPCLASS = '.dui-checkbox-check-group',
+          // 当前操作元素
+      $elem = that.$elem,
+          // 原始元素
+      $original = that.$original,
+          // 没有选中的元素
+      $noCheckeds = $original.parents(GROUPCLASS).find(CHECKBOX + ':not(":checked"):not("[indeterminate]")'),
+          // 选中了的元素
+      $checkeds = $original.parents(GROUPCLASS).find(CHECKBOX + ':checked:not("[indeterminate]")');
+
+      if (checked == true) {
+        // 设置选中
+        $noCheckeds.each(function (i, checkbox) {
+          // 原始元素
+          var $checkbox = $(checkbox),
+              // 显示元素
+          othis = $checkbox.parents(CLASS)[0] ? $checkbox.parents(CLASS) : $checkbox.parents(BUTTONCLASS); // 设置选中
+
+          $checkbox.prop('checked', true); // 设置样式
+
+          othis.addClass(CHECKED); // 核心
+
+          !$checkbox.attr('buttoned') && othis.find(COREINPUT).addClass(CHECKED);
+        });
+      } else {
+        $checkeds.each(function (i, checkbox) {
+          // 原始元素
+          var $checkbox = $(checkbox),
+              // 显示元素
+          othis = $checkbox.parents(CLASS)[0] ? $checkbox.parents(CLASS) : $checkbox.parents(BUTTONCLASS); // 设置选中
+
+          $checkbox.prop('checked', false); // 设置样式
+
+          othis.removeClass(CHECKED); // 核心
+
+          !$checkbox.attr('buttoned') && othis.find(COREINPUT).removeClass(CHECKED);
+        });
+      }
+    };
+    /**
+     * 单选按钮渲染函数
+     * @param {Element} el 要初始化的元素
+     * @param {Object} options 初始化参数
+     */
+
+
+    function _radio(el, options) {
       var that = this,
           props = {
         name: String,
@@ -258,58 +532,105 @@
           default: false
         } //是否选中
 
-      };
-      dui.setData(el, 'checkbox', {}, options);
-      dui.setProps(el, 'checkbox', props);
-
-      var config = that.config = $.extend(true, {}, el.vnode.props.checkbox),
-          group = $(el).parents('.' + ClassName.radioGroup).length > 0 ? $(el).parents('.' + ClassName.radioGroup) : $(el).parents(Selector.form),
-          checkClass = config.buttoned ? 'is-active' : 'is-checked',
-          mrchecked = function () {
-        if (group.find(Selector.radio + '[name="' + config.name + '"][checked]').length == 1 && config.checked) {
-          return ' ' + checkClass;
+      },
+          // 配置信息
+      config = that.config = $.extend(true, {}, dui.getProps(el, props)),
+          // 原始元素
+      $original = that.$original = $(el),
+          // 显示元素选择器
+      CLASS = 'dui-radio' + (config.buttoned ? '-button' : ''),
+          // 核心样式选择器
+      COREINPUT = CLASS + '__input',
+          // 组选择器
+      GROUPCLASS = '.dui-radio-group',
+          // 选中样式
+      CHECKED = config.buttoned ? 'is-active' : 'is-checked',
+          // 获取当前分组元素
+      group = $original.parents(GROUPCLASS).length > 0 ? $original.parents(GROUPCLASS) : $original.parents(FORM_NODE),
+          // 是否已经渲染过的选择器
+      RENDERCLASS = '.' + CLASS + '__inner',
+          // 获取当前选中样式
+      mrchecked = function () {
+        if ($original.is(':checked')) {
+          return ' ' + CHECKED;
         } else {
-          $(el).prop('checked', false);
-          $(el).removeAttr('checked');
           return '';
         }
       }(),
-          template = that.template = ['<div class="dui-radio' + (config.buttoned ? '-button' : '') + (config.bordered ? ' is-bordered' : '') + (mrchecked ? ' ' + checkClass : '') + (config.disabled ? ' is-disabled' : '') + '">', !config.buttoned ? '<span class="dui-radio__input' + (mrchecked ? ' is-checked' : '') + (config.disabled ? ' is-disabled' : '') + '">' : '', '<span class="dui-radio' + (config.buttoned ? '-button' : '') + '__inner">' + (config.buttoned ? config.label : '') + '</span>', !config.buttoned ? '</span>' : '', !config.buttoned ? '<span class="dui-radio__label">' + config.label + '</span>' : '', '</div>'].join(''),
-          $dom = that.$showDom = $(template),
-          hasRenderSelector = '.' + ClassName.radio + (config.buttoned ? '-button' : '') + '__inner',
-          hasRender = $(el).prev(hasRenderSelector);
+          // 模板
+      template = that.template = ['<div class="dui-radio' + (config.buttoned ? '-button' : '') + (config.bordered ? ' is-bordered' : '') + (mrchecked ? ' ' + CHECKED : '') + (config.disabled ? ' is-disabled' : '') + '">', !config.buttoned ? '<span class="dui-radio__input' + (mrchecked ? ' is-checked' : '') + (config.disabled ? ' is-disabled' : '') + '">' : '', '<span class="dui-radio' + (config.buttoned ? '-button' : '') + '__inner">' + (config.buttoned ? config.label : '') + '</span>', !config.buttoned ? '</span>' : '', !config.buttoned ? '<span class="dui-radio__label">' + config.label + '</span>' : '', '</div>'].join(''),
+          // 显示样式元素
+      $elem = that.$elem = $(template),
+          // 用来判断是否已经渲染过的元素
+      hasRender = $original.prev(RENDERCLASS); // 判断是否已经渲染过,已经渲染过就删除掉
 
-      hasRender[0] && hasRender.parents('.' + ClassName.radio + (config.buttoned ? '-button' : '')).after(el) && hasRender.parents('.' + ClassName.radio + (config.buttoned ? '-button' : '')).remove();
-      $(el).after($dom) && $dom.find(hasRenderSelector).after(el); //设置事件
 
-      $dom.on('click', function (e) {
-        if (config.disabled) {
-          return;
+      hasRender[0] && // 先把原始元素移动到显示元素的兄弟节点
+      hasRender.parents('.' + CLASS).after(el) && // 移除显示元素
+      hasRender.parents('.' + CLASS).remove(); // 插入显示元素
+
+      $original.after($elem) && // 隐藏原始元素
+      $elem.find(RENDERCLASS).after(el); // 设置事件
+      // 如果禁用则没有任何事件
+
+      if (config.disabled) return; // 点击事件
+
+      $elem.on('click', function (e) {
+        if (el.events && el.events.beforeChange) {
+          dui.trigger.call(el, 'beforeChange', done);
+        } else {
+          done();
         }
 
-        var othis = $(el),
-            thischecked = othis.prop('checked');
+        function done() {
+          // 当前被点击的对象
+          var othis = $elem,
+              // 核心显示框
+          $core = othis.find('.' + COREINPUT),
+              // 当前的选择状态
+          checked = $original.prop('checked'); // 如果当前按钮没有被选中则设置选中
 
-        if (thischecked === false) {
-          //没有选中则设置选中
-          group.find(Selector.radio + '[name="' + config.name + '"]').prop('checked', false);
-          othis.prop('checked', true); //设置选中样式
-          //首先设置其他选择框为不选中
+          if (checked == false) {
+            // 其他的元素
+            var other = group.find('[name="' + config.name + '"]:checked'),
+                otherElem = other.parents('.dui-radio')[0] ? other.parents('.dui-radio') : other.parents('.dui-radio-button'),
+                OTHERCHECKCLASS,
+                otherCore = function () {
+              if (otherElem.hasClass('dui-radio')) {
+                OTHERCHECKCLASS = 'is-checked';
+                return otherElem.find('.dui-radio__input');
+              } else {
+                OTHERCHECKCLASS = 'is-active';
+                return otherElem.find('.dui-radio-button__input');
+              }
+            }(); // 设置样式
 
-          group.find(Selector.radio + '[name="' + config.name + '"]').parents('.' + ClassName.radio + (config.buttoned ? '-button' : '')).removeClass(checkClass);
-          checkClass == 'is-checked' ? group.find(Selector.radio + '[name="' + config.name + '"]').parents('.' + ClassName.radioInput).removeClass(checkClass) : ''; //然后再设置当前选择框选中
 
-          $dom.addClass(checkClass);
-          checkClass == 'is-checked' ? othis.parents('.' + ClassName.radioInput).addClass(checkClass) : ''; //手动回调一下
+            otherElem.removeClass(OTHERCHECKCLASS) && otherCore.removeClass(OTHERCHECKCLASS); // 设置其他不选中
 
-          othis[0] && othis.change && othis.change();
-          el.vnode.event.radio && el.vnode.event.radio.change && el.vnode.event.radio.change.call(el, othis.prop('checked'));
+            other.prop('checked', false); // 设置当前状态
+
+            $original.prop('checked', true); // 设置当前选中样式
+
+            othis.addClass(CHECKED) && $core.addClass(CHECKED); // 回调事件
+            // 触发原始事件
+
+            el.change && el.change(); // 触发dui管理事件
+
+            el.events && el.events.change && dui.trigger.call(el, 'change', done);
+          }
         }
       });
-    },
-        Select = function Select(el, options) {
+    }
+    /**
+     * 下拉选择框的渲染类
+     * @param {Element} el 要初始化的元素
+     * @param {Object} options 初始化参数
+     */
+
+
+    function _select(el, options) {
       var that = this,
-          elements = that.elements = {},
           props = {
         name: String,
         //表单提交名
@@ -333,225 +654,248 @@
         //是否允许搜索
         original: Boolean //是否原始
 
-      };
-      that.state = {
-        inited: false
-      };
-      dui.setData(el, 'checkbox', options);
-      dui.setProps(el, 'checkbox', props);
-
-      var config = that.config = $.extend(true, {}, el.vnode.props.checkbox),
-          hasRender = $(el).next('.' + ClassName.select),
-          getOptData = function getOptData(elem) {
-        var res = [];
-        var childrens = $(elem).children();
-        childrens.each(function (i, opt) {
-          var item = {};
-
-          if (opt.tagName.toLowerCase() === 'optgroup') {
-            item.label = $(opt).attr('label');
-            item.type = 'group';
-
-            if (opt.children.length > 0) {
-              item.childrens = getOptData(opt);
-            }
-          } else if (opt.tagName.toLowerCase() === 'option') {
-            item.type = 'item';
-            item.label = $(opt).text();
-            item.value = $(opt).val();
-            item.selected = typeof $(opt).attr('selected') !== "undefined" ? true : false;
-            item.disabled = typeof $(opt).attr('disabled') !== "undefined" ? true : false;
-          }
-
-          res.push(item);
-        });
-        return res;
       },
-          getOptHtml = function getOptHtml(data) {
-        var returnHtml = '';
-        $.each(data, function (i, item) {
-          if (item.type == 'group') {
-            returnHtml += '<ul class="dui-select-group__wrap"><li class="dui-select-group__title">' + item.label + '</li><li>' + function () {
-              if (item.childrens) {
-                return '<ul class="dui-select-group">' + getOptHtml(item.childrens) + '</ul>';
-              }
-            }() + '</li></ul>';
-          } else if (item.type == 'item') {
-            returnHtml += '<li class="dui-select-dropdown__item' + (item.disabled ? ' is-disabled' : '') + (item.selected ? ' selected' : '') + '" dui-value="' + item.value + '"><span>' + item.label + '</span></li>';
-          }
-        });
-        return returnHtml;
-      },
-          getAlltag = function getAlltag() {
-        var tags = {};
-        $(el).find('option').each(function (i, opt) {
-          var title = $(opt).text(),
-              val = $(opt).val(); //添加元素到tagdom
-
-          var thisTag = $('<span class="dui-tag dui-tag--info dui-tag--small dui-tag--light">' + '<span class="dui-select__tags-text">' + title + '</span>' + '<i class="dui-tag__close dui-icon-close"></i>' + '</span>')[0];
-          thisTag.value = val;
-          tags[val] = thisTag;
-        });
-        return tags;
-      },
-          show = function show() {
-        $('body').append(pop); // 设置input的focuse状态
-
-        elements.input.addClass('is-focuse'); // 给选项角标添加样式
-
-        caret.addClass('is-reverse'); // 设置弹出框的宽度
-
-        optDom.css('min-width', clickDom.outerWidth()); // 手动修改一下
-
-        that.popper.updatePopper(); // 设置当前的显示状态
-
-        that.isShow = true; // 显示元素方法
-
-        that.transition.show();
-      },
-          hide = function hide() {
-        // 取消input的focuse状态
-        elements.clickDom.removeClass('is-focuse'); // 给选项角标添加样式
-
-        caret.removeClass('is-reverse'); // 设置当前的显示状态
-
-        that.isShow = false; // 隐藏元素方法
-
-        that.transition.hide();
-      },
-          value = that.value = config.multiple ? [] : '',
-          optData = that.optData = getOptData(el),
-          tags = that.tags = getAlltag(),
-          optHtml = that.optHtml = ['<div class="dui-select-dropdown dui-popper' + (config.multiple ? ' is-multiple' : '') + '" style="display:none">', '<ul class="dui-select-dropdown__list">' + getOptHtml(optData) + '</ul>', '<div x-arrow="" class="popper__arrow"></div>', '</div>'].join(' '),
-          clickHtml = ['<div class="' + ClassName.select + (config.size ? ' ' + ClassName.select + '--' + config.size : '') + '">', // 是否有多选
+          CLASS = 'dui-select',
+          CLEARABLE = 'dui-icon-circle-close',
+          config = that.config = dui.getProps(el, props),
+          // 原始元素
+      original = that.el = el,
+          // 原始元素jquery选择
+      $original = that.$original = $(original),
+          // 是否已经有渲染元素
+      hasRender = $original.next('.' + CLASS),
+          // 当前选中的值
+      value = that.value = $original.val(),
+          // 获取选项数据
+      optData = that.getOptData(),
+          // 获取所有标签
+      $tags = that.$tags = that.getAlltag(),
+          // 获取选项显示html
+      optHtml = that.optHtml = ['<div class="dui-select-dropdown dui-popper' + (config.multiple ? ' is-multiple' : '') + '" style="display:none">', '<ul class="dui-select-dropdown__list">' + that.getOptHtml(optData) + '</ul>', '<div x-arrow="" class="popper__arrow"></div>', '</div>'].join(' '),
+          // 点击元素
+      clickHtml = ['<div class="' + CLASS + (config.size ? ' ' + CLASS + '--' + config.size : '') + '">', // 是否有多选
       config.multiple ? '<div class="dui-select__tags"><span></span></div>' : '', '<div class="dui-input' + (config.size ? ' dui-input--' + config.size : '') + ' dui-input--suffix' + (config.disabled ? ' is-disabled' : '') + '">', '<input class="dui-input__inner dui-input--suffix"' + (!config.filterable ? ' readonly="readonly"' : '') + ' placeholder="' + config.placeholder + '"' + (config.disabled ? 'disabled="disabled"' : '') + '>', // 显示箭头按钮
       '<span class="dui-input__suffix">', '<span class="dui-input__suffix-inner">', '<i class="dui-select__caret dui-input__icon dui-icon-arrow-up"></i>', //清除按钮
-      config.clearable ? '<i class="dui-select__caret dui-input__icon ' + ClassName.selectClearable + '" style="display:none"></i>' : '', '</span>', '</span>', '</div>', '</div>'].join(''),
-          // 原始的元素 select
-      original = elements.original = $(el),
-          // 没有option显示
-      emptyDom = elements.emptyDom = $(['<p class="dui-select-dropdown__empty">' + '无匹配数据' + '</p>'].join('')),
-          // 点击元素
-      clickDom = elements.clickDom = $(clickHtml),
-          // 输入框外部元素
-      input = elements.input = elements.clickDom.find('.dui-input'),
-          // 输入框内部元素
-      inputInner = elements.inputInner = elements.clickDom.find('.dui-input__inner'),
-          // caret元素
-      caret = elements.caret = elements.clickDom.find('.dui-select__caret'),
-          // popper显示元素
-      optDom = elements.optDom = $(optHtml),
-          // 选项元素
-      opts = elements.opts = optDom.find('.' + ClassName.selectOption); // 给选项添加滚动条
+      config.clearable ? '<i class="dui-select__caret dui-input__icon ' + CLEARABLE + '" style="display:none"></i>' : '', '</span>', '</span>', '</div>', '</div>'].join(''),
+          // 没有任何内容的显示元素
+      $emptyDom = that.$emptyDom = $(['<p class="dui-select-dropdown__empty">' + '无匹配数据' + '</p>'].join('')),
+          // 触发点击的元素
+      $clickDom = that.$clickDom = $(clickHtml),
+          // 标签
+      $tagdom = that.$tagdom = $clickDom.find('.dui-select__tags>span'),
+          // 输入框元素
+      $input = that.$input = $clickDom.find('.dui-input__inner'),
+          // 角标元素
+      $caret = that.$caret = $clickDom.find('.dui-select__caret'),
+          // 选项显示元素
+      $optDom = that.$optDom = $(optHtml),
+          // 选项点击元素
+      $opts = that.$opts = $optDom.find('.dui-select-dropdown__item'); // 给选项添加滚动条
 
-
-      that.scrollbar = dui.addScrollBar(optDom.find('.dui-select-dropdown__list')[0], {
+      that.scrollbar = dui.addScrollBar($optDom.find('.dui-select-dropdown__list')[0], {
         wrapClass: 'dui-select-dropdown__wrap'
       }); // 添加显示元素
 
       hasRender[0] && hasRender.remove();
-      $(el).css('display', 'none').after(clickDom); // 添加选项元素
+      $(el).css('display', 'none').after($clickDom); // 设置popper
 
-      clickDom.append(optDom);
-      optDom.css('min-width', inputInner.outerWidth()); // 设置popper
+      that.setPopper(); // 同步值
 
-      var ref = clickDom[0],
-          pop = optDom[0];
-      var x = {
-        top: 'bottom',
-        'bottom': 'top'
-      };
-      that.popper = dui.addPopper(ref, pop, {
-        arrowOffset: 35,
-        onCreate: function onCreate(data) {
-          that.transition = dui.transition(pop, {
-            name: 'dui-zoom-in-' + x[data._options.placement]
-          });
-        },
-        onUpdate: function onUpdate(data) {
-          that.transition.data.name = 'dui-zoom-in-' + x[data.placement];
-          optDom.css('min-width', clickDom.outerWidth());
-        }
-      }); // 设置默认值
+      that.sysStyle(); // 如果是禁用没有任何事件
 
-      if (config.multiple) {
-        //多选
-        original.find('option[selected]').each(function (i, slt) {
-          var val = $(slt).val();
-
-          if ($.inArray(val, value) == -1) {
-            that.value.push(val);
-          }
-        });
-      } else {
-        //单选
-        original.find('option[selected]').each(function (i, slt) {
-          that.value = $(slt).val();
-        });
-      }
-
-      that.setValue();
       if (config.disabled) return; // 设置事件
 
-      dui.on(clickDom[0], 'click', function (e) {
-        e.stopPropagation();
+      that.setEvents();
+    }
+    /**
+     * 显示popper
+     */
 
-        if (that.isShow) {
-          hide();
+
+    _select.prototype.showPopper = function () {
+      var that = this,
+          transition = that.transition,
+          $optDom = that.$optDom,
+          $clickDom = that.$clickDom,
+          $input = that.$input,
+          $caret = that.$caret; // 设置弹出框的宽度
+
+      $optDom.css('min-width', $clickDom.outerWidth()); // 添加元素到body
+
+      $('body').append($optDom); // 设置打开样式
+
+      $input.addClass('is-focuse'); // 给选项角标添加样式
+
+      $caret.addClass('is-reverse'); // 开始显示动画
+
+      transition.show();
+    };
+    /**
+     * 隐藏popper
+     */
+
+
+    _select.prototype.hidePopper = function () {
+      var that = this,
+          transition = that.transition,
+          $input = that.$input,
+          $caret = that.$caret; // 设置打开样式
+
+      $input.removeClass('is-focuse'); // 给选项角标添加样式
+
+      $caret.removeClass('is-reverse'); // 开始显示动画
+
+      transition.hide();
+    };
+    /**
+     * 设置事件
+     */
+
+
+    _select.prototype.setEvents = function () {
+      var that = this,
+          config = that.config,
+          $clickDom = that.$clickDom,
+          $emptyDom = that.$emptyDom,
+          $input = that.$input,
+          $optDom = that.$optDom,
+          $tagdom = that.$tagdom,
+          $original = that.$original,
+          el = $original[0],
+          selectClearable = '.dui-icon-circle-close',
+          selectOption = '.dui-select-dropdown__item',
+          HIDE = 'dui-hide',
+          $opts = that.$optDom.find(selectOption); // 点击元素显示选项事件
+
+      $clickDom.on('click', function (e) {
+        if ($input.hasClass('is-focuse')) {
+          that.hidePopper();
         } else {
-          show();
+          that.showPopper();
         }
-      }); // 设置选项点击事件
+      }); // 点击选项的事件
 
-      opts.on('click', function (e) {
-        var othis = $(this),
-            val = othis.attr('dui-value');
+      $($opts).each(function (i, opt) {
+        dui.bind(opt, 'click', function (e) {
+          // 获取当前的值
+          var othis = $(this),
+              ovalue = othis.attr('dui-value'),
+              value = $original.val() || [];
 
-        if (config.multiple) {
-          if (othis.hasClass('selected')) {
-            that.value.splice($.inArray(val, value), 1);
-          } else {
-            if ($.inArray(val, value) == -1) {
-              that.value.push(val);
+          if (config.multiple) {
+            var index = $.inArray(ovalue, value);
+
+            if (index != -1) {
+              value.splice(index, 1);
+            } else {
+              value.push(ovalue);
             }
+          } else {
+            value = ovalue;
           }
-        } else {
-          that.value = val; // 关闭选项显示页面
 
-          hide();
-        }
+          if (el.events && el.events.beforeChange) {
+            dui.trigger.call(el, 'beforeChange', done, value, $original.val());
+          } else {
+            done();
+          }
 
-        that.setValue();
-      }); // 设置tag的关闭事件
+          function done() {
+            if (!config.multiple) {
+              that.hidePopper();
+            } // 设置值
 
-      $.each(tags, function (v, tag) {
-        dui.on(tag.children[1], 'click', function (e) {
+
+            $original.val(value); // 同步样式
+
+            that.sysStyle(); // 设置回调
+
+            if (el.events && el.events.select) {
+              dui.trigger.call(el, 'select', done, value);
+            }
+
+            $(el).trigger('change');
+          }
+        });
+      }); // 点击tag关闭的事件
+
+      $.each(that.$tags, function (k, tag) {
+        dui.bind($(tag).find('.dui-tag__close')[0], 'click', function (e) {
           e.stopPropagation();
-          that.value.splice($.inArray(v, that.value), 1);
-          that.setValue();
+          var othis = $(this).parents('.dui-tag'),
+              ovalue = othis[0].value;
+
+          if (config.multiple) {
+            var value = $original.val();
+            value.splice($.inArray(ovalue, value), 1);
+          } else {
+            value = '';
+          }
+
+          if (value.length == 0) {
+            value = null;
+          }
+
+          if (el.events && el.events.beforeChange) {
+            dui.trigger.call(el, 'beforeChange', done, value, $original.val());
+          } else {
+            done();
+          }
+
+          function done() {
+            // 设置值
+            $original.val(value); // 同步样式
+
+            that.sysStyle(); // 设置回调
+
+            if (el.events && el.events.change) {
+              dui.trigger.call(el, 'change', done, value);
+            }
+
+            $(el).trigger('change');
+          }
         });
       }); // 设置显示清除按钮和点击事件
 
       if (config.clearable) {
-        clickDom.hover(function () {
-          if (that.value.length > 0) {
-            clickDom.find('.dui-icon-arrow-up').css('display', 'none');
-            clickDom.find('.' + ClassName.selectClearable).css('display', '');
+        $clickDom.hover(function () {
+          var value = $original.val();
+
+          if (value && value.length > 0) {
+            $clickDom.find('.dui-icon-arrow-up').css('display', 'none');
+            $clickDom.find(selectClearable).css('display', '');
           }
         }, function (e) {
-          clickDom.find('.dui-icon-arrow-up').css('display', '');
-          clickDom.find('.' + ClassName.selectClearable).css('display', 'none');
+          $clickDom.find('.dui-icon-arrow-up').css('display', '');
+          $clickDom.find(selectClearable).css('display', 'none');
         });
-        clickDom.find('.' + ClassName.selectClearable).on('click', function (e) {
+        $clickDom.find(selectClearable).on('click', function (e) {
           e.stopPropagation();
-          value = that.value = config.multiple ? [] : '';
-          that.setValue();
+
+          if (el.events && el.events.beforeChange) {
+            dui.trigger.call(el, 'beforeChange', done, null, $original.val());
+          } else {
+            done();
+          }
+
+          function done() {
+            // 设置值
+            $original.val(null); // 同步样式
+
+            that.sysStyle(); // 设置回调
+
+            if (el.events && el.events.change) {
+              dui.trigger.call(el, 'change', done, value);
+            }
+
+            $(el).trigger('change');
+          }
         });
-      } // 搜索
+      } // 搜索事件
 
 
       if (config.filterable) {
-        inputInner.on('input', function (e) {
+        $input.on('input', function (e) {
           var value = this.value,
               keyCode = e.keyCode;
 
@@ -560,246 +904,223 @@
           } // 判断是否存在选项
 
 
-          opts.each(function (i, opt) {
+          $opts.each(function (i, opt) {
             var othis = $(opt),
                 text = othis.text(),
                 isNot = text.indexOf(value) === -1; // 设置样式
 
-            othis[isNot ? 'addClass' : 'removeClass'](ClassName.hide);
+            othis[isNot ? 'addClass' : 'removeClass'](HIDE);
           }); // 如果有group的情况下
 
-          $(optDom).find('.dui-select-group__wrap').each(function (i, group) {
+          $($optDom).find('.dui-select-group__wrap').each(function (i, group) {
             var othis = $(group); //判断选项和隐藏选项是否一样多是则隐藏自己，否则就显示
 
-            if (othis.find('.' + ClassName.selectOption + '.' + ClassName.hide).length == othis.find('.' + ClassName.selectOption).length) {
-              othis.addClass(ClassName.hide);
+            if (othis.find(selectOption + '.' + HIDE).length == othis.find(selectOption).length) {
+              othis.addClass(HIDE);
             } else {
-              othis.removeClass(ClassName.hide);
+              othis.removeClass(HIDE);
             }
           }); // 判断没有选项个数和总体个数
           // 搜索后的隐藏个数
 
-          var hideNum = optDom.find('.' + ClassName.selectOption + '.' + ClassName.hide).length; // 如果隐藏个数等于总个数
+          var hideNum = $optDom.find(selectOption + '.' + HIDE).length; // 如果隐藏个数等于总个数
 
-          if (hideNum == opts.length) {
+          if (hideNum == $opts.length) {
             $(that.scrollbar.scroll).addClass('is-empty');
-            $(that.scrollbar.scroll).after(emptyDom);
+            $(that.scrollbar.scroll).after($emptyDom);
           } else {
             $(that.scrollbar.scroll).removeClass('is-empty');
-            emptyDom.remove();
+            $emptyDom.remove();
           }
+
+          that.popper.updatePopper();
         });
-      } // 给docment设置点击的时候关闭
+      } // 点击其他元素的时候关闭
 
 
-      dui.on(document, 'click', function (e) {
-        var othis = $(e.target); //不是当前元素
-
-        if (elements.optDom.find(othis)[0] || elements.optDom[0] == othis[0]) {
-          return false;
+      $(document).on('click', function (e) {
+        if (!($clickDom.find(e.target)[0] || $clickDom[0] == e.target || $optDom[0] == e.target || $optDom.find(e.target)[0] || $tagdom.find(e.target)[0] || $tagdom[0] == e.target)) {
+          that.hidePopper();
         }
+      }); // 大小发生变化事件
 
-        elements.optDom.css('display') != 'none' && hide();
-      });
-    },
-        Selector = {
-      form: '[dui-form]',
-      switch: 'input[type="checkbox"][dui-switch]',
-      checkbox: 'input[type="checkbox"][dui-checkbox]',
-      radio: 'input[type="radio"][dui-radio]',
-      select: 'select[dui-select]'
-    },
-        ClassName = {
-      switch: 'dui-switch',
-      switchCore: 'dui-switch__core',
-      switchLabelLeft: 'dui-switch__label--left',
-      switchLabelRight: 'dui-switch__label--right',
-      checkbox: 'dui-checkbox',
-      checkboxInput: 'dui-checkbox__input',
-      radio: 'dui-radio',
-      radioInput: 'dui-radio__input',
-      radioGroup: 'dui-radio-group',
-      select: 'dui-select',
-      selectOption: 'dui-select-dropdown__item',
-      selectClearable: 'dui-icon-circle-close',
-      hide: 'dui-hide'
-    };
-
-    form.Item = form.prototype = {
-      //初始化form
-      init: function init(el, options, rendered) {
-        var that = this;
-        that.el = el;
-
-        if (el.vnode) {
-          delete el.vnode;
-        }
-
-        dui.setData(el, 'form', {
-          rule: false
-        }, options);
-
-        var submit = function submit(e) {
-          var data = el.vnode.data.form;
-          var event = el.vnode.event.form;
-
-          if (event['submit'] && typeof event['submit'] === "function") {
-            event['submit'].call(el, e);
-          }
-
-          if (!data.rule) ;
-
-          return true;
-        }; // dui.off(el,'submit') && dui.on(el,'submit',submit);
-
-
-        $(el).off('submit').on('submit', submit); //初始化元素
-
-        !rendered ? form.render(el) : '';
-        return that;
-      },
-      switch: Switch,
-      checkbox: Checkbox,
-      radio: Radio,
-      select: Select
-    };
-
-    form.render = function (el, type, filter, options) {
-      var filter = filter ? '[dui-filter="' + filter + '"]' : '',
-          Item = {
-        switch: function _switch() {
-          $(el).find(Selector.switch + filter).each(function (i, swc) {
-            swc.switchClass = new form.Item.switch(swc, options);
-          });
-        },
-        checkbox: function checkbox() {
-          $(el).find(Selector.checkbox + filter).each(function (i, cbx) {
-            cbx.checkboxClass = new form.Item.checkbox(cbx, options);
-          });
-        },
-        radio: function radio() {
-          $(el).find(Selector.radio + filter).each(function (i, rdo) {
-            rdo.radioClass = new form.Item.radio(rdo, options);
-          });
-        },
-        select: function select() {
-          $(el).find(Selector.select + filter).each(function (i, slt) {
-            slt.selectClass = new form.Item.select(slt, options);
-          });
-        }
-      };
-      el.vnode ? new form.Item.init(el, {}, true) : '';
-      type ? Item[type] && Item[type]() : $.each(Item, function (key, item) {
-        item();
+      $(window).on('resize', function (e) {
+        // 设置弹出框的宽度
+        $optDom.css('min-width', $clickDom.outerWidth());
       });
     };
+    /**
+     * 同步样式
+     */
 
-    form.init = function (filter, options) {
-      var filter = filter ? '[dui-filter="' + filter + '"]' : '',
-          forms = $(Selector.form + filter);
-      var list = [];
-      forms.each(function (i, item) {
-        list.push(new form.Item.init(item, options));
-      });
 
-      if (list.length > 1) {
-        return list;
-      } else {
-        return list[0];
-      }
-    };
-
-    Select.prototype.setValue = function (data) {
+    _select.prototype.sysStyle = function () {
       var that = this,
           config = that.config,
-          elements = that.elements,
-          opts = elements.optDom.find('.' + ClassName.selectOption),
-          tagdom = elements.clickDom.find('.dui-select__tags>span');
-      if (data) that.value = data;
+          $clickDom = that.$clickDom,
+          $original = that.$original,
+          el = $original[0],
+          $optDom = that.$optDom,
+          $opts = $optDom.find('.dui-select-dropdown__item'),
+          $tagdom = $clickDom.find('.dui-select__tags>span'),
+          $input = that.$input,
+          value = $original.val(); //1.全部置空
 
-      if (that.value.length == 0) {
-        // 没有设置值
-        elements.inputInner.val(''), elements.original.val(null);
-        config.multiple && elements.inputInner.attr('placeholder', config.placeholder);
-      } else {
-        // 有值
-        elements.original.val(that.value);
+      $tagdom.html('');
+      $opts.removeClass('selected'); // 根据值设置样式
+      // 获取当前选中的值
 
+      if (value && value.length > 0) {
+        // 有值的情况下
         if (config.multiple) {
-          elements.inputInner.attr('placeholder', '');
-        }
-      } // 清空tag样式
+          // 设置提示
+          $input.attr('placeholder', ''); // 设置选项选中
 
+          $.each(value, function (i, val) {
+            var selectOpt = $optDom.find('.dui-select-dropdown__item[dui-value="' + val + '"]'); // 设置选中
 
-      tagdom.html(''); // 清除选中样式
+            selectOpt.addClass('selected'); // 设置tag
 
-      opts.removeClass('selected'); // 设置样式
+            $tagdom.append(that.$tags[val]);
+          });
+          var tagHeight = parseFloat($tagdom.parent().outerHeight()),
+              inputHeight = parseFloat($input.outerHeight()); // 设置文本框的高度
 
-      if (config.multiple) {
-        //多选
-        $.each(that.value, function (i, v) {
-          var selOpt = elements.optDom.find('.' + ClassName.selectOption + '[dui-value="' + v + '"]');
-          selOpt.addClass('selected'); //设置tag
-
-          tagdom.append(that.tags[v]);
-        });
-        var tagHeight = parseFloat(tagdom.parent().outerHeight()),
-            inputInnerHeight = parseFloat(elements.inputInner.outerHeight()); // 设置文本框的高度
-
-        if (tagHeight > inputInnerHeight || inputInnerHeight > 36) {
-          elements.inputInner.css('height', parseFloat(tagHeight) + 6);
+          if (tagHeight > inputHeight || inputHeight > 36) {
+            $input.css('height', parseFloat(tagHeight) + 6);
+          } else {
+            $input.css('height', '');
+          }
         } else {
-          elements.inputInner.css('height', '');
+          // 设置提示
+          $input.attr('placeholder', config.placeholder); // 设置样式
+
+          $optDom.find('.dui-select-dropdown__item[dui-value="' + value + '"]').addClass('selected'); // 设置显示
+
+          var show = $optDom.find('.dui-select-dropdown__item[dui-value="' + value + '"]').text(); // 设置显示
+
+          $input.val(show);
         }
       } else {
-        //单选
-        var selOpt = elements.optDom.find('.' + ClassName.selectOption + '[dui-value="' + that.value + '"]');
-        selOpt.addClass('selected');
-        elements.inputInner.val(selOpt.text());
-      } // 跟新一下popper
-
-
-      that.popper.updatePopper(); // 设置回调函数
-
-      if (that.state.inited) {
-        var events = elements.original[0].vnode.event;
-        elements.original.change && elements.original.change();
-        events.select && events.select.change && typeof events.select.change === "function" && events.select.change.call(elements.original, that.value);
-      } else {
-        that.state.inited = true;
+        // 多选
+        $input.attr('placeholder', config.placeholder);
       }
     };
+    /**
+     * 设置选项
+     */
 
-    Checkbox.prototype.setChecked = function (checked) {
+
+    _select.prototype.setPopper = function () {
       var that = this,
-          config = that.config,
-          el = that.el;
-      var thisCheckbox = $(el),
-          othis = thisCheckbox.parents('.dui-checkbox'),
-          checkClass = "is-checked";
+          $clickDom = that.$clickDom,
+          $input = that.$input,
+          $optDom = that.$optDom; // 添加元素
 
-      if (checked === 'indeterminate' && config.indeterminate) {
-        thisCheckbox.prop('checked', false);
-        othis.find('.' + ClassName.checkboxInput).removeClass('is-checked').addClass('is-indeterminate');
-        othis.removeClass('is-checked');
-        !config.buttoned && othis.find('.' + ClassName.checkboxInput).removeClass('is-checked');
-      } else if (checked === true) {
-        //设置选中
-        !config.indeterminate ? thisCheckbox.prop('checked', true) : thisCheckbox.prop('checked', false);
-        othis.addClass(checkClass);
-        !config.buttoned && othis.find('.' + ClassName.checkboxInput).addClass(checkClass);
-        config.indeterminate && othis.find('.' + ClassName.checkboxInput).removeClass('is-indeterminate');
-      } else {
-        //设置不选中
-        thisCheckbox.prop('checked', false);
-        othis.removeClass(checkClass);
-        !config.buttoned && othis.find('.' + ClassName.checkboxInput).removeClass(checkClass);
-        config.indeterminate && othis.find('.' + ClassName.checkboxInput).removeClass('is-indeterminate');
-      }
+      $('body').append($optDom);
+      var ref = $clickDom[0],
+          pop = $optDom[0];
+      var x = {
+        top: 'bottom',
+        'bottom': 'top'
+      };
+      that.popper = dui.addPopper(ref, pop, {
+        arrowOffset: 35,
+        onCreate: function onCreate(data) {
+          that.transition = dui.transition(pop, {
+            name: 'dui-zoom-in-' + x[data._options.placement],
+            beforeEnter: function beforeEnter() {
+              that.popper.updatePopper();
+            },
+            afterLeave: function afterLeave() {
+              that.$optDom.remove();
+            }
+          });
+        },
+        onUpdate: function onUpdate(data) {
+          that.transition.config.name = 'dui-zoom-in-' + x[data.placement];
+        }
+      });
+      $optDom.css('min-width', $input.outerWidth()); // 手动修改一下
+
+      that.popper.updatePopper();
+    };
+    /**
+     * 多选的时候获取所有tag
+     */
+
+
+    _select.prototype.getAlltag = function () {
+      var that = this,
+          el = that.el,
+          tags = {};
+      $(el).find('option').each(function (i, opt) {
+        var title = $(opt).text(),
+            val = $(opt).val(); //添加元素到tagdom
+
+        var thisTag = $('<span class="dui-tag dui-tag--info dui-tag--small dui-tag--light">' + '<span class="dui-select__tags-text">' + title + '</span>' + '<i class="dui-tag__close dui-icon-close"></i>' + '</span>')[0];
+        thisTag.value = val;
+        tags[val] = thisTag;
+      });
+      return tags;
+    };
+    /**
+     * 根据选项数据获取选项html
+     */
+
+
+    _select.prototype.getOptHtml = function (data) {
+      var returnHtml = '',
+          that = this,
+          config = that.config;
+      $.each(data, function (i, item) {
+        if (item.type == 'group') {
+          returnHtml += '<ul class="dui-select-group__wrap"><li class="dui-select-group__title">' + item.label + '</li><li>' + function () {
+            if (item.childrens) {
+              return '<ul class="dui-select-group">' + that.getOptHtml(item.childrens) + '</ul>';
+            }
+          }() + '</li></ul>';
+        } else if (item.type == 'item') {
+          returnHtml += '<li class="dui-select-dropdown__item' + (item.disabled ? ' is-disabled' : '') + (item.selected ? ' selected' : '') + '" dui-value="' + item.value + '"><span>' + item.label + '</span></li>';
+        }
+      });
+      return returnHtml;
+    };
+    /**
+     * 获取器所有的选项数据
+     */
+
+
+    _select.prototype.getOptData = function (elem) {
+      var that = this,
+          elem = elem ? elem : that.el;
+      var res = [];
+      var childrens = $(elem).children();
+      childrens.each(function (i, opt) {
+        var item = {};
+
+        if (opt.tagName.toLowerCase() === 'optgroup') {
+          item.label = $(opt).attr('label');
+          item.type = 'group';
+
+          if (opt.children.length > 0) {
+            item.childrens = that.getOptData(opt);
+          }
+        } else if (opt.tagName.toLowerCase() === 'option') {
+          item.type = 'item';
+          item.label = $(opt).text();
+          item.value = $(opt).val();
+          item.selected = $(that.el).val() == $(opt).val() || $.inArray($(opt).val(), $(that.el).val()) != -1 ? true : false;
+          item.disabled = typeof $(opt).attr('disabled') !== "undefined" ? true : false;
+        }
+
+        res.push(item);
+      });
+      return res;
     };
 
     form.init();
 
     return form;
 
-}));
+})));

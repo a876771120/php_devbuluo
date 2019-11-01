@@ -2,7 +2,7 @@
   typeof exports === 'object' && typeof module !== 'undefined' ? module.exports = factory(require('jquery')) :
   typeof define === 'function' && define.amd ? define('mdEditor', ['jquery'], factory) :
   (global = global || self, global.mdEditor = factory(global.jQuery));
-}(this, function ($) { 'use strict';
+}(this, (function ($) { 'use strict';
 
   $ = $ && $.hasOwnProperty('default') ? $['default'] : $;
 
@@ -19703,4 +19703,4 @@
 
   return mdEditor;
 
-}));
+})));

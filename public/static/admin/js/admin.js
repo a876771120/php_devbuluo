@@ -241,7 +241,7 @@ define('admin',['jquery','element','pjax','nprogress','popup'],function($,elemen
                 nprogress.start();
             });
             // 设置pjax结束监听
-            $(document).on('pjax:end',   function() { 
+            $(document).on('pjax:end',function() { 
                 nprogress.done();
                 var menuId = window.duiRoute;
                 that.custonEvent.changeUrlHander.call(this,menuId);
@@ -319,8 +319,6 @@ define('admin',['jquery','element','pjax','nprogress','popup'],function($,elemen
             changeUrlHander:function(id){
                 // 找到url所属的侧边栏元素
                 var currentAsideMenu = $(SELECTOR.aside).find(SELECTOR.menuItem+'[data-id="'+id+'"]');
-                // 如果当前元素有class为is-active，则直接返回
-                if(currentAsideMenu.hasClass(CLASS.active)) return;
                 // 移除当前菜单跳转高亮
                 $(SELECTOR.aside).find(SELECTOR.menuItem).removeClass(CLASS.active);
                 // 移除当前菜单的子菜单高亮
@@ -345,7 +343,6 @@ define('admin',['jquery','element','pjax','nprogress','popup'],function($,elemen
                     submenus.each(function(i,item){
                         // 如果父元素是没有打开状态,则手动触发
                         if(!$(item).parent().hasClass('is-opened')){
-                            console.log('进来了');
                             $(item).trigger("click");
                         }
                     })

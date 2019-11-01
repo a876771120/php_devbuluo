@@ -1,1 +1,279 @@
-!function(e,n){"object"==typeof exports&&"undefined"!=typeof module?module.exports=n(require("jquery")):"function"==typeof define&&define.amd?define("element",["jquery"],n):(e=e||self).element=n(e.jQuery)}(this,function(p){"use strict";p=p&&p.hasOwnProperty("default")?p.default:p;function o(e,n,i){return new o.Items[e](n,i)}var t="[dui-menubar]",m=".dui-menu",v=".dui-submenu",h=".dui-submenu__title",d=".dui-menu-item",r="[dui-dropdown]",u=".dui-dropdown-toggle",a=".dui-dropdown-menu",w="is-opened",s="is-active";return o.Items=o.prototype={navMenu:function(e,n){var i=this;i.elem=e,dui.setData(e,"navMenu",n);function o(e){p(i.elem).find(d).removeClass(s),p(i.elem).find(h).removeClass(s),p(i.elem).siblings().find(d).removeClass(s),p(i.elem).siblings().find(h).removeClass(s),function(e){p(e).addClass(s);var n=p(e).parents(m).prev(h);n[0]&&n.addClass(s)}(p(this)[0])}var t=p(i.elem).children(v),r=p(i.elem).find(d);!function a(e,l,c){var f=!1;p.each(e,function(e,n){var i=p(n),o=i.children(h),t=i.children(m),r=!!i.hasClass(w),d=r&&!f?f=!0:(i.removeClass(w),!1);o[0].isOpen=r,o[0].transition=dui.collapseTransition(t[0],{show:d}),o[0].show=function(){o[0].transition.show(),o[0].isOpen=!0,o.parent().addClass("is-opened")},o[0].hide=function(){o[0].transition.hide(),o[0].isOpen=!1,o.parent().removeClass("is-opened")};function s(e){e.preventDefault();var n=this,i=n.isOpen,o=p(n).parent().siblings().find(h);if(p("body").find("is-shrink").find(n)[0])return!1;i?n.hide():(n.show(),c&&o.each(function(e,n){n.hide()}))}o.off("click",s).on("click",s);var u=t.children(v);u&&a(u,l+1,c)})}(t,1,e.vnode.data.navMenu.openonly),r.off("click",o).on("click",o),e.inited=!0},dropDown:function(e,n){var i=this;i.options=p.extend(!0,{},n),dui.setData(e,"dropDown",{},{});e.vnode.data.dropDown;var o={top:"bottom",bottom:"top"},t=p(e).find(u),r=p(e).find(a);i.popper=dui.addPopper(t[0],r[0],{onCreate:function(e){i.transition=dui.transition(r[0],{name:"dui-zoom-in-"+o[e._options.placement]})},onUpdate:function(e){i.transition.data.name="dui-zoom-in-"+o[e.placement]}}),i.visible="none"==r.css("display"),i.toggle="hover"==t.attr("toggle")?"hover":"click",i.showTimeout=0,i.hideTimeout=150,i.timerout=0;function d(){clearTimeout(i.timerout),"none"===r.css("display")&&(i.timerout=setTimeout(function(){i.visible=!1,i.popper.updatePopper(),i.transition.show()},"hover"===i.toggle?i.showTimeout:0))}function s(){clearTimeout(i.timerout),i.timerout=setTimeout(function(){i.visible=!0,i.transition.hide()},"hover"===i.toggle?i.hideTimeout:0)}"hover"===i.toggle?(t.hover(d,s),r.hover(d,s)):t.on("click",function(e){i.visible?d():s()}),e.inited=!0}},o.render=function(e,n){n=n?'[dui-filter="'+n+'"]':"";var i={navMenu:function(){p(t+n).each(function(e,n){n.inited||o("navMenu",n,{openonly:void 0!==p(n).attr("openonly")})})},dropDown:function(){p(r+n).each(function(e,n){n.inited||o("dropDown",n,{})})}};i[e]?i[e]():dui.each(i,function(e,n){n()})},o.render(),o});
+(function (global, factory) {
+    typeof exports === 'object' && typeof module !== 'undefined' ? module.exports = factory(require('jquery')) :
+    typeof define === 'function' && define.amd ? define('element', ['jquery'], factory) :
+    (global = global || self, global.element = factory(global.jQuery));
+}(this, (function ($) { 'use strict';
+
+    $ = $ && $.hasOwnProperty('default') ? $['default'] : $;
+
+    var DROPDOWN = '[dui-dropdown]',
+        MENU = '[dui-menubar]',
+        $doc = $(document);
+
+    function element(type, only) {
+      return element.render(type, only);
+    }
+    /**
+     * 手动渲染
+     */
+
+
+    element.render = function (type, only) {
+      var items = {
+        dorpDown: function dorpDown() {
+          if (only && only.nodeType) {
+            only.DropDown = new DropDown(only);
+          } else {
+            $doc.find(DROPDOWN).each(function (i, drp) {
+              drp.DropDown = new DropDown(drp);
+            });
+          }
+        },
+        NavMenu: function NavMenu() {
+          if (only && only.nodeType) {
+            only.NavMenu = new _NavMenu(only);
+          } else {
+            $doc.find(MENU).each(function (i, menu) {
+              menu.NavMenu = new _NavMenu(menu);
+            });
+          }
+        }
+      };
+      type ? items[type] && items[type]() : $.each(items, function (i, item) {
+        item();
+      });
+    };
+    /**
+     * dorpdown渲染方法
+     */
+
+
+    element.dropdown = function (el, options) {
+      return new DropDown(el, options);
+    };
+
+    element.navmenu = function (el, options) {
+      return new _NavMenu(el, options);
+    };
+    /**
+     * 初始化一个DropDown
+     * @param {Element} el 初始化元素
+     * @param {Object} options 初始化参数
+     */
+
+
+    function DropDown(el, options) {
+      var that = this;
+      if (el.dorpInit) return;
+      var TOGGLE = '.dui-dropdown-toggle',
+          //触发按钮
+      DROPMENU = '.dui-dropdown-menu'; //显示的菜单
+
+      var config = that.config = $.extend(true, {}, options);
+      var x = {
+        top: 'bottom',
+        'bottom': 'top'
+      };
+      var ref = $(el).find(TOGGLE);
+      var pop = $(el).find(DROPMENU); // 创建popper
+
+      that.popper = dui.addPopper(ref[0], pop[0], {
+        onCreate: function onCreate(data) {
+          that.transition = dui.transition(pop[0], {
+            name: 'dui-zoom-in-' + x[data._options.placement],
+            enter: function enter(TCLASS, done) {
+              that.popper.updatePopper();
+              setTimeout(function () {
+                done();
+              }, 300);
+            }
+          });
+        },
+        onUpdate: function onUpdate(data) {
+          that.transition.config.name = 'dui-zoom-in-' + x[data.placement];
+        }
+      });
+      that.toggle = ref.attr('toggle') == 'hover' ? 'hover' : 'click';
+      that.showTimeout = config.showTimeout || 0;
+      that.hideTimeout = config.hideTimeout || 150;
+      that.timerout = 0; // 显示方法
+
+      var show = function show(e) {
+        clearTimeout(that.timerout);
+
+        if (pop.css('display') !== 'none') {
+          return;
+        } else {
+          that.timerout = setTimeout(function () {
+            that.visible = false;
+            that.transition.show();
+          }, that.toggle === 'hover' ? that.showTimeout : 0);
+        }
+      }; // 隐藏方法
+
+
+      var hide = function hide(e) {
+        clearTimeout(that.timerout);
+        that.timerout = setTimeout(function () {
+          that.visible = true;
+          that.transition.hide();
+        }, that.toggle === 'hover' ? that.hideTimeout : 0);
+      };
+
+      if (that.toggle === 'hover') {
+        ref.hover(show, hide);
+        pop.hover(show, hide);
+      } else {
+        ref.on('click', function (e) {
+          if (pop.css('display') === 'none') {
+            show();
+          } else {
+            hide();
+          }
+        });
+      } // 设置初始化标识
+
+
+      el.dorpInit = true; // 设置点击关闭事件
+
+      $doc.on('click', function (e) {
+        var othis = e.target;
+
+        if (!(el == othis || $(el).find(othis)[0] || pop.css('display') === 'none')) {
+          hide();
+        }
+      });
+    }
+    /**
+     * 初始化一个DropDown
+     * @param {Element} el 初始化元素
+     * @param {Object} options 初始化参数
+     */
+
+
+    function _NavMenu(el, options) {
+      if (el.menuInit) return;
+      var that = this,
+          SUBMENU = '.dui-submenu',
+          MENUCLASS = '.dui-menu',
+          SUBTITLE = '.dui-submenu__title',
+          ISOPEN = 'is-opened',
+          MENUITEM = '.dui-menu-item',
+          ISACTIVE = 'is-active',
+          // 配置信息
+      config = that.config = $.extend(true, {}, options),
+          // 下级菜单
+      $submenus = $(el).children(SUBMENU),
+          // 是否是只打开一个
+      openOnly = typeof $(el).attr('openonly') !== "undefined" ? true : false; // 添加过渡动画
+
+      renderTransition($submenus);
+      /**
+       * 检查openOnly方法
+       * @param {ELement} list 子菜单集合
+       */
+
+      function renderTransition(list) {
+        var open = false;
+        $.each(list, function (i, item) {
+          var $menu = $(item).children(MENUCLASS); // 如果配置了只能打开一个菜单
+
+          if (openOnly) {
+            if (open && $menu.css('display') !== 'none') {
+              $menu.css('display', 'none');
+
+              if ($(item).hasClass(ISOPEN)) {
+                $(item).removeClass(ISOPEN);
+              }
+            } else {
+              if ($menu.css('display') !== 'none') {
+                open = true;
+
+                if (!$(item).hasClass(ISOPEN)) {
+                  $(item).addClass(ISOPEN);
+                }
+              } else {
+                if ($(item).hasClass(ISOPEN)) {
+                  $(item).removeClass(ISOPEN);
+                }
+              }
+            }
+          } else {
+            // 如果菜单显示，但是没有is-opened样式则添加该样式
+            if ($menu.css('display') !== 'none' && !$(item).hasClass(ISOPEN)) {
+              $(item).addClass(ISOPEN);
+            }
+
+            if ($menu.css('display') == 'none' && $(item).hasClass(ISOPEN)) {
+              $(item).removeClass(ISOPEN);
+            }
+          }
+
+          if ($(item).children(SUBMENU).length > 0) {
+            checkOpen($(item).children(SUBMENU));
+          } // 添加过渡
+
+
+          $menu[0].transition = dui.collapseTransition($menu[0]);
+        });
+      } // 给子菜单添加点击事件
+
+
+      $(el).find(SUBTITLE).on('click', function (e) {
+        var othis = $(this);
+
+        if (el.events && el.events.beforeOpen) {
+          dui.trigger.call(this, 'beforeOpen', done);
+        } else {
+          done();
+        }
+
+        function done() {
+          var $nextMenu = othis.next(MENUCLASS),
+              transition = $nextMenu[0].transition,
+              others = othis.parent().siblings().children(MENUCLASS);
+
+          if ($nextMenu.css('display') === 'none') {
+            othis.parents(SUBMENU).addClass(ISOPEN).siblings().removeClass(ISOPEN);
+            transition.show();
+
+            if (openOnly) {
+              others.each(function (i, m) {
+                if ($(m).css('display') !== 'none') {
+                  m.transition.hide();
+                }
+              });
+            }
+          } else {
+            othis.parents(SUBMENU).removeClass(ISOPEN);
+            transition.hide();
+          }
+        }
+      }); // 连接被点击
+
+      $(el).find(MENUITEM).on('click', function (e) {
+        var othis = $(this);
+
+        if (el.events && el.events.beforeJump) {
+          dui.trigger.call(this, 'beforeJump', done);
+        } else {
+          done();
+        }
+
+        function done() {
+          othis.addClass(ISACTIVE).siblings().removeClass(ISACTIVE);
+          othis.parents(MENUCLASS).prev(SUBTITLE).addClass(ISACTIVE);
+          othis.parents(SUBMENU).siblings().children(SUBTITLE).removeClass(ISACTIVE);
+          othis.parents(SUBMENU).siblings().find(MENUITEM).removeClass(ISACTIVE);
+        }
+      }); // 设置初始化状态
+
+      el.menuInit = true;
+    } // 触发渲染
+
+
+    element.render();
+
+    return element;
+
+})));
