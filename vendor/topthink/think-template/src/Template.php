@@ -1204,6 +1204,7 @@ class Template
                 //支持加载变量文件名
                 $templateName = $this->get(substr($templateName, 1));
             }
+
             $template = $this->parseTemplateFile($templateName);
 
             if ($template) {

@@ -46,7 +46,7 @@ class Config
         // 设置配置信息
         config($system_config,'app');
         // 入口文件名称
-        $scriptName =pathinfo($request->baseFile(), PATHINFO_FILENAME);
+        $scriptName =$this->getScriptName();
         // 访问的应用
         $app = app('http')->getName();
         // 默认应用的控制器层
@@ -65,6 +65,7 @@ class Config
                 config(['controller_layer'=>'controller\admin'],'route');
                 // 设置模板路径
                 View::config(['view_path'=>$this->app->getBasePath().$app.'/view/admin/']);
+                
             }else{
                 // 设置模板路径
                 View::config(['view_path'=>$this->app->getBasePath().$app.'/view/']);
@@ -87,5 +88,19 @@ class Config
         }
         // 返回
         return $next($request);
+    }
+
+    /**
+     * 获取当前运行的文件名
+     *
+     * @return void
+     */
+    protected function getScriptName(){
+        if (isset($_SERVER['SCRIPT_FILENAME'])) {
+            $file = $_SERVER['SCRIPT_FILENAME'];
+        } elseif (isset($_SERVER['argv'][0])) {
+            $file = realpath($_SERVER['argv'][0]);
+        }
+        return isset($file) ? pathinfo($file, PATHINFO_FILENAME) : '';
     }
 }
