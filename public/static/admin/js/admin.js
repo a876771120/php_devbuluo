@@ -103,7 +103,6 @@ define('admin',['jquery','element','pjax','nprogress','popup'],function($,elemen
                                             type:'success',
                                             onClose:function(){
                                                 var currUrl = (data.url ? data.url: window.location.href);
-                                                console.log(currUrl);
                                                 $.pjax({url:currUrl,container: SELECTOR.pjax_container})
                                                 // $.pjax.reload('#pjax-container')
                                             }

@@ -64,7 +64,7 @@ class Index extends Base{
                 ]
             ],
             'hash'=>[
-                'title'=>'应用组标识',
+                'title'=>'接口标识',
                 'list'=>[
                     'filter'=>true,
                     'width'=>180
@@ -84,7 +84,8 @@ class Index extends Base{
                     'template'=>'<span class="dui-tag {{if method=="0"}} 
                     dui-tag--warning{{else if method=="1"}} dui-tag--success
                     {{else if method=="2"}} dui-tag--primary{{/if}} dui-tag--small">
-                        {{if method=="0"}}不限{{else if method=="1"}}post{{else if method=="2"}}get{{/if}}
+                        {{if method=="0"}}不限{{else if method=="1"}}post{{else if method=="2"}}get
+                        {{else if method=="3"}}PUT{{else if method=="4"}}DELETE{{else if method=="5"}}HEAD{{/if}}
                     </span>',
                     'align'=>'center',
                     'width'=>100,
@@ -137,27 +138,26 @@ class Index extends Base{
                     'value'=>0
                 ]
             ],
-            'is_test'=>[
-                'title'=>'接口模式',
-                'list'=>false,
-                'form'=>[
-                    'template'=>'select',
-                    'options'=>[
-                        0=>'生产模式',
-                        1=>'测试模式'
-                    ],
-                    'value'=>0
-                ]
-            ],
             'state'=>[
                 'title'=>'状态',
                 'type'=>'integer',
                 'list'=>[
-                    'template'=>'switch',
-                    'options'=>['active-value'=>1,'inactive-value'=>0],
+                    'template'=>'<span class="dui-tag{{ if state=="1"}} dui-tag--success
+                    {{else if state=="2" || state=="3" || state=="4"}} dui-tag--warning{{else}}  dui-tag--danger{{/if}} dui-tag--small">
+                        {{if state=="1"}}启用{{else if state=="2"}}维护
+                        {{else if state=="3"}}开发{{else if state=="4"}}测试{{else if state=="5"}}BUG{{/if}}
+                    </span>',
+                    'align'=>'center',
+                    'width'=>100,
                     'filter'=>[
                         'type'=>'enum',
-                        'options'=>[1=>'启用',0=>'禁用']
+                        'options'=>[
+                            '1'=>'启用',
+                            '2'=>'维护',
+                            '3'=>'开发',
+                            '4'=>'测试',
+                            '5'=>'BUG'
+                        ]
                     ]
                 ],
                 'form'=>[

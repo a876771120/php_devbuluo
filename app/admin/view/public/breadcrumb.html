@@ -2,7 +2,7 @@
     <div class="dui-breadcrumb">
         {if count($_location)>=4}
         <button class="dui-button dui-button--default breadcrumb-return" onclick="javascript:history.back(-1);return false;"><i class="dui-icon-back"></i> 返回{$_location[2]['title']}</button>
-        <button class="dui-button dui-button--primary dui-button--small" jump jump-form="api_index_add" type="submit">提交</button>
+        <button class="dui-button dui-button--primary dui-button--small" jump jump-form="{:implode('_',explode('/',$_location[3]['url_value']))}" type="submit">提交</button>
         {else/}
         {volist name="_location" id="breadcrumb"}
         <span class="dui-breadcrumb__item">

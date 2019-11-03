@@ -12,7 +12,9 @@ namespace app\api\controller\admin;
 
 use app\common\builder\Dbuilder;
 use app\admin\controller\Common;
+use app\api\entity\DataType;
 use think\Exception;
+use think\exception\ValidateException;
 /**
  * 配置管理控制器
  * @package app\api\controller\admin
@@ -20,16 +22,25 @@ use think\Exception;
  */
 class Index extends Common{
     /**
-     * 右侧按钮
-     *
-     * @var array
-     */
-    protected $right_buttons=['edit','enable','disable','delete'];
-    /**
      * 是否显示多选
      * @var boolean
      */
-    protected $checkbox=false;
+    protected $checkbox=true;
+    /**
+     * 参数类型
+     * @var array
+     */
+    private $dataType = array(
+        DataType::TYPE_STRING  => 'String',
+        DataType::TYPE_INTEGER => 'Integer',
+        DataType::TYPE_FLOAT   => 'Float',
+        DataType::TYPE_BOOLEAN => 'Boolean',
+        DataType::TYPE_FILE    => 'File',
+        DataType::TYPE_ENUM    => 'Enum',
+        DataType::TYPE_JSON    => 'JSON',
+        DataType::TYPE_OBJECT  => 'Object',
+        DataType::TYPE_ARRAY   => 'Array'
+    );
     /**
      * 后台api首页
      * @return void
@@ -52,6 +63,13 @@ class Index extends Common{
             ],
             'delete'
         ];
+        $this->right_buttons=[
+            'edit'=>[
+                'jump-mode'     => '_pjax',
+                'jump-url'      => urldecode((string)url('edit',['id'=>'{{id}}']))
+            ],
+            'delete'
+        ];
         return call_user_func(array('parent', __FUNCTION__));
     }
     /**
@@ -61,11 +79,51 @@ class Index extends Common{
     public function add(){
         $this->model = $this->loadModel();
         if($this->request->isPost()){
+            $data = input('post.');
+            try {
+                validate(get_class($this->loadValidate()))->check($data);
+            } catch (ValidateException $e) {
+                $this->error($e->getError());
+            }
+            $res = $this->model->create($data);
+            if($res){
+                $this->success('添加成功',(string)url('index'));
+            }else{
+                $this->error('添加失败');
+            }
 
         }
-        
         $formItems = array_column($this->model->getFromItems(), null, 'field');
         return view()->assign(['formItems'=>$formItems]);
+    }
+    /**
+     * 修改方法
+     * @return void
+     */
+    public function edit($id=''){
+        if(!$id) $this->error('参数错误！');
+        $this->model = $this->loadModel();
+        // 如果是post提交
+        if($this->request->isPost()){
+            $data = input('post.');
+            try {
+                validate(get_class($this->loadValidate()))->check($data);
+            } catch (ValidateException $e) {
+                $this->error($e->getError());
+            }
+            $res = $this->model->update($data);
+            if($res){
+                $this->success('修改成功',(string)url('index'));
+            }else{
+                $this->error('修改失败');
+            }
+        }
+        // 获取数据
+        $data = $this->model->find($id);
+        $formItems = array_column($this->model->getFromItems(), null, 'field');
+        $data['request'] = json_decode($data['request'],true);
+        $data['response'] = json_decode($data['response'],true);
+        return view()->assign(['data'=>$data,'formItems'=>$formItems]);
     }
     /**
      * 刷新路由操作
@@ -82,11 +140,12 @@ class Index extends Common{
         // 获取模板内容
         $tplStr = file_get_contents($tplPath);
         // 获取所有的接口
-        $listInfo = $this->loadModel()->where('state','=',1)->column('api_class,method','hash');
+        $listInfo = $this->loadModel()->where('state','in',['1','2','3','4'])->column('api_class,method,user_token','hash');
         // 路由字符串
         $routeStr = [];
         // 组装路由字符串
         foreach ($listInfo as $hash=>&$rule) {
+            $middleware = ['"ApiPermission"','"ApiAuth"','"ApiRequest"','"ApiLog"'];
             // 解析url
             try {
                 list($app,$controller,$action) = explode('/',$rule['api_class']);
@@ -95,7 +154,10 @@ class Index extends Common{
                 $app = 'api';
                 list($controller,$action) = explode('/',$rule['api_class']);
             }
-            array_push($routeStr, "Route::rule('".addslashes($hash)."','app\\".$app."\\controller\\interface\\".$controller."@".$action."','".$methodArr[$rule['method']]."')->middleware(['ApiPermission','ApiAuth','ApiRequest','ApiLog']);");
+            if($rule['user_token']==1){
+                $middleware[] = '"UserAuth"';
+            }
+            array_push($routeStr, "Route::rule('".addslashes($hash)."','app\\".$app."\\controller\\interface\\".$controller."@".$action."','".$methodArr[$rule['method']]."')->middleware([".implode(',',$middleware)."]);");
         }
         $routeStr = str_replace('{$API_RULE}',implode(PHP_EOL,$routeStr),$tplStr);
         // 写入路由文件

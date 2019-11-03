@@ -268,7 +268,7 @@
         } //手动回调一下
 
 
-        othis[0] && othis.change && othis.change();
+        el && $(el).trigger('change');
         el.events && el.events.beforeChange && dui.trigger.call(el, 'change', done);
       }
 
@@ -397,7 +397,7 @@
           } // 触发原始事件
 
 
-          el.change && el.change(); // 触发dui管理事件
+          el && $(el).trigger('change'); // 触发dui管理事件
 
           el.events && el.events.change && dui.trigger.call(el, 'change', done);
         }
@@ -615,7 +615,7 @@
             othis.addClass(CHECKED) && $core.addClass(CHECKED); // 回调事件
             // 触发原始事件
 
-            el.change && el.change(); // 触发dui管理事件
+            el && $(el).trigger('change'); // 触发dui管理事件
 
             el.events && el.events.change && dui.trigger.call(el, 'change', done);
           }

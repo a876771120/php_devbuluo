@@ -8,6 +8,7 @@
 
     var DROPDOWN = '[dui-dropdown]',
         MENU = '[dui-menubar]',
+        TABS = '[dui-tabs]',
         $doc = $(document);
 
     function element(type, only) {
@@ -35,6 +36,15 @@
           } else {
             $doc.find(MENU).each(function (i, menu) {
               menu.NavMenu = new _NavMenu(menu);
+            });
+          }
+        },
+        tabs: function tabs() {
+          if (only && only.nodeType) {
+            only.tabs = new _tabs(only);
+          } else {
+            $doc.find(TABS).each(function (i, tab) {
+              tab.tabs = new _tabs(tab);
             });
           }
         }
@@ -269,6 +279,56 @@
       }); // 设置初始化状态
 
       el.menuInit = true;
+    }
+    /**
+     * 初始化一个tabs
+     * @param {Element} el 初始化元素
+     * @param {Object} options 初始化参数
+     */
+
+
+    function _tabs(el, options) {
+      var config = $.extend(true, {}, options),
+          $el = $(el),
+          $controll = $el.find('.dui-tabs__nav'),
+          $action = $controll.find('.dui-tabs__item'),
+          $content = $el.find('.dui-tabs__content'),
+          ISACTIVE = 'is-active',
+          $panel = $content.find('.dui-tabs__panel'),
+          index = function () {
+        var res = null;
+        $panel.each(function (i, item) {
+          if ($(item).hasClass(ISACTIVE)) {
+            res = i;
+            return;
+          }
+        });
+        return res == null ? 0 : res;
+      }(); // 初始化样式
+
+
+      $action.eq(index).addClass(ISACTIVE).siblings().removeClass(ISACTIVE); // 如果有多余显示的pannel则删除
+
+      $panel.eq(index).addClass(ISACTIVE).siblings().removeClass(ISACTIVE); // 设置点击事件
+
+      $action.on('click', function (e) {
+        var othis = $(this),
+            oindex = function () {
+          var res = null;
+          $action.each(function (i, item) {
+            if (item == e.target) {
+              res = i;
+              return;
+            }
+          });
+          return res == null ? 0 : res;
+        }(); // 设置显示元素
+
+
+        othis.addClass(ISACTIVE).siblings().removeClass(ISACTIVE); // 设置pannel
+
+        $panel.eq(oindex).addClass(ISACTIVE).siblings().removeClass(ISACTIVE);
+      });
     } // 触发渲染
 
 

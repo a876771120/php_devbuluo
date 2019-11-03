@@ -1,12 +1,17 @@
 {extend name="$_admin_base_layout" /}
 {block name="title"}{if !empty($page_title)}{$page_title}{else/}{$_location[count($_location)-1]['title']}{/if}{/block}
 {block name="content"}
-<div class="dui-tabs dui-tabs__card" dui-tabs>
+<div class="dui-tabs dui-tabs__card">
     <div class="dui-tabs__header">
         <div class="dui-tabs__nav">
+            
             {if (!empty($tab_nav))}
             {volist name="tab_nav.list" id="nav"}
-            <div class="dui-tabs__item{if $nav.name == $tab_nav.curr} is-active{/if}"{if !($nav.name == $tab_nav.curr)} jump jump-url="{$nav.href}"{/if}>{$nav.title}</div>
+            {if ($nav['name']==$tab_nav['curr'])===true}
+            <div class="dui-tabs__item is-active" >{$nav.title}</div>
+            {else/}
+            <div class="dui-tabs__item" jump jump-url="{$nav.href}">{$nav.title}</div>
+            {/if}
             {/volist}
             {else/}
             <div class="dui-tabs__item is-active">{if !empty($page_title)}{$page_title}{else/}{$_location[count($_location)-1]['title']}{/if}</div>
