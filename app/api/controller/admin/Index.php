@@ -140,12 +140,12 @@ class Index extends Common{
         // 获取模板内容
         $tplStr = file_get_contents($tplPath);
         // 获取所有的接口
-        $listInfo = $this->loadModel()->where('state','in',['1','2','3','4'])->column('api_class,method,user_token','hash');
+        $listInfo = $this->loadModel()->where('state','in',['1','2','3','4'])->column('api_class,method,user_token,access_token','hash');
         // 路由字符串
         $routeStr = [];
         // 组装路由字符串
         foreach ($listInfo as $hash=>&$rule) {
-            $middleware = ['"ApiPermission"','"ApiAuth"','"ApiRequest"','"ApiLog"'];
+            $middleware = ['"LogStart"'];
             // 解析url
             try {
                 list($app,$controller,$action) = explode('/',$rule['api_class']);
@@ -154,9 +154,14 @@ class Index extends Common{
                 $app = 'api';
                 list($controller,$action) = explode('/',$rule['api_class']);
             }
+            if(in_array($rule['access_token'],['1','2'])){
+                $middleware = array_merge($middleware,['"ApiAuth"','"ApiPermission"']);
+            }
+            $middleware[] = '"ApiRequest"';
             if($rule['user_token']==1){
                 $middleware[] = '"UserAuth"';
             }
+            $middleware[] = '"LogEnd"';
             array_push($routeStr, "Route::rule('".addslashes($hash)."','app\\".$app."\\controller\\interface\\".$controller."@".$action."','".$methodArr[$rule['method']]."')->middleware([".implode(',',$middleware)."]);");
         }
         $routeStr = str_replace('{$API_RULE}',implode(PHP_EOL,$routeStr),$tplStr);

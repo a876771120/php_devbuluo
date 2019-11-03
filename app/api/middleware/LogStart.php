@@ -17,7 +17,7 @@ use app\Request;
  * @package app\common\middleware
  * @author 刘勤 <876771120@qq.com>
  */
-class Log{
+class LogStart{
     /**
      * 应用实例
      * @var App

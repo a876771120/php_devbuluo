@@ -28,6 +28,10 @@
                     {// 单行文本 }
                     {include file="../app/common/builder/form/items/text.html"/}
                     {/case}
+                    {case value="refresh_text"}
+                    {// 单行文本 }
+                    {include file="../app/common/builder/form/items/refresh_text.html"/}
+                    {/case}
                     {case value="textarea"}
                     {// 多行文本 }
                     {include file="../app/common/builder/form/items/textarea.html"/}
@@ -43,6 +47,10 @@
                     {case value="checkbox"}
                     {// 多选框 }
                     {include file="../app/common/builder/form/items/checkbox.html"/}
+                    {/case}
+                    {case value="checkbox_groups"}
+                    {// 多选框分组 }
+                    {include file="../app/common/builder/form/items/checkbox_groups.html"/}
                     {/case}
                     {case value="select"}
                     {// 多选框 }

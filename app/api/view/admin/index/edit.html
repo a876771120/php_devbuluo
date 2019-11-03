@@ -338,8 +338,9 @@ pre.jf-CodeContainer {
                     <label class="dui-form-item__label" style="width: 110px;text-align: right;">AccessToken：</label>
                     <div class="dui-form-item__content" style="margin-left: 110px;">
                         <select dui-select placeholder="请选择一项" name="access_token">
-                            <option value="0"{if $data.access_token==0} selected="selected"{/if}>简易认证</option>
-                            <option value="1"{if $data.access_token==1} selected="selected"{/if}>复杂认证</option>
+                            <option value="0"{if $data.access_token==0} selected="selected"{/if}>不认证</option>
+                            <option value="1"{if $data.access_token==1} selected="selected"{/if}>简易认证</option>
+                            <option value="2"{if $data.access_token==2} selected="selected"{/if}>复杂认证</option>
                         </select>
                     </div>
                 </div>

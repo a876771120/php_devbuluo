@@ -120,10 +120,11 @@ class Index extends Base{
                 'form'=>[
                     'template'=>'select',
                     'options'=>[
-                        0=>'简单认证',
-                        1=>'复杂认证'
+                        0=>'不认证',
+                        1=>'简单认证',
+                        2=>'复杂认证'
                     ],
-                    'value'=>0
+                    'value'=>1
                 ]
             ],
             'user_token'=>[

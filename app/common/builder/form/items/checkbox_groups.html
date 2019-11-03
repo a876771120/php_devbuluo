@@ -1,0 +1,23 @@
+<div class="dui-form-item">
+    <label class="dui-form-item__label">{$formItem.title}</label>
+    <div class="dui-form-item__content">
+        <div class="dui-checkbox-group__container" style="max-height: 300px;overflow: hidden;overflow-y: auto;">
+            {notempty name="formItem.options"}
+            {volist name="formItem.options" id="option"}
+            {notempty name="option.child"}
+            <div class="dui-card dui-checkbox-check-group">
+                <div class="dui-card__header" style="padding: 5px 15px;">
+                    <input type="checkbox" dui-checkbox   label="{$option.title|default=''}" indeterminate="true">
+                </div>
+                <div class="dui-card__body" style="padding: 5px 15px;">
+                    {volist name="option.child" id="child"}
+                    <input type="checkbox" dui-checkbox name="{$formItem.field}[]" value="{$key}" label="{$child}" {if in_array($key,$formItem.value)}checked="checked"{/if}>
+                    {/volist}
+                </div>
+            </div>
+            {/notempty}
+            {/volist}
+            {/notempty}
+        </div>
+    </div>
+</div>

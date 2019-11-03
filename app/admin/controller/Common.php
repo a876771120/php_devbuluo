@@ -439,7 +439,7 @@ class Common extends Admin{
                 $this->error('操作失败');
             }
         }
-        $formData = $this->model->find($id);
+        $formData = $this->model->find($id)->toArray();
         return Dbuilder::create('form')
         ->setPageTitle($this->page_title)
         ->setTabNav($this->group_list,$this->group_curr)

@@ -1,0 +1,18 @@
+<div class="dui-form-item">
+    <label class="dui-form-item__label">{$formItem.title}</label>
+    <div class="dui-form-item__content">
+        <div class="dui-input dui-input-group dui-input-group--append is-disabled">
+            <input type="text" class="dui-input__inner" name="{$formItem.field}" value="{$formItem.value|default=''}" placeholder="{$formItem.placeholder|default='请输入'.$formItem.title}"
+            readonly="readonly"
+            >
+            <div class="dui-input-group__append">
+                <button class="dui-button dui-button--default refresh-text" type="button" ajax-url="{$formItem.attr['ajax-url']|default=''}"><i class="dui-icon-redo"></i></button>
+            </div>
+        </div>
+        {notempty name="formItem.tips"}
+        <div class="dui-form-item__tips">
+            {$formItem.tips}
+        </div>
+        {/notempty}
+    </div>
+</div>

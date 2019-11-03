@@ -23,6 +23,7 @@ Route::group('app', function () {
     Route::rule('edit', 'app/edit');
     Route::rule('enable', 'app/enable');
     Route::rule('disable', 'app/disable');
+    Route::rule('getSecret', 'app/getSecret');
     Route::rule('delete', 'app/delete');
 });
 Route::group('group', function () {
@@ -38,8 +39,6 @@ Route::group('index', function () {
     Route::rule('index', 'index/index');
     Route::rule('add', 'index/add');
     Route::rule('edit', 'index/edit');
-    Route::rule('enable', 'index/enable');
-    Route::rule('disable', 'index/disable');
     Route::rule('delete', 'index/delete');
 });
 Route::group('fields', function () {

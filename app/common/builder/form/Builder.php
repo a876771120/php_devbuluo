@@ -122,7 +122,35 @@ class Builder extends Dbuilder{
         $this->_vars['form_items'][] = $item;
         return $this;
     }
-
+    /**
+     * 添加一个带刷新的文本框
+     * @param string $field 字段名称
+     * @param string $title 标题
+     * @param string $tips 提示
+     * @param string $default 默认值
+     * @param array $attr 特有属性
+     * @param string $extra_attr 额外属性
+     * @param string $extra_class 额外样式
+     * @return void
+     */
+    public function addRefreshText($field = '', $title = '', $tips='', $default = '',$attr=[],$extra_attr = '', $extra_class = ''){
+        if(strpos($title, '|')){
+            list($title, $placeholder) = explode('|', $title);
+        }
+        $item = [
+            'template'    => 'refresh_text',
+            'field'       => $field,
+            'title'       => $title,
+            'tips'        => $tips,
+            'value'       => $default,
+            'attr'        => $attr,
+            'extra_class' => $extra_class,
+            'extra_attr'  => $extra_attr,
+            'placeholder' => isset($placeholder) ? $placeholder : '请输入'.$title,
+        ];
+        $this->_vars['form_items'][] = $item;
+        return $this;
+    }
     /**
      * 添加一个文本框
      *
@@ -210,7 +238,31 @@ class Builder extends Dbuilder{
         $this->_vars['form_items'][] = $item;
         return $this;
     }
-
+    /**
+     * 添加分组
+     * @param string $field
+     * @param string $title
+     * @param array $options
+     * @param array $default
+     * @param array $attr
+     * @param string $extra_attr
+     * @param string $extra_class
+     * @return void
+     */
+    public function addCheckboxGroups($field = '', $title = '', $options = [], $default = [], $attr = [], $extra_attr = '', $extra_class = ''){
+        $item = [
+            'template'    => 'checkbox_groups',
+            'field'        => $field,
+            'title'       => $title,
+            'options'     => $options == '' ? [] : $options,
+            'value'       => $default == '' ? [] : $default,
+            'attr'        => $attr,
+            'extra_attr'  => $extra_attr,
+            'extra_class' => $extra_class,
+        ];
+        $this->_vars['form_items'][] = $item;
+        return $this;
+    }
     /**
      * 添加开关
      * @param string $field 表单项名

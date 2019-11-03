@@ -19,4 +19,5 @@ class DataType {
     const TYPE_JSON = 7;
     const TYPE_OBJECT = 8;
     const TYPE_ARRAY = 9;
+    const TYPE_MOBILE =10;
 }

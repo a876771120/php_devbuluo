@@ -83,6 +83,32 @@ dui.define('buildform',['jquery','form','popup'],function($,form,popup){
             $(el).on('change','select[linkage-field]',function(e){
                 linkageChange(this);
             })
+            // 刷新文本框
+            $(el).on('click','.refresh-text',function(e){
+                console.log('进来了');
+                var othis=$(this),url = othis.attr('ajax-url')||'';
+                $.ajax({
+                    url:url,
+                    dataType:'json',
+                    type:'get',
+                    success:function(res){
+                        if(res.code==1){
+                            othis.parents('.dui-input-group').find('input.dui-input__inner').val(res.data);
+                        }else{
+                            popup.message('刷新失败',{type:'error'})
+                        }
+                    },
+                    error:function(res){
+                        var res = '';
+                        try {
+                            res = error.responseJSON.message;
+                        } catch (error) {
+                            res = '网络请求失败';
+                        }
+                        popup.message(res,{type:'error'})
+                    }
+                })
+            })
         }
     }
     return BuildForm;

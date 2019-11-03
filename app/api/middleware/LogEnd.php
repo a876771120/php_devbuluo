@@ -10,8 +10,6 @@
 // +----------------------------------------------------------------------
 declare(strict_types=1);
 namespace app\api\middleware;
-
-use app\api\helper\ReturnCode;
 use think\App;
 use app\Request;
 /**
@@ -19,7 +17,7 @@ use app\Request;
  * @package app\common\middleware
  * @author 刘勤 <876771120@qq.com>
  */
-class Permission{
+class LogEnd{
     /**
      * 应用实例
      * @var App
@@ -41,17 +39,6 @@ class Permission{
      * @return Response
      */
     public function handle(Request $request, \Closure $next){
-        $header = config('api.CROSS');
-        $appInfo = $request->APP_CONF_DETAIL;
-        $apiInfo = $request->API_CONF_DETAIL;
-        $allRules = explode(',', $appInfo['app_api']);
-        if (!in_array($apiInfo['hash'], $allRules)) {
-            return json([
-                'code' => ReturnCode::INVALID,
-                'msg'  => '您当前的应用没有该权限，可联系管理员添加',
-                'data' => []
-            ])->header($header);
-        }
         return $next($request);
     }
 }
