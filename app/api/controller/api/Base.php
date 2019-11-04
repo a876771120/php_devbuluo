@@ -8,9 +8,9 @@
 // +----------------------------------------------------------------------
 // | 开源协议 ( http://www.apache.org/licenses/LICENSE-2.0 )
 // +----------------------------------------------------------------------
-use think\facade\Route;
-//MISS路由定义
-Route::miss('Miss/index');
-Route::rule('5db5c20c9abaa','app\api\controller\api\Build@accessToken','POST')->middleware(["LogStart","ApiRequest","LogEnd"]);
-Route::rule('5dbfd774098a5','app\api\controller\api\Publics@getVersion','POST')->middleware(["LogStart","ApiRequest","LogEnd"]);
-Route::rule('5dbfd8d218a80','app\api\controller\api\Publics@splashAd','*')->middleware(["LogStart","ApiRequest","LogEnd"]);
+namespace app\api\controller\api;
+use app\common\controller\Base as BaseController;
+
+class Base extends BaseController{
+
+}

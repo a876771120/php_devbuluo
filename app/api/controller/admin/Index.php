@@ -162,7 +162,7 @@ class Index extends Common{
                 $middleware[] = '"UserAuth"';
             }
             $middleware[] = '"LogEnd"';
-            array_push($routeStr, "Route::rule('".addslashes($hash)."','app\\".$app."\\controller\\interface\\".$controller."@".$action."','".$methodArr[$rule['method']]."')->middleware([".implode(',',$middleware)."]);");
+            array_push($routeStr, "Route::rule('".addslashes($hash)."','app\\".$app."\\controller\\api\\".$controller."@".$action."','".$methodArr[$rule['method']]."')->middleware([".implode(',',$middleware)."]);");
         }
         $routeStr = str_replace('{$API_RULE}',implode(PHP_EOL,$routeStr),$tplStr);
         // 写入路由文件
