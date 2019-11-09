@@ -4,11 +4,12 @@
 
 namespace Composer\Autoload;
 
-class ComposerStaticInit2ac9accdd11967f2a1b1d81948d398ad
+class ComposerStaticInit70410a523307566cb869540dd1dedbc2
 {
     public static $files = array (
         '9b552a3cc426e3287cc811caefa3cf53' => __DIR__ . '/..' . '/topthink/think-helper/src/helper.php',
         '538ca81a9a966a6716601ecf48f4eaef' => __DIR__ . '/..' . '/opis/closure/functions.php',
+        'ad155f8f1cf0d418fe49e248db8c661b' => __DIR__ . '/..' . '/react/promise/src/functions_include.php',
         '0e6d7bf4a5811bfa5cf40c5ccd6fae6a' => __DIR__ . '/..' . '/symfony/polyfill-mbstring/bootstrap.php',
         '25072dd6e2470089de65ae7bf11d3109' => __DIR__ . '/..' . '/symfony/polyfill-php72/bootstrap.php',
         '667aeda72477189d0494fecd327c3641' => __DIR__ . '/..' . '/symfony/var-dumper/Resources/functions/dump.php',
@@ -34,6 +35,10 @@ class ComposerStaticInit2ac9accdd11967f2a1b1d81948d398ad
             'Symfony\\Polyfill\\Mbstring\\' => 26,
             'Symfony\\Component\\VarDumper\\' => 28,
         ),
+        'R' => 
+        array (
+            'React\\Promise\\' => 14,
+        ),
         'P' => 
         array (
             'Psr\\SimpleCache\\' => 16,
@@ -49,6 +54,15 @@ class ComposerStaticInit2ac9accdd11967f2a1b1d81948d398ad
         array (
             'League\\Flysystem\\Cached\\' => 24,
             'League\\Flysystem\\' => 17,
+        ),
+        'G' => 
+        array (
+            'GuzzleHttp\\Stream\\' => 18,
+            'GuzzleHttp\\Ring\\' => 16,
+        ),
+        'E' => 
+        array (
+            'Elasticsearch\\' => 14,
         ),
     );
 
@@ -92,6 +106,10 @@ class ComposerStaticInit2ac9accdd11967f2a1b1d81948d398ad
         array (
             0 => __DIR__ . '/..' . '/symfony/var-dumper',
         ),
+        'React\\Promise\\' => 
+        array (
+            0 => __DIR__ . '/..' . '/react/promise/src',
+        ),
         'Psr\\SimpleCache\\' => 
         array (
             0 => __DIR__ . '/..' . '/psr/simple-cache/src',
@@ -120,6 +138,18 @@ class ComposerStaticInit2ac9accdd11967f2a1b1d81948d398ad
         array (
             0 => __DIR__ . '/..' . '/league/flysystem/src',
         ),
+        'GuzzleHttp\\Stream\\' => 
+        array (
+            0 => __DIR__ . '/..' . '/guzzlehttp/streams/src',
+        ),
+        'GuzzleHttp\\Ring\\' => 
+        array (
+            0 => __DIR__ . '/..' . '/guzzlehttp/ringphp/src',
+        ),
+        'Elasticsearch\\' => 
+        array (
+            0 => __DIR__ . '/..' . '/elasticsearch/elasticsearch/src/Elasticsearch',
+        ),
     );
 
     public static $fallbackDirsPsr0 = array (
@@ -129,9 +159,9 @@ class ComposerStaticInit2ac9accdd11967f2a1b1d81948d398ad
     public static function getInitializer(ClassLoader $loader)
     {
         return \Closure::bind(function () use ($loader) {
-            $loader->prefixLengthsPsr4 = ComposerStaticInit2ac9accdd11967f2a1b1d81948d398ad::$prefixLengthsPsr4;
-            $loader->prefixDirsPsr4 = ComposerStaticInit2ac9accdd11967f2a1b1d81948d398ad::$prefixDirsPsr4;
-            $loader->fallbackDirsPsr0 = ComposerStaticInit2ac9accdd11967f2a1b1d81948d398ad::$fallbackDirsPsr0;
+            $loader->prefixLengthsPsr4 = ComposerStaticInit70410a523307566cb869540dd1dedbc2::$prefixLengthsPsr4;
+            $loader->prefixDirsPsr4 = ComposerStaticInit70410a523307566cb869540dd1dedbc2::$prefixDirsPsr4;
+            $loader->fallbackDirsPsr0 = ComposerStaticInit70410a523307566cb869540dd1dedbc2::$fallbackDirsPsr0;
 
         }, null, ClassLoader::class);
     }

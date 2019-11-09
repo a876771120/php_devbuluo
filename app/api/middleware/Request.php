@@ -65,7 +65,7 @@ class Request{
         if ($cached) {
             $newRule = cache('RequestFields:NewRule:' . $apiInfo['hash']);
         } else {
-            $rule = json_decode($apiInfo['request'],true);
+            $rule = json_decode($apiInfo['request']?:"",true);
             $newRule = $this->buildValidateRule($rule);
             cache('RequestFields:NewRule:' . $apiInfo['hash'], $newRule);
         }

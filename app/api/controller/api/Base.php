@@ -10,7 +10,16 @@
 // +----------------------------------------------------------------------
 namespace app\api\controller\api;
 use app\common\controller\Base as BaseController;
-
 class Base extends BaseController{
+    // 初始化
+    protected function initialize(){
+        $this->init();
+    }
+    /**
+     * 初始化方法
+     * @return void
+     */
+    protected function init(){
 
+    }
 }

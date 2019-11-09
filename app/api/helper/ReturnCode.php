@@ -38,6 +38,13 @@ class ReturnCode{
     const FIELD_REQUIRE = -23; //字段不能为空
     const FIELD_MAX = -24; //字段长度超出
     const FIELD_UNIQUE = -25; //字段长度超出
+    const ES_CONNET_ERROR = -26; //elastic连接错误
+    const ES_CREATE_INDEX_ERROR = -27; //创建索引失败
+    const ES_PUT_MAPING_ERROR = -28; //创建索引失败
+    const ES_SEARCH_ERROR = -28; //es查询失败
+    const ES_ADD_ERROR = -28; //es添加数据错误
+    const ES_EDITE_ERROR = -29; //es添加数据错误
+    const ES_DELETE_ERROR = -30; //es添加数据错误
     const PARAM_INVALID = -995; // 参数无效
     const ACCESS_TOKEN_TIMEOUT = -996;
     const SESSION_TIMEOUT = -997;

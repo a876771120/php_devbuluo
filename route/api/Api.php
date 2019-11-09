@@ -14,3 +14,4 @@ Route::miss('Miss/index');
 Route::rule('5db5c20c9abaa','app\api\controller\api\Build@accessToken','POST')->middleware(["LogStart","ApiRequest","LogEnd"]);
 Route::rule('5dbfd774098a5','app\api\controller\api\Publics@getVersion','POST')->middleware(["LogStart","ApiRequest","LogEnd"]);
 Route::rule('5dbfd8d218a80','app\api\controller\api\Publics@splashAd','*')->middleware(["LogStart","ApiRequest","LogEnd"]);
+Route::rule('5dc6001a140a4','app\article\controller\api\Category@index','*')->middleware(["LogStart","ApiRequest","LogEnd"]);
