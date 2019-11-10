@@ -45,8 +45,4 @@ return [
     'admin_error_template'=>app()->getBasePath().'admin/view/public/error.html',
     // 成功提示模板
     'admin_success_template'=>app()->getBasePath().'admin/view/public/success.html',
-    // elasticsearch服务器配置
-    'es_host' => [
-        '49.235.160.203:9200' // ip和端口
-    ],
 ];

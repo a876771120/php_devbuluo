@@ -52,7 +52,7 @@ class ElasticsearHelper{
             $this->indexName = $indexName;
             $this->type = $type;
             $this->client = ClientBuilder::create()
-            ->setHosts(config('app.es_host'))
+            ->setHosts(config('elasticsearch.host'))
             ->build();
         } catch (exception $e) {
             return [
