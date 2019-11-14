@@ -13,6 +13,7 @@ namespace app\api\controller\admin;
 use app\common\builder\Dbuilder;
 use app\admin\controller\Common;
 use app\api\entity\DataType;
+use app\api\helper\Request;
 use think\Exception;
 use think\exception\ValidateException;
 /**
@@ -136,7 +137,7 @@ class Index extends Common{
         // 路由模板路径
         $apiRoutePath = app()->getRootPath().'route/api/Api.php';
         // 支持的请求方式
-        $methodArr = ['*', 'POST', 'GET', 'PUT', 'DELETE', 'HEAD'];
+        $methodArr = Request::METHOD;
         // 获取模板内容
         $tplStr = file_get_contents($tplPath);
         // 获取所有的接口

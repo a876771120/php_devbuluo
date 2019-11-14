@@ -11,7 +11,8 @@
 declare(strict_types=1);
 namespace app\api\middleware;
 
-use app\admin\model\App as ApiApp;
+use app\api\helper\Request as AppRequest;
+use app\api\model\App as ApiApp;
 use think\App;
 use app\Request;
 use think\facade\Cache;
@@ -67,6 +68,14 @@ class Auth{
             if ($apiInfo['access_token']==1) {
                 $appInfo = $this->simpleCheck($accessToken);
             } else if($apiInfo['access_token']==2) {
+                $query = [];
+                parse_str(urldecode(base64_decode($accessToken)),$query);
+                // 支持的请求方式
+                $methodArr = AppRequest::METHOD;
+                $param = input(strtolower($methodArr[$apiInfo['method']]).'.',[]);
+                $query = array_merge($query,$param);
+                $appInfo = $this->checkJwt($accessToken,$query);
+            }else if($apiInfo['access_token']==3) {
                 $appInfo = $this->check($accessToken);
             }
             if ($appInfo === false) {
@@ -86,6 +95,40 @@ class Auth{
             ])->header($header);
         }
         return $next($request);
+    }
+    /**
+     * jwt签名验证
+     * @param string $accessToken
+     * @param string $query
+     * @return void
+     */
+    protected function checkJwt($accessToken='',$query=''){
+        $appId = $query['appId'];
+        $signature = $query['signature'];
+        
+        unset($query['signature']);
+        
+        // 获取appinfo
+        $appInfo = cache('appId:' . $appId);
+        if (!$appInfo) {
+            $appInfo = ApiApp::where(['app_id' => $appId])->find();
+            if (!$appInfo) {
+                return false;
+            } else {
+                $appInfo = $appInfo->toArray();
+                cache('appId:' . $appId, $appInfo);
+            }
+        }
+        $query['appSecret'] = $appInfo['app_secret'];
+        ksort($query);
+        if((time())<intval($query['timestamp']) || intval($query['timestamp']) <(time()-15)){
+            return false;
+        }
+        $query = http_build_query($query);
+        if(hash('sha256',$query)!=$signature){
+            return false;
+        }
+        return $appInfo;
     }
     /**
      * 简单检查认证accessToken
