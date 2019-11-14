@@ -17,11 +17,12 @@ class Miss extends Base{
      * @return void
      */
     public function index(){
+        $header = config('api.CROSS');
         // 如果是检验服务器性能请求
         if(request()->isOptions()){
-            return ['code'=>1,'msg'=>'请求到了哦','data'=>[
+            return json(['code'=>1,'msg'=>'请求到了哦','data'=>[
 
-            ]];
+                ]])->header($header);
         }
         return view(app()->getBasePath().'/admin/view/public/error.html')->assign([
             

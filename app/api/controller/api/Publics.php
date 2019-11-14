@@ -18,11 +18,12 @@ class Publics extends Base{
      * @return void
      */
     public function splashAd(){
+        $header = config('api.CROSS');
         $data['id'] = 1;
         $data['adUrl'] = "http://www.baidu.com";
         $data['adImage'] = $this->request->domain()."/uploads/images/ad.jpeg";
         $data['startTime'] = time()-24*3600;
         $data['endTime'] = time()+24*3600;
-        return json(['code'=>1,'msg'=>'获取成功','data'=>$data]);
+        return json(['code'=>1,'msg'=>'获取成功','data'=>$data])->header($header);
     }
 }
