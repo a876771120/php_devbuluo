@@ -105,9 +105,7 @@ class Auth{
     protected function checkJwt($accessToken='',$query=''){
         $appId = $query['appId'];
         $signature = $query['signature'];
-        
         unset($query['signature']);
-        
         // 获取appinfo
         $appInfo = cache('appId:' . $appId);
         if (!$appInfo) {

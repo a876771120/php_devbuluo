@@ -808,8 +808,8 @@
     },
     {
         "name": "symfony/var-dumper",
-        "version": "v4.3.6",
-        "version_normalized": "4.3.6.0",
+        "version": "v4.3.8",
+        "version_normalized": "4.3.8.0",
         "source": {
             "type": "git",
             "url": "https://github.com/symfony/var-dumper.git",
@@ -897,12 +897,12 @@
         "source": {
             "type": "git",
             "url": "https://github.com/top-think/framework.git",
-            "reference": "1d1725c1dfab411cc0ff004a947e6f19216e8d63"
+            "reference": "7f945e48449c32a450642d65aed1901a4f2551f0"
         },
         "dist": {
             "type": "zip",
-            "url": "https://api.github.com/repos/top-think/framework/zipball/1d1725c1dfab411cc0ff004a947e6f19216e8d63",
-            "reference": "1d1725c1dfab411cc0ff004a947e6f19216e8d63",
+            "url": "https://api.github.com/repos/top-think/framework/zipball/7f945e48449c32a450642d65aed1901a4f2551f0",
+            "reference": "7f945e48449c32a450642d65aed1901a4f2551f0",
             "shasum": "",
             "mirrors": [
                 {
@@ -929,7 +929,7 @@
             "mockery/mockery": "^1.2",
             "phpunit/phpunit": "^7.0"
         },
-        "time": "2019-11-08T12:06:24+00:00",
+        "time": "2019-11-14T13:51:54+00:00",
         "type": "library",
         "installation-source": "dist",
         "autoload": {
@@ -1123,12 +1123,12 @@
         "source": {
             "type": "git",
             "url": "https://github.com/top-think/think-orm.git",
-            "reference": "50c2c4932e9323002793d2babf13acb547e43723"
+            "reference": "3fb17fa37fc56f0eb0c20a8bd08667b1065bad37"
         },
         "dist": {
             "type": "zip",
-            "url": "https://api.github.com/repos/top-think/think-orm/zipball/50c2c4932e9323002793d2babf13acb547e43723",
-            "reference": "50c2c4932e9323002793d2babf13acb547e43723",
+            "url": "https://api.github.com/repos/top-think/think-orm/zipball/3fb17fa37fc56f0eb0c20a8bd08667b1065bad37",
+            "reference": "3fb17fa37fc56f0eb0c20a8bd08667b1065bad37",
             "shasum": "",
             "mirrors": [
                 {
@@ -1144,7 +1144,7 @@
             "psr/simple-cache": "^1.0",
             "topthink/think-helper": "^3.1"
         },
-        "time": "2019-11-08T07:44:23+00:00",
+        "time": "2019-11-13T02:48:08+00:00",
         "type": "library",
         "installation-source": "dist",
         "autoload": {
