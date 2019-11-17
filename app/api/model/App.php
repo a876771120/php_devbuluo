@@ -172,6 +172,7 @@ class App extends Base{
             $group = [];
             $group['value']= $hash;
             $group['title'] = $name;
+            $where = [];
             $where[] = ['state','in',['1','2','3','4']];
             $where[] = ['group_hash','=',$hash];
             $group['child'] = Db::name('ApiList')->where($where)->column('name','hash');

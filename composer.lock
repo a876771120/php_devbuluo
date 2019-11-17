@@ -795,12 +795,12 @@
             "source": {
                 "type": "git",
                 "url": "https://github.com/top-think/think-orm.git",
-                "reference": "3fb17fa37fc56f0eb0c20a8bd08667b1065bad37"
+                "reference": "ff5f112f5559497222f2716385b5a709ab82741b"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/top-think/think-orm/zipball/3fb17fa37fc56f0eb0c20a8bd08667b1065bad37",
-                "reference": "3fb17fa37fc56f0eb0c20a8bd08667b1065bad37",
+                "url": "https://api.github.com/repos/top-think/think-orm/zipball/ff5f112f5559497222f2716385b5a709ab82741b",
+                "reference": "ff5f112f5559497222f2716385b5a709ab82741b",
                 "shasum": ""
             },
             "require": {
@@ -832,7 +832,7 @@
                 "database",
                 "orm"
             ],
-            "time": "2019-11-13T02:48:08+00:00"
+            "time": "2019-11-17T07:53:45+00:00"
         },
         {
             "name": "topthink/think-template",

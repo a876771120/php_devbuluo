@@ -19,7 +19,7 @@ use app\Request;
  * @package app\common\middleware
  * @author 刘勤 <876771120@qq.com>
  */
-class Permission{
+class Response{
     /**
      * 应用实例
      * @var App
@@ -34,24 +34,14 @@ class Permission{
         $this->app = $app;
     }
     /**
-     * 处理请求
+     * api结束给出header，并记录日志
      *
      * @param Request $request
      * @param \Closure $next
      * @return Response
      */
     public function handle(Request $request, \Closure $next){
-        $header = config('api.CROSS');
-        $appInfo = $request->APP_CONF_DETAIL;
-        $apiInfo = $request->API_CONF_DETAIL;
-        $allRules = json_decode($appInfo['app_api'],true);
-        if (!in_array($apiInfo['hash'], $allRules)) {
-            return json([
-                'code' => ReturnCode::INVALID,
-                'msg'  => '您当前的应用没有该权限，可联系管理员添加',
-                'data' => []
-            ])->header($header);
-        }
-        return $next($request);
+        $response = $next($request)->header(config('api.CROSS'));
+        return $response;
     }
 }

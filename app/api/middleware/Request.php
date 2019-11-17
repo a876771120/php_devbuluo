@@ -47,7 +47,9 @@ class Request{
      * @return Response
      */
     public function handle(tpRequest $request, \Closure $next){
-        
+        if($request->isOptions()){
+            return json(['code' => ReturnCode::SUCCESS, 'msg' => '检验成功哦', 'data' => []])->header(config('api.CROSS'));
+        }
         $apiInfo = $request->API_CONF_DETAIL;
         if(!$apiInfo){
             $apiHash = $request->rule()->getRule();
@@ -69,11 +71,12 @@ class Request{
             $newRule = $this->buildValidateRule($rule);
             cache('RequestFields:NewRule:' . $apiInfo['hash'], $newRule);
         }
+        // 参数检测
         if ($newRule) {
             try {
                 validate()->rule($newRule)->check($data);
             } catch (ValidateException $e) {
-                return json(['code' => ReturnCode::PARAM_INVALID, 'msg' => $e->getError(), 'data' => []]);
+                return json(['code' => ReturnCode::PARAM_INVALID, 'msg' => $e->getError(), 'data' => []])->header(config('api.CROSS'));
             }
         }
         return $next($request);

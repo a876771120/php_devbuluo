@@ -16,6 +16,8 @@ use app\api\entity\DataType;
 use app\api\helper\Request;
 use think\Exception;
 use think\exception\ValidateException;
+use think\facade\Cache;
+
 /**
  * 配置管理控制器
  * @package app\api\controller\admin
@@ -147,6 +149,8 @@ class Index extends Common{
         // 组装路由字符串
         foreach ($listInfo as $hash=>&$rule) {
             $middleware = ['"LogStart"'];
+            // 检验参数
+            $middleware[] = '"ApiRequest"';
             // 解析url
             try {
                 list($app,$controller,$action) = explode('/',$rule['api_class']);
@@ -158,16 +162,17 @@ class Index extends Common{
             if(in_array($rule['access_token'],['1','2'])){
                 $middleware = array_merge($middleware,['"ApiAuth"','"ApiPermission"']);
             }
-            $middleware[] = '"ApiRequest"';
             if($rule['user_token']==1){
                 $middleware[] = '"UserAuth"';
             }
             $middleware[] = '"LogEnd"';
+            $middleware[] = '"Response"';
             array_push($routeStr, "Route::rule('".addslashes($hash)."','app\\".$app."\\controller\\api\\".$controller."@".$action."','".$methodArr[$rule['method']]."')->middleware([".implode(',',$middleware)."]);");
         }
         $routeStr = str_replace('{$API_RULE}',implode(PHP_EOL,$routeStr),$tplStr);
         // 写入路由文件
         file_put_contents($apiRoutePath, $routeStr);
+        Cache::clear();
         $this->success('路由刷新成功');
     }
 }

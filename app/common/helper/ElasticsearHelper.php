@@ -67,7 +67,7 @@ class ElasticsearHelper{
      * @author 刘勤 <876771120@qq.com>
      * @return array
      */
-    protected function initParams(){
+    public function initParams(){
         return [
             'index'=>$this->indexName,
             'type'=>$this->type
@@ -201,6 +201,14 @@ class ElasticsearHelper{
         } catch (Exception $e) {
             return $this->error(ReturnCode::ES_SEARCH_ERROR,'查询失败');
         }
+    }
+    /**
+     * 获取es客户端
+     *
+     * @return Client
+     */
+    public function getClient(){
+        return $this->client;
     }
     /**
      * 添加数据

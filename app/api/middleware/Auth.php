@@ -119,9 +119,9 @@ class Auth{
         }
         $query['appSecret'] = $appInfo['app_secret'];
         ksort($query);
-        if((time())<intval($query['timestamp']) || intval($query['timestamp']) <(time()-15)){
-            return false;
-        }
+        // if((time())<intval($query['timestamp']) || intval($query['timestamp']) <(time()-15)){
+        //     return false;
+        // }
         $query = http_build_query($query);
         if(hash('sha256',$query)!=$signature){
             return false;

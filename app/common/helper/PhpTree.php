@@ -70,12 +70,13 @@ class PhpTree
         $trees = [];
         $lists = array_values($lists);
         foreach ($lists as $key => $value) {
-            if ($value[self::$config['pid']] == $pid) {
+            if ($value[self::$config['pid']] === $pid) {
                 if ($max_level > 0 && $curr_level == $max_level) {
                     return $trees;
                 }
                 unset($lists[$key]);
                 $child = self::toLayer($lists, $value[self::$config['id']], $max_level, $curr_level + 1);
+                
                 if (!empty($child)) {
                     $value[self::$config['child']] = $child;
                 }
