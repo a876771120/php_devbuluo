@@ -11,6 +11,8 @@
 namespace app\member\model;
 use app\member\model\Role as RoleModel;
 use app\common\model\Base;
+use think\helper\Str;
+
 /**
  * 角色模型
  * @package app\member\model
@@ -60,28 +62,38 @@ class Member extends Base{
      * @param string $username 用户名
      * @param string $password 密码
      * @param string $device_id 设备编号
-     * @param boolean $remember_me 记住我
+     * @param boolean $rememberme 记住我
      * @return void
      */
     public static function apiLogin($username='',$password='',$device_id='',$rememberme=false){
         $where[] = ['username|email|mobile','=',$username];
         $user = self::alias('member')->where($where)->find();
+        if(!$user){
+            return ['code'=>-1,'msg'=>'账号或者密码错误'];
+        }
         if($user['state']!=1){
             return ['code'=>-1,'msg'=>'账号被禁用'];
         }
         if($user['password']!=md5(md5($password).$user['salt'].$user['jointime'])){
             return ['code'=>-1,'msg'=>'账号或者密码错误'];
         }else{
-            $uid = $user['id'];
-            // 更新登录信息
-            $user['last_login_time'] = request()->time();
-            $user['last_login_ip']   = get_client_ip(1);
-            if ($user->save()) {
+            $user = $user->getData();
+            // 插入登录日志
+            $data['user_id'] = $user['id'];
+            $data['type'] = 1;
+            $data['client_id'] = time().Str::random(3,1);
+            $data['ip'] = request()->ip();
+            $data['rememberme'] = $rememberme;
+            $data['remark'] = '用户登录';
+            $userLog = MemberLog::create($data)->getData();
+            if ($userLog) {
+                $userLog['last_login_time'] = $userLog['create_time'];
+                $user = array_merge($userLog,$user);
                 // 保存用户信息在缓存
-                return self::autoLogin(self::find($uid)->getData(),$device_id,$rememberme);
+                return self::autoLogin($user,$rememberme);
             } else {
                 // 更新登录信息失败
-                return ['code'=>-1,'msg'=>'登录时发生错误,请重新登录'];
+                return ['code'=>-1,'msg'=>'登录失败,请重试'];
             }
         }
     }
@@ -92,32 +104,36 @@ class Member extends Base{
      * @param boolean $rememberme
      * @return void
      */
-    protected function autoLogin($user=[],$device_id='',$rememberme=false){
+    protected static function autoLogin($user=[],$rememberme=false){
         // 记录到cache
-        $uid = uniqid().$user['id'];
         $auth = array(
             'uid'             => $user['id'],
             'avatar'          => $user['avatar'],
-            'device_id'       => $device_id,
+            'client_id'       => $user['client_id'],
+            'rememberme'      => $user['rememberme'],
             'mobile'          => $user['mobile'],
             'nickname'        => $user['nickname'],
             'last_login_time' => $user['last_login_time'],
-            'last_login_ip'   => get_client_ip(1),
+            'ip'   => $user['ip'],
         );
-        $signin_token = data_build_token($user['device_id'].$user['id'].$user['last_login_time']);
+        $signin_token = data_build_token($user['client_id'].$user['mobile'].$user['id'].$user['last_login_time']);
         // 默认2小时过期
         $cache_time = 2*3600;
         // 记住登录
         if ($rememberme) {
             $cache_time = 7*24*3600;
         }
-        $auth_sign = base64_encode(json([
-            'clientId'=>$device_id,
+        $auth_sign = base64_encode(json_encode([
+            'clientId'=>$user['client_id'],
             'token'=>$signin_token,
-            'user_id'=>$uid
+            'user_id'=>$user['id']
         ]));
-        cache($uid.'_'.$device_id,$auth,$cache_time);
-        cookie('auth',$auth_sign);
-        return ['code'=>1,'msg'=>'登录成功'];
+        cache($auth_sign,$auth,$cache_time);
+        return ['code'=>1,'msg'=>'登录成功','data'=>[
+            'auth'=>$auth_sign,
+            'nickname'=>$user['nickname'],
+            'avatar'=>$user['avatar'],
+            'expires_start'=> time()*1000
+        ]];
     }
 }

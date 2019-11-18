@@ -8,30 +8,18 @@
 // +----------------------------------------------------------------------
 // | 开源协议 ( http://www.apache.org/licenses/LICENSE-2.0 )
 // +----------------------------------------------------------------------
-namespace app\member\controller\api;
-use app\member\model\Member as MemberModel;
-use think\exception\ValidateException;
-
+namespace app\member\model;
+use app\common\model\Base;
 /**
- * 用户其他不需要权限的控制器
+ * 角色模型
+ * @package app\member\model
+ * @author 刘勤 <876771120@qq.com>
  */
-class Publics{
-    /**
-     * 登录方法
-     *
-     * @return void
-     */
-	public function login(){
-        $data = input('post.');
-        // 验证码验证码
-        return MemberModel::apiLogin($data['username'],$data['password']);
-    }
-    /**
-     * 注册方法
-     *
-     * @return void
-     */
-    public function register(){
-
-    }
+class MemberLog extends Base{
+    // 设置当前模型名称
+    protected $name = 'CommonMemberLog';
+    // 主键
+    protected $pk = 'id';
+    // 自动写入时间戳
+    protected $autoWriteTimestamp = true;
 }
