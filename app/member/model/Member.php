@@ -55,4 +55,69 @@ class Member extends Base{
         session('role_menu_auth',$auth);
         return true;
     }
+    /**
+     * api登录方法
+     * @param string $username 用户名
+     * @param string $password 密码
+     * @param string $device_id 设备编号
+     * @param boolean $remember_me 记住我
+     * @return void
+     */
+    public static function apiLogin($username='',$password='',$device_id='',$rememberme=false){
+        $where[] = ['username|email|mobile','=',$username];
+        $user = self::alias('member')->where($where)->find();
+        if($user['state']!=1){
+            return ['code'=>-1,'msg'=>'账号被禁用'];
+        }
+        if($user['password']!=md5(md5($password).$user['salt'].$user['jointime'])){
+            return ['code'=>-1,'msg'=>'账号或者密码错误'];
+        }else{
+            $uid = $user['id'];
+            // 更新登录信息
+            $user['last_login_time'] = request()->time();
+            $user['last_login_ip']   = get_client_ip(1);
+            if ($user->save()) {
+                // 保存用户信息在缓存
+                return self::autoLogin(self::find($uid)->getData(),$device_id,$rememberme);
+            } else {
+                // 更新登录信息失败
+                return ['code'=>-1,'msg'=>'登录时发生错误,请重新登录'];
+            }
+        }
+    }
+    /**
+     * 自动检测并登录
+     * @param array $user 用户信息
+     * @param string $device_id 设备编号，web端是客户传递的时间戳
+     * @param boolean $rememberme
+     * @return void
+     */
+    protected function autoLogin($user=[],$device_id='',$rememberme=false){
+        // 记录到cache
+        $uid = uniqid().$user['id'];
+        $auth = array(
+            'uid'             => $user['id'],
+            'avatar'          => $user['avatar'],
+            'device_id'       => $device_id,
+            'mobile'          => $user['mobile'],
+            'nickname'        => $user['nickname'],
+            'last_login_time' => $user['last_login_time'],
+            'last_login_ip'   => get_client_ip(1),
+        );
+        $signin_token = data_build_token($user['device_id'].$user['id'].$user['last_login_time']);
+        // 默认2小时过期
+        $cache_time = 2*3600;
+        // 记住登录
+        if ($rememberme) {
+            $cache_time = 7*24*3600;
+        }
+        $auth_sign = base64_encode(json([
+            'clientId'=>$device_id,
+            'token'=>$signin_token,
+            'user_id'=>$uid
+        ]));
+        cache($uid.'_'.$device_id,$auth,$cache_time);
+        cookie('auth',$auth_sign);
+        return ['code'=>1,'msg'=>'登录成功'];
+    }
 }

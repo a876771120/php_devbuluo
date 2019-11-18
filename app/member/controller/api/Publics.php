@@ -21,9 +21,11 @@ class Publics{
      *
      * @return void
      */
-	public function login()
-    {
-    	return json(['code'=>1,'msg'=>'登录成功']);
+	public function login(){
+        $data = input('post.');
+        // 验证码验证码
+        MemberModel::apiLogin($data['username'],$data['password'],$data['']);
+    	return json(['code'=>1,'msg'=>'登录成功','data'=>input('post.')]);
     }
     /**
      * 注册方法

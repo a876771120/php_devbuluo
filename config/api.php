@@ -14,7 +14,7 @@ return [
     'CROSS'          => [
         'Access-Control-Allow-Origin'      => '*',
         'Access-Control-Allow-Methods'     => 'POST,PUT,GET,DELETE',
-        'Access-Control-Allow-Headers'     => 'version, access-token, user-token, User-Agent, Keep-Alive, Origin, No-Cache, X-Requested-With, If-Modified-Since, Pragma, Last-Modified, Cache-Control, Expires, Content-Type, X-E4M-With',
+        'Access-Control-Allow-Headers'     => 'X-Auth-Device-Id,Api-Version, X-Auth-Access-Token, X-Auth-Token,X-Auth-Uid, User-Agent, Keep-Alive, Origin, No-Cache, X-Requested-With, If-Modified-Since, Pragma, Last-Modified, Cache-Control, Expires, Content-Type, X-E4M-With',
         'Access-Control-Allow-Credentials' => 'true'
     ]
 ];

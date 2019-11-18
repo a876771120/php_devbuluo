@@ -57,11 +57,11 @@ class Auth{
                 $apiInfo = $apiInfo->toArray();
                 Cache::set('ApiInfo:' . $apiHash, $apiInfo);
             }
-            $accessToken = $request->header('access-token', '');
+            $accessToken = $request->header('X-Auth-Access-Token', '');
             if (!$accessToken) {
                 return json([
                     'code' => ReturnCode::AUTH_ERROR,
-                    'msg'  => '缺少必要参数access-token',
+                    'msg'  => '缺少必要参数Access-Token',
                     'data' => []
                 ])->header($header);
             }
@@ -81,7 +81,7 @@ class Auth{
             if ($appInfo === false) {
                 return json([
                     'code' => ReturnCode::ACCESS_TOKEN_TIMEOUT,
-                    'msg'  => 'access-token已过期',
+                    'msg'  => 'Access-Token已过期',
                     'data' => []
                 ])->header($header);
             }
@@ -119,9 +119,9 @@ class Auth{
         }
         $query['appSecret'] = $appInfo['app_secret'];
         ksort($query);
-        // if((time())<intval($query['timestamp']) || intval($query['timestamp']) <(time()-15)){
-        //     return false;
-        // }
+        if((time())<intval($query['timestamp']) || intval($query['timestamp']) <(time()-15)){
+            return false;
+        }
         $query = http_build_query($query);
         if(hash('sha256',$query)!=$signature){
             return false;

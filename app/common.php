@@ -116,3 +116,23 @@ if (!function_exists('format_linkage')) {
         return $list;
     }
 }
+if(!function_exists('data_build_token')){
+    /**
+     * 构建token
+     * @param array $data 要构建的数据
+     * @return void
+     */
+    function data_build_token($data = []){
+        // 数据类型检测
+        if(!is_array($data)){
+            $data = (array)$data;
+        }
+        // 排序
+        ksort($data);
+        // url编码并生成query字符串
+        $code = http_build_query($data);
+        // 生成签名
+        $sign = hash('sha256',$code);
+        return $sign;
+    }
+}
