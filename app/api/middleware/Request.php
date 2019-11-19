@@ -79,6 +79,10 @@ class Request{
                 return json(['code' => ReturnCode::PARAM_INVALID, 'msg' => $e->getError(), 'data' => []])->header(config('api.CROSS'));
             }
         }
+
+        // 检测用户登录
+        dump($request->header(''));die;
+
         return $next($request);
     }
 
