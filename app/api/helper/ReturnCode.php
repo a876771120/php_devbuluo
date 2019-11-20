@@ -46,6 +46,7 @@ class ReturnCode{
     const ES_EDITE_ERROR = -29; //es添加数据错误
     const ES_DELETE_ERROR = -30; //es添加数据错误
     const PARAM_INVALID = -995; // 参数无效
+    const USER_TOKEN_TIMEOUT=-995;//用户登录失效
     const ACCESS_TOKEN_TIMEOUT = -996;
     const SESSION_TIMEOUT = -997;
     const UNKNOWN = -998;

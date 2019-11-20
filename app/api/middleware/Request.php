@@ -14,6 +14,7 @@ namespace app\api\middleware;
 use app\api\entity\DataType;
 use app\api\helper\ReturnCode;
 use app\api\model\Index as ApiList;
+use app\member\model\Member;
 use think\exception\ValidateException;
 use think\App;
 use app\Request as tpRequest;
@@ -79,10 +80,44 @@ class Request{
                 return json(['code' => ReturnCode::PARAM_INVALID, 'msg' => $e->getError(), 'data' => []])->header(config('api.CROSS'));
             }
         }
-
-        // 检测用户登录
-        dump($request->header(''));die;
-
+        // 用户检验
+        $userToken = $request->header('x-auth-user-token');
+        // 续约token
+        if($userToken){
+            $authInfo = cache($userToken);
+            if($authInfo){
+                // 如果有记住我，继续缓存7天，否则缓存2个小时
+                cache($userToken,$authInfo,$authInfo['rememberme']?(7*24*3600):(3600*2));
+            }else{
+                // 检测token是否被串改
+                // 联合查询出最后一次登录信息
+                $tokenInfo = json_decode(base64_decode($userToken),true);
+                $where=[];
+                $where[] = ['client_id','=',$tokenInfo['clientId']];//客户端编号
+                $where[] = ['type','=',1];//登录日志
+                $where[] = ['m.id','=',$tokenInfo['user_id']];//当前用户
+                $user = Member::alias('m')->field('l.*,m.nickname,m.id as uid,m.avatar,mobile,l.create_time as last_login_time')
+                ->join('CommonMemberLog l','m.id=l.user_id')->where($where)
+                ->order('l.create_time desc')->find();
+                $auth = array(
+                    'uid'             => $user['uid'],
+                    'avatar'          => $user['avatar'],
+                    'client_id'       => $user['client_id'],
+                    'rememberme'      => $user['rememberme'],
+                    'mobile'          => $user['mobile'],
+                    'nickname'        => $user['nickname'],
+                    'last_login_time' => $user['last_login_time'],
+                    'ip'   => $user['ip'],
+                );
+                $checkToken = data_build_token($user['client_id'].$user['mobile'].$user['uid'].$user['last_login_time']);
+                if($tokenInfo['token']==$checkToken){
+                    // 如果有记住我，继续缓存7天，否则缓存2个小时
+                    cache($userToken,$auth,$auth['rememberme']?(7*24*3600):(3600*2));
+                }else{
+                    return json(['code'=>ReturnCode::EXCEPTION,'msg'=>'您当前的操作异常，服务器已经记录'])->header(config('api.CROSS'));
+                }
+            }
+        }
         return $next($request);
     }
 

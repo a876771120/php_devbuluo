@@ -83,7 +83,7 @@ class Member extends Base{
             $data['type'] = 1;
             $data['client_id'] = time().Str::random(3,1);
             $data['ip'] = request()->ip();
-            $data['rememberme'] = $rememberme;
+            $data['rememberme'] = $rememberme?1:0;
             $data['remark'] = '用户登录';
             $userLog = MemberLog::create($data)->getData();
             if ($userLog) {
